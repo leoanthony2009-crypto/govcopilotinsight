@@ -135,11 +135,16 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 @media screen and (max-width:960px){.doc.va,.doc.vb{width:100%;min-height:0;padding:14px}.doc .ctx{grid-template-columns:repeat(2,1fr)!important}.doc .cols{flex-direction:column}.doc.va .ctx span,.doc.va .ctx i{display:block}.doc.va .ctx i::before{content:""}}
 /* Small screens: readable type, stacked headers, tables scroll inside their own box instead of widening the page */
 .doc .tscroll{max-width:100%;position:relative}
+/* Desktop: the page keeps its true A4 width and is scaled down to fit the viewing area (see fitScale) */
+@media screen and (min-width:961px){
+  .docwrap{width:100%;overflow:hidden;padding-bottom:40px;margin-bottom:-40px}
+  .doc.va,.doc.vb{max-width:none;transform-origin:top left}
+}
 @media screen and (max-width:960px){
   .doc .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;background:linear-gradient(to right,#fff 30%,rgba(255,255,255,0)) left/24px 100% no-repeat local,linear-gradient(to left,#fff 30%,rgba(255,255,255,0)) right/24px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,rgba(0,0,0,.18),transparent) left/10px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.18),transparent) right/10px 100% no-repeat scroll}
   .doc .tscroll:focus-visible{outline:2px solid #0b5d5a;outline-offset:2px}
   .doc .tscroll>table{min-width:100%;table-layout:auto!important}
-  .doc .tscroll tr:nth-child(even) td{background:rgba(31,56,100,.045)}
+  .doc .tscroll tr:nth-child(even) td{background:rgba(11,93,90,.05)}
   .doc .tscroll td,.doc .tscroll th{background-clip:padding-box}
   .doc table.ev{min-width:760px}
   .placeholder{min-height:0;padding:40px 20px}
@@ -174,6 +179,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
   .app{display:block;min-height:0}.panel{display:none}.stage{padding:0;display:block}.docwrap{width:100%}
   .doc{box-shadow:none;width:auto;max-width:none;min-height:0}
   .doc .tscroll{overflow:visible;background:none}
+  .doc{transform:none!important}.docwrap{height:auto!important;overflow:visible;padding-bottom:0;margin-bottom:0}
   .doc[contenteditable="true"]{outline:none}
   .doc.va{padding:0;min-height:0;width:auto;max-width:none}
   .doc.vb{padding:0;width:auto;max-width:none}
@@ -518,7 +524,7 @@ function headHTML(m,an,short){ const s=m.school; const sub=short?`IDSR released 
 function ctxHTML(an,inline){ return `<div class="ctx">${ctxCells(an).map(c=>`<div><b>${esc(c.value)}</b><span>${esc(inline?c.shortLabel:c.label)}</span><i>${esc(c.band)}${c.gloss&&!inline?` <span style="color:#555">(${esc(c.gloss)})</span>`:''}</i></div>`).join('')}</div>`; }
 function attTableHTML(an,short){ const rows=an.attTable.map(r=>`<tr><td>${esc(short?r.short:r.name)}${r.n!=null&&r.n<11?' <span class="warn" title="very small cohort">†</span>':''}</td><td class="n">${esc(r.school)}</td><td class="n">${esc(r.nat)}</td><td class="n">${r.n??''}</td><td class="b">${jHTML(r.j)}</td><td class="n">${esc(r.avg)}</td><td class="b">${jHTML(r.avgJ,!short)}</td>${short?'':`<td class="c">${esc(r.year)}</td>`}</tr>`).join('');
   const prog=an.progTable.length?`<tr class="grp"><td colspan="${short?7:8}">${esc(an.achLabel.charAt(0).toUpperCase()+an.achLabel.slice(1))} progress (national = 0.0)</td></tr>`+an.progTable.map(r=>`<tr><td>${esc(r.name)}</td><td class="n">${esc(r.school)}</td><td class="n">${esc(r.nat)}</td><td class="n">${r.n??''}</td><td class="b">${jHTML(r.j)}</td><td></td><td></td>${short?'':`<td class="c">${esc(r.year)}</td>`}</tr>`).join(''):'';
-  const hdr=short?`<tr><th style="width:31%" scope="col">Measure</th><th class="n" style="width:10%" scope="col">School</th><th class="n" style="width:9%" scope="col">Nat.</th><th class="n" style="width:6%" scope="col">n</th><th style="width:24%" scope="col">vs national</th><th class="n" style="width:9.5%" scope="col">3-yr av.</th><th class="b" scope="col">3-yr</th></tr>`:`<tr><th scope="col">Measure</th><th class="n" scope="col">School</th><th class="n" scope="col">National</th><th class="n" scope="col">n</th><th scope="col">vs national</th><th class="n" scope="col">3-yr average</th><th scope="col">3-yr vs national (smooths small cohorts)</th><th class="c" scope="col">Year</th></tr>`;
+  const hdr=short?`<tr><th style="width:29%" scope="col">Measure</th><th class="n" style="width:10.5%" scope="col">School</th><th class="n" style="width:9%" scope="col">Nat.</th><th class="n" style="width:6%" scope="col">n</th><th style="width:22%" scope="col">vs national</th><th class="n" style="width:11.5%" scope="col">3-yr av.</th><th class="b" scope="col">3-yr</th></tr>`:`<tr><th scope="col">Measure</th><th class="n" scope="col">School</th><th class="n" scope="col">National</th><th class="n" scope="col">n</th><th scope="col">vs national</th><th class="n" scope="col">3-yr average</th><th scope="col">3-yr vs national (smooths small cohorts)</th><th class="c" scope="col">Year</th></tr>`;
   return `<table${short?' style="table-layout:fixed"':''}><caption class="vh">Attainment and progress, all pupils</caption><thead>${hdr}</thead><tbody>${rows}${prog}</tbody></table>`; }
 function paTableHTML(an,short){ if(!an.groupProgTable.length) return ''; const hdr=an.progTable.map(p=>`<th class="n" scope="col">${esc(p.name.replace(' progress',''))}</th><th scope="col"></th>`).join(''); return `<table><caption class="vh">Progress by prior attainment</caption><thead><tr><th scope="col">Progress by prior attainment${an.progTable[0]?`, ${esc(an.progTable[0].year)}`:''}</th>${hdr}</tr></thead><tbody>${an.groupProgTable.map(g=>`<tr><td>${esc(g.label)}</td>${g.cells.map(c=>c?`<td class="n">${esc(c.v)}</td><td class="b">${jHTML(c.j,!short)}</td>`:'<td>–</td><td></td>').join('')}</tr>`).join('')}</tbody></table>`; }
 function disTableHTML(an,short){ if(!an.disTable.length) return ''; const d=an.disTable[0]; return `<table><caption class="vh">Disadvantaged pupils</caption><thead><tr><th scope="col">Disadvantaged pupils, ${esc(d.year)} (n = ${d.n})</th><th class="n" scope="col">School</th><th class="n" scope="col">Nat. disadv.</th><th class="n" scope="col">Nat. non-disadv.</th><th class="n" scope="col">Gap</th></tr></thead><tbody>${an.disTable.map(r=>`<tr><td>${esc(r.name)}${r.sig>0?' <span class="up" title="significantly above national disadvantaged">▲▲</span>':r.sig<0?' <span class="down">▼▼</span>':''}</td><td class="n">${esc(r.school)}</td><td class="n">${esc(r.natDis)}</td><td class="n">${esc(r.natNon)}</td><td class="n"><b>${esc(r.gap)}</b></td></tr>`).join('')}</tbody></table>`; }
@@ -659,13 +665,16 @@ showFound(null); $('ver').textContent='Version '+VERSION+'.';
 function setStatus(t,cls){ const s=$('status'); s.textContent=t; s.className='status'+(cls?' '+cls:''); }
 const A_LIMIT=210*96/25.4, B_LIMIT=268*96/25.4;
 function docFits(){ const d=$('doc'); if(!d) return null; const prev=d.style.minHeight; d.style.minHeight='0'; const h=d.offsetHeight; d.style.minHeight=prev; return h; }
+function fitScale(){ const d=$('doc'), w=$('docwrap'); if(!d) return; if(window.innerWidth<=960){ d.style.transform=''; w.style.height=''; return; }
+  const avail=w.clientWidth; const dw=d.offsetWidth; const sc=Math.min(1,avail/dw); d.style.transform=sc<1?`scale(${sc})`:''; w.style.height=sc<1?Math.ceil(d.offsetHeight*sc)+'px':''; }
+const fitRO=('ResizeObserver' in window)?new ResizeObserver(()=>fitScale()):null;
 function fitCheck(){ const el=$('fitcheck'); const d=$('doc'); if(!d||window.innerWidth<960){ el.textContent=''; return; }
   if(VIEW==='A'){ const h=docFits(); const over=h-A_LIMIT; el.innerHTML=over<=0?'<b>Print check:</b> Version A fits one side of A4 landscape at 9pt.':`<b>Print check:</b> Version A is about ${Math.ceil(over*25.4/96)} mm too tall for one page even in its most compact priority view. Print Version B instead, or edit the text.`; }
   else { const pages=d.querySelectorAll('.page').length; el.innerHTML=`<b>Print check:</b> Version B prints on A4 portrait, one section per page (${pages} sections, plus continuation pages for the evidence trail). Nothing is cut or shrunk; long sections continue onto the next page.`; } }
 function render(){ if(!MODEL) return; const on=$('optSuppress').checked; let html;
   if(VIEW==='A'){ const plans=[{hs:4,cs:4,qs:3},{hs:3,cs:3,qs:3},{hs:3,cs:3,qs:2}]; html=renderA(MODEL,AN,on,plans[0]); $('docwrap').innerHTML=html; for(let i=1;i<plans.length&&window.innerWidth>=960&&docFits()>A_LIMIT;i++){ html=renderA(MODEL,AN,on,plans[i]); $('docwrap').innerHTML=html; } }
   else { html=renderB(MODEL,AN,on); $('docwrap').innerHTML=html; }
-  wrapTables(); $('toOpts').hidden=false; fitCheck(); EDITED=false; $('btnEdit').classList.remove('on'); $('btnEdit').textContent='Edit text'; $('printHint').textContent=VIEW==='A'?'Version A prints on one side of A4 landscape. Switch to Version B for the full five-section briefing (recommended for emailing).':'Version B prints on A4 portrait, one section per page. Switch to Version A for the one-page summary.'; setPageSize(); }
+  wrapTables(); $('toOpts').hidden=false; fitCheck(); fitScale(); if(fitRO){ fitRO.disconnect(); const d=$('doc'); if(d) fitRO.observe(d); } EDITED=false; $('btnEdit').classList.remove('on'); $('btnEdit').textContent='Edit text'; $('printHint').textContent=VIEW==='A'?'Version A prints on one side of A4 landscape. Switch to Version B for the full five-section briefing (recommended for emailing).':'Version B prints on A4 portrait, one section per page. Switch to Version A for the one-page summary.'; setPageSize(); }
 function wrapTables(){ document.querySelectorAll('#doc table').forEach(t=>{ if(t.parentElement.classList.contains('tscroll')) return; const w=document.createElement('div'); w.className='tscroll'; w.tabIndex=0; w.setAttribute('role','region'); const cap=t.querySelector('caption'); w.setAttribute('aria-label',(cap?cap.textContent.trim():'Table')+' (scrolls sideways on small screens)'); t.parentNode.insertBefore(w,t); w.appendChild(t); }); }
 function showDocOnMobile(){ if(window.innerWidth<960){ const d=$('doc'); if(d) d.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}); } }
 function setPageSize(){ let st=$('pagesize'); if(!st){ st=document.createElement('style'); st.id='pagesize'; document.head.appendChild(st); } st.textContent=VIEW==='A'?'@page{size:A4 landscape;margin:10mm 11mm}':'@page{size:A4 portrait;margin:13mm 14mm 16mm}'; }
@@ -681,7 +690,7 @@ $('tabA').addEventListener('click',()=>{ if(!confirmDiscard()) return; VIEW='A';
 $('tabB').addEventListener('click',()=>{ if(!confirmDiscard()) return; VIEW='B'; $('tabB').classList.add('on'); $('tabA').classList.remove('on'); $('tabB').setAttribute('aria-selected','true'); $('tabA').setAttribute('aria-selected','false'); render(); showDocOnMobile(); });
 $('optSuppress').addEventListener('change',()=>{ if(confirmDiscard()) render(); });
 $('btnReset').addEventListener('click',()=>{ if(confirmDiscard()) render(); });
-addEventListener('resize',()=>{ if(MODEL&&!EDITED) fitCheck(); });
+addEventListener('resize',()=>{ if(MODEL&&!EDITED) fitCheck(); fitScale(); });
 $('btnEdit').addEventListener('click',()=>{ const d=$('doc'); if(!d) return; const on=d.contentEditable!=='true'; d.contentEditable=on?'true':'false'; $('btnEdit').classList.toggle('on',on); $('btnEdit').textContent=on?'Done editing':'Edit text'; if(on){ d.focus(); d.addEventListener('input',()=>{EDITED=true;},{once:true}); } });
 $('btnCopy').addEventListener('click',async()=>{ const d=$('doc'); if(!d) return; try{ await navigator.clipboard.writeText(d.innerText); setStatus('Briefing copied as plain text.','ok'); }catch(e){ const r=document.createRange(); r.selectNodeContents(d); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); setStatus('Text selected: press Ctrl+C / ⌘C to copy.','ok'); } });
 const EMBEDDED=window.self!==window.top;
