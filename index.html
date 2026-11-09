@@ -1,4 +1,4 @@
-<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><title>GovCopilot Insight</title>
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body><title>GovCopilot Insight</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* App chrome: control rail + document stage. Documents use a fixed paper palette (navy / teal / amber / grey) that prints the same in both themes. */
@@ -57,6 +57,9 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 .stage{padding-block:28px 60px;padding-left:16px;padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;justify-content:center;align-items:flex-start;min-width:0}
 @media screen and (max-width:960px){.stage{padding-left:max(16px,env(safe-area-inset-left,0px))}}
 .docwrap{max-width:100%;min-width:0}
+.toopts{display:none}
+@media screen and (max-width:960px){.stage{flex-direction:column;align-items:stretch;padding-bottom:84px}.toopts:not([hidden]){display:block;position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:5;padding:10px 14px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:13.5px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)}}
+@media print{.toopts{display:none!important}}
 .placeholder{background:#fff;color:#444;width:210mm;max-width:100%;min-height:200mm;padding:30mm 20mm;box-shadow:0 12px 40px rgba(20,30,50,.18);display:flex;align-items:center;justify-content:center;text-align:center;font-size:12pt}
 
 /* ---------- Document (paper) styles shared by Version A and B ---------- */
@@ -129,12 +132,47 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 .doc.vb .page+.page{margin-top:14mm;border-top:1px dashed #cfd3db;padding-top:10mm}
 
 @media screen and (max-width:960px){.doc.va,.doc.vb{width:100%;min-height:0;padding:14px}.doc .ctx{grid-template-columns:repeat(2,1fr)!important}.doc .cols{flex-direction:column}.doc.va .ctx span,.doc.va .ctx i{display:block}.doc.va .ctx i::before{content:""}}
+/* Small screens: readable type, stacked headers, tables scroll inside their own box instead of widening the page */
+.doc .tscroll{max-width:100%;position:relative}
+@media screen and (max-width:960px){
+  .doc .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;background:linear-gradient(to right,#fff 30%,rgba(255,255,255,0)) left/24px 100% no-repeat local,linear-gradient(to left,#fff 30%,rgba(255,255,255,0)) right/24px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,rgba(0,0,0,.18),transparent) left/10px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.18),transparent) right/10px 100% no-repeat scroll}
+  .doc .tscroll:focus-visible{outline:2px solid #1f3864;outline-offset:2px}
+  .doc .tscroll>table{min-width:100%;table-layout:auto!important}
+  .doc .tscroll tr:nth-child(even) td{background:rgba(31,56,100,.045)}
+  .doc .tscroll td,.doc .tscroll th{background-clip:padding-box}
+  .doc table.ev{min-width:760px}
+  .placeholder{min-height:0;padding:40px 20px}
+}
+@media screen and (max-width:640px){
+  .stage{padding-block:16px 84px;padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}
+  .doc.va,.doc.vb{padding:14px 12px;font-size:13.5px;line-height:1.4}
+  .doc.va table,.doc.vb table{font-size:13px}
+  .doc.va .sub,.doc.va .conf,.doc.va .note,.doc.va th,.doc.va .foot,.doc.va .ctx span,.doc.va .ctx i,.doc.va h2 small,.doc.va .tag,
+  .doc.vb .sub,.doc.vb .conf,.doc.vb .note,.doc.vb th,.doc.vb .foot,.doc.vb .ctx span,.doc.vb .ctx i,.doc.vb h2 small,.doc.vb .running,.doc.vb .tag{font-size:11.5px}
+  .doc table.ev{font-size:12px}.doc table.ev th{font-size:11px}
+  .doc.va h1,.doc.vb h1{font-size:22px}
+  .doc.va h2,.doc.vb h2{font-size:15px}.doc.va h3,.doc.vb h3{font-size:14.5px}
+  .doc.va .ctx b,.doc.vb .ctx b{font-size:17px}
+  .doc .head{flex-direction:column;gap:6px}
+  .doc .conf{max-width:none;text-align:left}
+  .doc .running{flex-direction:column;gap:2px}
+  .doc h2 small{display:block;margin-left:0}
+  .doc.va td,.doc.vb td{padding:4px 6px}.doc.va th,.doc.vb th{padding:5px 6px}
+  .doc.vb .page+.page{margin-top:24px;padding-top:18px}
+  .doc .tag{white-space:normal}
+}
+@media (pointer:coarse){
+  button{min-height:44px}
+  .opts input[type=checkbox]{width:20px;height:20px;margin-top:0;flex:none}
+  .drop{padding:18px 14px}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
 @media print{
   body{background:#fff}
   .app{display:block;min-height:0}.panel{display:none}.stage{padding:0;display:block}.docwrap{width:100%}
   .doc{box-shadow:none;width:auto;max-width:none;min-height:0}
+  .doc .tscroll{overflow:visible;background:none}
   .doc[contenteditable="true"]{outline:none}
   .doc.va{padding:0;min-height:0;width:auto;max-width:none}
   .doc.vb{padding:0;width:auto;max-width:none}
@@ -143,7 +181,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 </style>
 
 <div class="app">
-  <aside class="panel">
+  <aside class="panel" id="controls">
     <div class="brand">
       <span class="eyebrow">GovCopilot Insight · free</span>
       <h1>IDSR Governor Briefing</h1>
@@ -196,7 +234,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
     <p class="note" style="border-top:1px solid var(--line);padding-top:10px"><strong>GovCopilot Insight · Pilot version.</strong> Designed by and © W. Gopaul 2026. All rights reserved.</p>
   </aside>
 
-  <main class="stage"><div class="docwrap" id="docwrap"><div class="placeholder" id="placeholder">Tick the attestation and upload an IDSR, or load the example school to see the three outputs.</div></div></main>
+  <main class="stage"><a class="toopts" id="toOpts" href="#controls" hidden>↑ Options &amp; downloads</a><div class="docwrap" id="docwrap"><div class="placeholder" id="placeholder">Tick the attestation and upload an IDSR, or load the example school to see the three outputs.</div></div></main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/docx@9.5.1/dist/index.iife.js"></script>
@@ -621,18 +659,20 @@ function fitCheck(){ const el=$('fitcheck'); const d=$('doc'); if(!d||window.inn
 function render(){ if(!MODEL) return; const on=$('optSuppress').checked; let html;
   if(VIEW==='A'){ const plans=[{hs:4,cs:4,qs:3},{hs:3,cs:3,qs:3},{hs:3,cs:3,qs:2}]; html=renderA(MODEL,AN,on,plans[0]); $('docwrap').innerHTML=html; for(let i=1;i<plans.length&&window.innerWidth>=960&&docFits()>A_LIMIT;i++){ html=renderA(MODEL,AN,on,plans[i]); $('docwrap').innerHTML=html; } }
   else { html=renderB(MODEL,AN,on); $('docwrap').innerHTML=html; }
-  fitCheck(); EDITED=false; $('btnEdit').classList.remove('on'); $('btnEdit').textContent='Edit text'; $('printHint').textContent=VIEW==='A'?'Version A prints on one side of A4 landscape. Switch to Version B for the full five-section briefing (recommended for emailing).':'Version B prints on A4 portrait, one section per page. Switch to Version A for the one-page summary.'; setPageSize(); }
+  wrapTables(); $('toOpts').hidden=false; fitCheck(); EDITED=false; $('btnEdit').classList.remove('on'); $('btnEdit').textContent='Edit text'; $('printHint').textContent=VIEW==='A'?'Version A prints on one side of A4 landscape. Switch to Version B for the full five-section briefing (recommended for emailing).':'Version B prints on A4 portrait, one section per page. Switch to Version A for the one-page summary.'; setPageSize(); }
+function wrapTables(){ document.querySelectorAll('#doc table').forEach(t=>{ if(t.parentElement.classList.contains('tscroll')) return; const w=document.createElement('div'); w.className='tscroll'; w.tabIndex=0; w.setAttribute('role','region'); const cap=t.querySelector('caption'); w.setAttribute('aria-label',(cap?cap.textContent.trim():'Table')+' (scrolls sideways on small screens)'); t.parentNode.insertBefore(w,t); w.appendChild(t); }); }
+function showDocOnMobile(){ if(window.innerWidth<960){ const d=$('doc'); if(d) d.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}); } }
 function setPageSize(){ let st=$('pagesize'); if(!st){ st=document.createElement('style'); st.id='pagesize'; document.head.appendChild(st); } st.textContent=VIEW==='A'?'@page{size:A4 landscape;margin:10mm 11mm}':'@page{size:A4 portrait;margin:13mm 14mm 16mm}'; }
 function showCoverage(an){ const c=an.coverage; $('coverage').innerHTML=`<b>Extracted:</b> ${c.found.length} achievement measure${c.found.length===1?'':'s'}; attendance ${c.behaviour.filter(x=>x[1]).length}/${c.behaviour.length}. <b>Missing for this phase:</b> ${c.missing.length?esc(c.missing.join(', ')):'none'}. <b>Check manually:</b> ${c.verify.length?`${c.verify.length} item${c.verify.length>1?'s':''} (listed in Appendix B of Version B)`:'nothing flagged'}.`; }
-function load(model,label){ try{ MODEL=model; AN=analyse(model); showFound(model); showCoverage(AN); render(); setStatus(`${label}: ${model.school.name}${model.school.release?` (IDSR released ${model.school.release})`:''}${model.phase.isSpecial?' – special school: no national bandings published':''}.`,'ok'); }catch(e){ console.error(e); setStatus('We read the file but could not build the briefing from part of it (Ofsted may have changed the page layout). The sections found are ticked above. Please keep the file and report this so it can be fixed.','err'); } }
+function load(model,label){ try{ MODEL=model; AN=analyse(model); showFound(model); showCoverage(AN); render(); showDocOnMobile(); setStatus(`${label}: ${model.school.name}${model.school.release?` (IDSR released ${model.school.release})`:''}${model.phase.isSpecial?' – special school: no national bandings published':''}.`,'ok'); }catch(e){ console.error(e); setStatus('We read the file but could not build the briefing from part of it (Ofsted may have changed the page layout). The sections found are ticked above. Please keep the file and report this so it can be fixed.','err'); } }
 function handleFile(file){ if(!file) return; if(!$('attest').checked){ setStatus('Please tick the attestation box before uploading.','err'); return; } setStatus('Reading '+file.name+'…'); const fr=new FileReader(); fr.onload=()=>{ try{ load(parseIDSR(fr.result),'Loaded'); }catch(e){ setStatus(e.message,'err'); } }; fr.onerror=()=>setStatus('Could not read that file.','err'); fr.readAsText(file); }
 $('attest').addEventListener('change',e=>{ $('drop').setAttribute('aria-disabled',e.target.checked?'false':'true'); $('drop').querySelector('span').textContent=e.target.checked?'Drag the file here or click to choose.':'Drag the file here or click to choose. Tick the box above first.'; });
 $('drop').addEventListener('click',e=>{ if(!$('attest').checked){ e.preventDefault(); setStatus('Please tick the attestation box before uploading.','err'); } });
 $('file').addEventListener('change',e=>handleFile(e.target.files[0]));
 const drop=$('drop'); ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');})); ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');})); drop.addEventListener('drop',e=>handleFile(e.dataTransfer.files[0])); drop.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); if($('attest').checked) $('file').click(); } });
 function confirmDiscard(){ if(!EDITED) return true; const ok=document.createElement('div'); return window.__discardOK===true || (setStatus('You have edited the text. Click the same button again within 10 seconds to discard your edits.','err'), window.__discardOK=true, setTimeout(()=>window.__discardOK=false,10000), false); }
-$('tabA').addEventListener('click',()=>{ if(!confirmDiscard()) return; VIEW='A'; $('tabA').classList.add('on'); $('tabB').classList.remove('on'); $('tabA').setAttribute('aria-selected','true'); $('tabB').setAttribute('aria-selected','false'); render(); });
-$('tabB').addEventListener('click',()=>{ if(!confirmDiscard()) return; VIEW='B'; $('tabB').classList.add('on'); $('tabA').classList.remove('on'); $('tabB').setAttribute('aria-selected','true'); $('tabA').setAttribute('aria-selected','false'); render(); });
+$('tabA').addEventListener('click',()=>{ if(!confirmDiscard()) return; VIEW='A'; $('tabA').classList.add('on'); $('tabB').classList.remove('on'); $('tabA').setAttribute('aria-selected','true'); $('tabB').setAttribute('aria-selected','false'); render(); showDocOnMobile(); });
+$('tabB').addEventListener('click',()=>{ if(!confirmDiscard()) return; VIEW='B'; $('tabB').classList.add('on'); $('tabA').classList.remove('on'); $('tabB').setAttribute('aria-selected','true'); $('tabA').setAttribute('aria-selected','false'); render(); showDocOnMobile(); });
 $('optSuppress').addEventListener('change',()=>{ if(confirmDiscard()) render(); });
 $('btnReset').addEventListener('click',()=>{ if(confirmDiscard()) render(); });
 addEventListener('resize',()=>{ if(MODEL&&!EDITED) fitCheck(); });
