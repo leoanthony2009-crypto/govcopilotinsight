@@ -1,4 +1,4 @@
-<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body><title>GovCopilot Insight</title>
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-16.png" type="image/png" sizes="16x16"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest"><meta name="theme-color" content="#1f3864"></head><body><title>GovCopilot Insight</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* App chrome: control rail + document stage. Documents use a fixed paper palette (navy / teal / amber / grey) that prints the same in both themes. */
@@ -20,6 +20,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px
 @media screen and (max-width:960px){.app{grid-template-columns:1fr}}
 .panel{background:var(--panel);border-right:1px solid var(--line);padding-block:20px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px;display:flex;flex-direction:column;gap:16px;position:sticky;top:0;height:100vh;overflow-y:auto}
 @media screen and (max-width:960px){.panel{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding-right:max(16px,env(safe-area-inset-right,0px))}}
+.brand-row{display:flex;align-items:center;gap:12px}.brand-row img{flex:none;display:block}
 .brand h1{font-size:21px;margin:0;line-height:1.15;color:var(--accent)}
 .brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
 .eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
@@ -183,8 +184,13 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 <div class="app">
   <aside class="panel" id="controls">
     <div class="brand">
-      <span class="eyebrow">GovCopilot Insight · free</span>
-      <h1>IDSR Governor Briefing</h1>
+      <div class="brand-row">
+        <img src="/logo-mark.svg" alt="" width="44" height="44">
+        <div>
+          <span class="eyebrow">GovCopilot Insight · free</span>
+          <h1>IDSR Governor Briefing</h1>
+        </div>
+      </div>
       <p>Turn your school's Ofsted IDSR into a one-page executive briefing, a full accessible briefing and an editable Word document, with headlines, an evidence trail and governor questions aligned to the 2026 inspection toolkit.</p>
     </div>
 
