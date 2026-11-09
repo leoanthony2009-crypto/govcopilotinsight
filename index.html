@@ -4,15 +4,15 @@
 /* App chrome: control rail + document stage. Documents use a fixed paper palette (navy / teal / amber / grey) that prints the same in both themes. */
 :root{
   --bg:#eef0f3; --panel:#ffffff; --fg:#1c2230; --muted:#5b6474; --line:#d6dae2;
-  --accent:#1f3864; --accent-ink:#ffffff; --accent-soft:#e7e9ee;
+  --accent:#0b5d5a; --accent-ink:#ffffff; --accent-soft:#e4f0ef;
   --font:Arial,"Liberation Sans",Helvetica,sans-serif;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#161a22; --panel:#1f2430; --fg:#e8ebf1; --muted:#a4acbb; --line:#343b49;
-  --accent:#8fb3e8; --accent-ink:#0f1620; --accent-soft:#263249; color-scheme:dark } }
+  --accent:#7fd1cb; --accent-ink:#0f1620; --accent-soft:#1c3a38; color-scheme:dark } }
 :root[data-theme="dark"]{
   --bg:#161a22; --panel:#1f2430; --fg:#e8ebf1; --muted:#a4acbb; --line:#343b49;
-  --accent:#8fb3e8; --accent-ink:#0f1620; --accent-soft:#263249; color-scheme:dark }
+  --accent:#7fd1cb; --accent-ink:#0f1620; --accent-soft:#1c3a38; color-scheme:dark }
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.45;margin:0}
@@ -65,44 +65,44 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 
 /* ---------- Document (paper) styles shared by Version A and B ---------- */
 .doc{background:#fff;color:#1a1a1a;font-family:var(--font);box-shadow:0 1px 2px rgba(0,0,0,.12),0 12px 40px rgba(20,30,50,.18);position:relative;font-variant-numeric:tabular-nums;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.doc[contenteditable="true"]{outline:2px dashed #1f3864;outline-offset:4px}
-.doc h1{color:#1f3864;margin:0;line-height:1.15}
+.doc[contenteditable="true"]{outline:2px dashed #0b5d5a;outline-offset:4px}
+.doc h1{color:#0b5d5a;margin:0;line-height:1.15}
 .doc .sub{color:#444;margin:3pt 0 0;line-height:1.3}
-.doc .conf{font-weight:700;color:#1f3864;letter-spacing:.05em;text-transform:uppercase;text-align:right;max-width:40%}
-.doc .head{display:flex;justify-content:space-between;align-items:flex-start;gap:12pt;border-bottom:2.5pt solid #1f3864;padding-bottom:5pt}
+.doc .conf{font-weight:700;color:#0b5d5a;letter-spacing:.05em;text-transform:uppercase;text-align:right;max-width:40%}
+.doc .head{display:flex;justify-content:space-between;align-items:flex-start;gap:12pt;border-bottom:2.5pt solid #0b5d5a;padding-bottom:5pt}
 .doc .head>div:first-child{min-width:0}
-.doc h2{color:#fff;background:#1f3864;margin:0 0 6pt;padding:3.5pt 8pt;line-height:1.2;break-after:avoid}
+.doc h2{color:#fff;background:#0b5d5a;margin:0 0 6pt;padding:3.5pt 8pt;line-height:1.2;break-after:avoid}
 .doc h2 small{font-weight:400;opacity:.9;margin-left:8pt}
-.doc h3{color:#1f3864;margin:0 0 4pt}
+.doc h3{color:#0b5d5a;margin:0 0 4pt}
 .doc .sec{margin-bottom:var(--gap)}
 .doc .keep{break-inside:avoid}
 .doc table{width:100%;border-collapse:collapse}
 .doc tr{break-inside:avoid}
-.doc th{background:#e7e9ee;color:#1f3864;text-align:left;font-weight:700;padding:3.5pt 5pt;border-bottom:1pt solid #9aa3b5;vertical-align:bottom}
+.doc th{background:#e4f0ef;color:#0b5d5a;text-align:left;font-weight:700;padding:3.5pt 5pt;border-bottom:1pt solid #9aa3b5;vertical-align:bottom}
 .doc td{padding:var(--cell) 5pt;border-bottom:.6pt solid #cfd3db;vertical-align:top}
 .doc tr:nth-child(even) td{background:#f5f6f8}
 .doc td.n,.doc th.n{text-align:right;white-space:nowrap}
 .doc td.c,.doc th.c{text-align:center;white-space:nowrap}
 .doc td.b,.doc th.b{white-space:nowrap}
-.doc tr.grp td{background:#e7e9ee;color:#1f3864;font-weight:700;padding-top:4pt}
-.doc caption{text-align:left;font-weight:700;color:#1f3864;padding:0 0 3pt}
+.doc tr.grp td{background:#e4f0ef;color:#0b5d5a;font-weight:700;padding-top:4pt}
+.doc caption{text-align:left;font-weight:700;color:#0b5d5a;padding:0 0 3pt}
 .doc .ctx{display:grid;grid-template-columns:repeat(8,1fr);gap:5pt}
-.doc .ctx div{border:1pt solid #cfd3db;border-top:3pt solid #1f3864;padding:4pt 6pt;background:#fff}
-.doc .ctx b{display:block;color:#1f3864;line-height:1.1}
+.doc .ctx div{border:1pt solid #cfd3db;border-top:3pt solid #0b5d5a;padding:4pt 6pt;background:#fff}
+.doc .ctx b{display:block;color:#0b5d5a;line-height:1.1}
 .doc .ctx span{display:block;color:#333;margin-top:2pt}
 .doc .ctx i{display:block;font-style:normal;color:#444;margin-top:1pt}
-.doc .up{color:#0b6e5e}.doc .down{color:#8f4208}.doc .flat{color:#555}
+.doc .up{color:#1e7a3c}.doc .down{color:#8f4208}.doc .flat{color:#555}
 .doc .box{border:1pt solid #cfd3db;padding:7pt 9pt;background:#fff}
-.doc .box.str{border-left:5pt solid #0b6e5e}.doc .box.con{border-left:5pt solid #b8730a}
-.doc .box.str h3{color:#0b6e5e}.doc .box.con h3{color:#8a5500}
+.doc .box.str{border-left:5pt solid #1e7a3c}.doc .box.con{border-left:5pt solid #b8730a}
+.doc .box.str h3{color:#1e7a3c}.doc .box.con h3{color:#8a5500}
 .doc ul{margin:0;padding-left:0;list-style:none}
 .doc li{padding-left:13pt;position:relative;margin-bottom:var(--li);line-height:1.32;break-inside:avoid}
-.doc li::before{content:"";position:absolute;left:0;top:.42em;width:6pt;height:6pt;border-radius:50%;background:#1f3864}
-.doc .str li::before{background:#0b6e5e;border-radius:0}
+.doc li::before{content:"";position:absolute;left:0;top:.42em;width:6pt;height:6pt;border-radius:50%;background:#0b5d5a}
+.doc .str li::before{background:#1e7a3c;border-radius:0}
 .doc .con li::before{background:none;border-radius:0;width:0;height:0;top:.3em;border-left:4pt solid transparent;border-right:4pt solid transparent;border-bottom:7pt solid #b8730a}
-.doc .q li::before{content:"Q";background:none;color:#1f3864;font-weight:700;top:0;width:auto;height:auto}
+.doc .q li::before{content:"Q";background:none;color:#0b5d5a;font-weight:700;top:0;width:auto;height:auto}
 .doc .q li{padding-left:15pt}
-.doc .tag{display:inline-block;font-weight:700;color:#1f3864;background:#e7e9ee;border:.5pt solid #c3c8d4;padding:0 4pt;border-radius:2pt;margin-right:4pt;white-space:nowrap;letter-spacing:.02em;text-transform:uppercase;vertical-align:1pt}
+.doc .tag{display:inline-block;font-weight:700;color:#0b5d5a;background:#e4f0ef;border:.5pt solid #b7d8d5;padding:0 4pt;border-radius:2pt;margin-right:4pt;white-space:nowrap;letter-spacing:.02em;text-transform:uppercase;vertical-align:1pt}
 .doc .note{color:#444;margin:4pt 0 0;line-height:1.3}
 .doc .foot{border-top:1pt solid #9aa3b5;padding-top:4pt;color:#444;line-height:1.3}
 .doc .foot p{margin:0 0 2pt}
@@ -137,7 +137,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 .doc .tscroll{max-width:100%;position:relative}
 @media screen and (max-width:960px){
   .doc .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;background:linear-gradient(to right,#fff 30%,rgba(255,255,255,0)) left/24px 100% no-repeat local,linear-gradient(to left,#fff 30%,rgba(255,255,255,0)) right/24px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,rgba(0,0,0,.18),transparent) left/10px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.18),transparent) right/10px 100% no-repeat scroll}
-  .doc .tscroll:focus-visible{outline:2px solid #1f3864;outline-offset:2px}
+  .doc .tscroll:focus-visible{outline:2px solid #0b5d5a;outline-offset:2px}
   .doc .tscroll>table{min-width:100%;table-layout:auto!important}
   .doc .tscroll tr:nth-child(even) td{background:rgba(31,56,100,.045)}
   .doc .tscroll td,.doc .tscroll th{background-clip:padding-box}
@@ -556,7 +556,7 @@ function renderA(m,an,on,plan){ plan=plan||{hs:4,cs:4,qs:3}; const li=x=>`<li>${
 function evidenceRows(an){ const rows=[]; let n=0; [['Strength',an.strengths],['Attention',an.concerns]].forEach(([type,list])=>list.forEach(h=>{ n++; h.ref=n; (h.ev&&h.ev.length?h.ev:[{section:'',group:'',measure:'(derived from the measures above)',year:'',cohort:null,school:'',nat:'',band:'',trend:''}]).forEach(e=>rows.push({ref:n,type,text:h.text,...e})); })); return rows; }
 function evidenceHTML(an){ const rows=evidenceRows(an); return `<table class="ev" style="table-layout:fixed"><caption class="vh">Evidence trail</caption><thead><tr><th scope="col" style="width:3%">#</th><th scope="col" style="width:23%">Headline</th><th scope="col" style="width:14%">IDSR section · group</th><th scope="col" style="width:15%">Measure</th><th scope="col" style="width:8%">Year</th><th class="n" scope="col" style="width:4%">n</th><th class="n" scope="col" style="width:9%">School</th><th class="n" scope="col" style="width:9%">National</th><th scope="col">Banding / trend as published</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td>${i===0||rows[i-1].ref!==r.ref?r.ref:''}</td><td>${i===0||rows[i-1].ref!==r.ref?`<span class="tag">${r.type}</span>${esc(r.text.length>110?r.text.slice(0,107)+'…':r.text)}`:''}</td><td>${esc([r.section,r.group].filter(Boolean).join(' · '))}</td><td>${esc(nameOf(r.measure||''))}</td><td>${esc(yearLabel(r.year||''))}</td><td class="n">${r.cohort??''}</td><td class="n">${esc(r.school||'')}${r.gap?` (gap ${esc(r.gap)})`:''}</td><td class="n">${esc(r.nat||'')}${r.natOther?` / non-disadv. ${esc(r.natOther)}`:''}</td><td>${esc([r.band,r.trend].filter(x=>x&&!/not available/i.test(x)).join(' · '))}</td></tr>`).join('')}</tbody></table>`; }
 function coverageHTML(an){ const c=an.coverage; return `<div class="cols"><div><h3>Extracted from the IDSR</h3><p style="margin:0 0 6pt">${c.found.length?esc(c.found.join(' · ')):'No achievement measures.'}</p><p style="margin:0">Attendance and behaviour: ${c.behaviour.map(([k,ok])=>`${esc(k)} ${ok?'✓':'– not found'}`).join(' · ')}.</p></div><div><h3>Not found (expected for this phase)</h3><p style="margin:0 0 6pt">${c.missing.length?esc(c.missing.join(' · ')):'None – all expected measures were found.'}</p><h3>Check manually against the IDSR</h3>${c.verify.length?`<ul>${c.verify.map(v=>`<li>${esc(v)}</li>`).join('')}</ul>`:'<p style="margin:0">Nothing flagged.</p>'}</div></div>`; }
-function renderB(m,an,on){ evidenceRows(an); const li=x=>`<li>${esc(x.text)} <sup style="color:#1f3864;font-weight:700">[${x.ref}]</sup></li>`; const run=`<div class="running"><span>${esc(m.school.name)} · IDSR Governor Briefing</span><span>${CONF}</span></div>`; const special=m.phase.isSpecial||!an.hasBandings;
+function renderB(m,an,on){ evidenceRows(an); const li=x=>`<li>${esc(x.text)} <sup style="color:#0b5d5a;font-weight:700">[${x.ref}]</sup></li>`; const run=`<div class="running"><span>${esc(m.school.name)} · IDSR Governor Briefing</span><span>${CONF}</span></div>`; const special=m.phase.isSpecial||!an.hasBandings;
   const p1=`<div class="page">${headHTML(m,an,false)}${ctxHTML(an,false)}<p class="note" style="margin:0 0 12pt">School census ${esc(an.ctx.year||'')}. Bandings compare the school with all schools in the same phase nationally (±0.5 standard deviations = above/below; ±1 = well above/below). For FSM6, deprivation and children in need, "above average" means more disadvantage than most schools; it describes context, not performance.</p>
     <div class="sec"><h2>1. Key headlines</h2><div class="cols"><div class="box str"><h3>Strengths – where the school is above national</h3><ul>${an.strengths.map(li).join('')||'<li>Nothing banded above national in the latest data.</li>'}</ul></div><div class="box con"><h3>Areas for governor attention</h3><ul>${an.concerns.map(li).join('')||'<li>Nothing banded below national in the latest data.</li>'}</ul></div></div></div></div>`;
   const p2=special?`<div class="page">${run}<div class="sec"><h2>2. Achievement</h2><p>The IDSR publishes no national comparisons, bandings or summary tables for this school, so this briefing cannot report attainment or progress against national figures. Governors should rely on the school's own evidence of progress from starting points and towards EHC plan outcomes.</p></div></div>`:
@@ -576,7 +576,7 @@ function renderB(m,an,on){ evidenceRows(an); const li=x=>`<li>${esc(x.text)} <su
 function buildDocx(m,an,on){
   const D=window.docx; if(!D) throw new Error('The Word library did not load. Check your connection and try again.');
   const {Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,ShadingType,AlignmentType,BorderStyle,HeadingLevel,Header,Footer,PageNumber,LevelFormat,PageBreak,VerticalAlign}=D;
-  const NAVY='1F3864',TEAL='0B6E5E',AMBER='8A5500',GREY='E7E9EE',LINE='CFD3DB',MUTED='444444',FONT='Arial';
+  const NAVY='0B5D5A',TEAL='1E7A3C',AMBER='8A5500',GREY='E4F0EF',LINE='CFD3DB',MUTED='444444',FONT='Arial';
   const PAGE_W=11906,MARGIN=794,CW=PAGE_W-2*MARGIN;
   const run=(t,o={})=>new TextRun({text:t,font:FONT,size:o.size||20,bold:o.bold,color:o.color,italics:o.italics});
   const para=(ch,o={})=>new Paragraph({children:Array.isArray(ch)?ch:[run(ch,o)],spacing:{before:o.before??0,after:o.after??80,line:o.line??276},alignment:o.align,keepNext:o.keepNext});
@@ -587,7 +587,7 @@ function buildDocx(m,an,on){
   const R=AlignmentType.RIGHT;
   const hrow=(labels,ws,al=[])=>new TableRow({tableHeader:true,cantSplit:true,children:labels.map((l,i)=>tcell(l,ws[i],{bold:true,color:NAVY,fill:GREY,size:17,align:al[i]}))});
   const jt=j=>j?`${j.arrow} ${j.word}`:''; const jc=j=>!j?MUTED:j.dir>0?TEAL:j.dir<0?'8F4208':'555555';
-  const h2=(t,note)=>new Paragraph({heading:HeadingLevel.HEADING_1,children:[run(t,{size:25,bold:true,color:'FFFFFF'}),...(note?[run('   '+note,{size:17,color:'E7E9EE'})]:[])],shading:{type:ShadingType.CLEAR,fill:NAVY,color:'auto'},spacing:{before:240,after:140},keepNext:true});
+  const h2=(t,note)=>new Paragraph({heading:HeadingLevel.HEADING_1,children:[run(t,{size:25,bold:true,color:'FFFFFF'}),...(note?[run('   '+note,{size:17,color:'E4F0EF'})]:[])],shading:{type:ShadingType.CLEAR,fill:NAVY,color:'auto'},spacing:{before:240,after:140},keepNext:true});
   const h3=(t,c=NAVY)=>new Paragraph({heading:HeadingLevel.HEADING_2,children:[run(t,{size:22,bold:true,color:c})],spacing:{before:160,after:80},keepNext:true});
   const note=t=>para([run(t,{size:17,color:MUTED})],{after:120,line:250});
   const bullets=(items,ref)=>items.map(t=>new Paragraph({children:[run(t,{size:20})],numbering:{reference:ref,level:0},spacing:{after:70,line:270}}));
