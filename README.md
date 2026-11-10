@@ -2,7 +2,7 @@
 
 Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page governor briefing, a full briefing with an evidence trail, and an editable Word document.
 
-**Status:** pilot, version 3.1. Checked against the IDSR release of 25 September 2026, mainly on primary-school data. Secondary and special-school handling exists but has had little testing.
+**Status:** pilot, version 3.2. Checked against the IDSR release of 25 September 2026, mainly on primary-school data. Secondary and special-school handling exists but has had little testing.
 
 ## How it works
 
@@ -34,6 +34,10 @@ There is no build step. Deploy by publishing the folder as a static site.
 ## Small numbers
 
 With "Hide small numbers" ticked (the default), counts of 5 or fewer are shown as "5 or fewer", and suspension and exclusion reasons are left out, on screen, in print and in the Word file. The line follows the IDSR, which suppresses cohorts of 5 or fewer. Percentages are shown as the IDSR gives them.
+
+## Governor questions and the Ofsted toolkit
+
+Each question is produced by a fixed rule and linked to a theme in Ofsted's State-funded school inspection toolkit (v2.0, June 2026, for use from 7 September 2026). Version B and the Word file show, for each area, a short paraphrase of what the toolkit's expected standard looks for. The paraphrases live in `TOOLKIT` in `core.js`. They are not Ofsted's wording, and they must be re-read against the toolkit whenever Ofsted updates it. Leadership and governance is cited by area only. Safeguarding and personal development and wellbeing are not evidenced by IDSR data, so no questions are generated for them.
 
 ## Tests
 

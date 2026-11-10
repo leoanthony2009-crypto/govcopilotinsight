@@ -1,4 +1,4 @@
-const VERSION='3.1 (November 2026)';
+const VERSION='3.2 (November 2026)';
 /* IDSR releases this version has been checked against. An IDSR released after the last one still loads, with a warning. */
 const TESTED_RELEASES=['25 September 2026'];
 /* Ofsted suppresses cohorts of 5 or fewer in the IDSR; this tool uses the same line for small counts. */
@@ -190,6 +190,35 @@ const CATALOGUE=[ // [annex name regex, display, exec short]
   [/^Reading progress$/i,'Reading progress','Reading progress'],[/^Writing progress$/i,'Writing progress','Writing progress'],[/^Maths progress$/i,'Maths progress','Maths progress'],
 ];
 const AREAS={ach:'Achievement',inc:'Inclusion',att:'Attendance & behaviour',lead:'Leadership & governance',cur:'Curriculum & teaching',ey:'Early years'};
+/* Each question is tied to a theme of Ofsted's toolkit. "gist" is a short PARAPHRASE of the expected standard for that
+   theme, written for this tool; it is not Ofsted's wording and must be re-checked whenever the toolkit is updated.
+   Leadership and governance is cited by area only. Safeguarding and personal development and wellbeing are not
+   evidenced by IDSR data, so no questions are generated for them. */
+const TOOLKIT={title:'Ofsted, State-funded school inspection toolkit, v2.0 (June 2026), for use on inspections from 7 September 2026',refs:{
+  ach_nat:{area:'Achievement',theme:'Inclusive achievement: national tests and examinations',gist:'achievement is broadly in line with national averages, including for disadvantaged pupils'},
+  ach_prog:{area:'Achievement',theme:'Inclusive achievement: across the curriculum',gist:"disadvantaged pupils, pupils with SEND, pupils known to children's social care and others generally make suitable progress from their starting points"},
+  ach_data:{area:'Achievement',theme:'Gathering evidence about achievement',gist:'published data is looked at over time, and results for small cohorts are read with caution because they fluctuate'},
+  inc_id:{area:'Inclusion',theme:'Identifying, assessing and meeting needs, and reducing barriers',gist:'leaders identify needs, including emerging needs, quickly and accurately and work with families'},
+  inc_dis:{area:'Inclusion',theme:'Supporting disadvantaged pupils',gist:'the pupil premium strategy is based on evidence, understood by staff and reviewed'},
+  inc_send:{area:'Inclusion',theme:'Supporting pupils with SEND',gist:'a graduated approach is used and staff are trained to meet pupils\' needs'},
+  inc_csc:{area:'Inclusion',theme:"Supporting pupils known to children's social care",gist:'these pupils, including looked-after pupils, are supported well'},
+  inc_ap:{area:'Inclusion',theme:'Alternative provision',gist:'any alternative provision is commissioned appropriately'},
+  att_lead:{area:'Attendance and behaviour',theme:'Strategic leadership of attendance and behaviour',gist:'leaders have an accurate, informed understanding of attendance and behaviour and effective strategies to tackle issues'},
+  att_beh:{area:'Attendance and behaviour',theme:'Behaviour, including bullying',gist:'rules and sanctions are generally applied effectively, and suspension and permanent exclusion are used appropriately'},
+  cur_found:{area:'Curriculum and teaching',theme:'Securing strong foundations for all pupils',gist:'pupils who lack core foundations in reading, writing, language and number are identified and helped, and early readers are taught systematic synthetic phonics'},
+  cur_teach:{area:'Curriculum and teaching',theme:'Teaching',gist:"teaching draws on pupils' starting points and checks their understanding"},
+  ey_ach:{area:'Early years',theme:'Achievement in early years',gist:'the proportion of children reaching a good level of development is broadly in line with national averages'},
+  lead:{area:'Leadership and governance',theme:'',gist:''}}};
+/* Which toolkit theme a generated question belongs to. Ordered: the first matching rule wins. */
+const REF_RULES=[
+  ['lead',/Cohorts are small/i,'ach_data'],['lead',/./,'lead'],
+  ['ach',/progress|special schools/i,'ach_prog'],['ach',/./,'ach_nat'],
+  ['att',/exclusion|suspension|suspended/i,'att_beh'],['att',/./,'att_lead'],
+  ['inc',/pupil premium|disadvantaged/i,'inc_dis'],['inc',/alternative provision/i,'inc_ap'],['inc',/children in need|social care|looked.after/i,'inc_csc'],['inc',/primary need|Persistent absence for pupils with SEN/i,'inc_send'],['inc',/./,'inc_id'],
+  ['cur',/phonics|multiplication|additional language|vocabulary/i,'cur_found'],['cur',/./,'cur_teach'],
+  ['ey',/./,'ey_ach']];
+const refFor=(area,q)=>{ const r=REF_RULES.find(([a,re])=>a===area&&re.test(q)); return r?r[2]:null; };
+const refLabel=k=>{ const r=TOOLKIT.refs[k]; return r?(r.theme?`${r.area}: ${r.theme}`:r.area):''; };
 const latest=rows=>(rows||[]).filter(r=>isYear(r.year)&&r.schoolN!=null).sort((a,b)=>yearKey(b.year)-yearKey(a.year))[0];
 /* "2025/26 (1 term)" is a part-year figure: say so wherever it is quoted. "(3 term)" is a full year. */
 const termNote=y=>{ const m=(y||'').match(/\((\d)\s*term/i); return !m||m[1]==='3'?'':m[1]==='1'?', autumn term only':', autumn and spring terms only'; };
@@ -213,7 +242,7 @@ function analyse(m){
   const strengths=[],concerns=[],questions=[];
   const S=(t,pri,ev)=>strengths.push({text:t,pri,ev:[].concat(ev||[])}); const Cn=(t,pri,ev)=>concerns.push({text:t,pri,ev:[].concat(ev||[])});
   const EV=(group,measure,r,section)=>r?{section:section||m.measureSection[measure]||'',group,measure,year:r.year,cohort:r.cohort,school:r.school,nat:r.nat,natOther:r.natOther,gap:r.gap,band:r.band?r.band.text:(r.bandText||'not banded'),trend:r.trend||''}:null;
-  const Q=(area,q,pri=5)=>{ if(!questions.some(x=>x.q===q)) questions.push({area,q,pri}); };
+  const Q=(area,q,pri=5)=>{ if(!questions.some(x=>x.q===q)) questions.push({area,q,pri,ref:refFor(area,q)}); };
   const notAnalysed=[];
   const achLabel=m.phase.hasKS4&&!m.phase.hasKS2?'key stage 4':m.phase.hasKS2?'key stage 2':'achievement';
 
@@ -377,7 +406,9 @@ function profileItems(m,on){ const out=[]; if(m.sen.needs.length){ const byNeed=
   if(m.ap.length) out.push(m.ap.every(t=>/no data|incomplete/i.test(t))?'No pupils recorded in alternative provision in the latest terms.':SUPPRESS?'Pupils are recorded in alternative provision; the figures are in the IDSR and are not repeated here while small numbers are hidden.':`Alternative provision: ${m.ap.join(' ')}`);
   return out; }
 function trendsHTML(an,short){ if(!an.trendGroups.length) return '<p class="note">Not enough years of data for trends.</p>'; return `<table class="tr" style="table-layout:fixed"><caption class="vh">Trends over time</caption>${an.trendGroups.map(g=>`<thead><tr><th style="width:30%" scope="col">${esc(g.title)}</th><th class="n" style="width:36%" scope="col">Oldest → latest</th><th style="width:18%" scope="col">Comparator</th><th scope="col">Latest vs national</th></tr></thead><tbody>${g.rows.map(r=>`<tr><td>${esc(r.label)}</td><td class="n s"><b>${r.values.map(v=>`<span>${esc(v)}</span>`).join(' → ')}</b></td><td>${esc(r.comp)}</td><td>${jHTML(r.j)}</td></tr>`).join('')}</tbody>`).join('')}</table>`; }
-function qHTML(qs,grouped){ if(!qs.length) return '<p class="note">No questions generated.</p>'; if(grouped){ const areas=[...new Set(qs.map(q=>q.area))]; return areas.map(a=>`<div class="keep"><h3 style="margin:8pt 0 4pt">${esc(AREAS[a])}</h3><ul class="q">${qs.filter(q=>q.area===a).map(q=>`<li>${esc(q.q)}</li>`).join('')}</ul></div>`).join(''); } return `<ul class="q">${qs.map(q=>`<li><span class="tag">${esc(AREAS[q.area])}</span>${esc(q.q)}</li>`).join('')}</ul>`; }
+/* The toolkit themes a set of questions relates to, each with its paraphrased expected standard, listed once. */
+function toolkitThemes(qs){ return [...new Set(qs.map(q=>q.ref).filter(Boolean))].map(k=>TOOLKIT.refs[k]).filter(r=>r&&r.theme); }
+function qHTML(qs,grouped){ if(!qs.length) return '<p class="note">No questions generated.</p>'; if(grouped){ const areas=[...new Set(qs.map(q=>q.area))]; return areas.map(a=>{ const list=qs.filter(q=>q.area===a); const th=toolkitThemes(list); return `<div class="keep"><h3 style="margin:8pt 0 4pt">${esc(AREAS[a])}</h3>${th.length?`<p class="note" style="margin:0 0 4pt"><b>What the toolkit looks for (paraphrased):</b> ${th.map(r=>`<i>${esc(r.theme)}</i> – ${esc(r.gist)}`).join('; ')}.</p>`:''}<ul class="q">${list.map(q=>`<li>${esc(q.q)}${q.ref&&TOOLKIT.refs[q.ref].theme?` <span style="color:#555;font-size:88%">[Toolkit: ${esc(refLabel(q.ref))}]</span>`:''}</li>`).join('')}</ul></div>`; }).join(''); } return `<ul class="q">${qs.map(q=>`<li><span class="tag">${esc(AREAS[q.area])}</span>${esc(q.q)}</li>`).join('')}</ul>`; }
 const KEY='The IDSR publishes two things for most measures and this briefing keeps them apart: a banding (where the school sits among all schools: above, close to average, below) and a significance test against the national figure. ▲▲ / ▼▼ = statistically significantly above / below national; the words beside the arrows always say so. For context measures, which have no significance test, ▲▲ / ▼▼ mean well above / well below average. ▲ / ▼ = above / below, not statistically significant. ≈ = close to average. For absence and suspensions lower is better, so arrows and words say better or worse than national. n = number of pupils counted. pp = percentage points. † = cohort of 10 or fewer pupils; treat with great caution. Counts of 5 or fewer are shown as "5 or fewer" when small numbers are hidden.';
 const ACR='RWM reading, writing and maths · GPS (EGPS) English grammar, punctuation and spelling · FSM6 eligible for free school meals at any time in the last six years · EHC education, health and care plan · EAL English as an additional language · SEN special educational needs · CIN children in need · persistent absence = 10% or more of sessions missed.';
 function sourceText(m){ const s=m.school; return `${m.invented?'EXAMPLE WITH INVENTED FIGURES – not a real school. ':''}Source: Ofsted Inspection Data Summary Report for ${s.name}${s.urn?` (URN ${s.urn})`:''}${s.release?`, released ${s.release}`:''}, using DfE census, attendance, exclusions and assessment data. The IDSR guides inspectors' conversations with leaders; it is not a judgement of the school, and this briefing is not an Ofsted judgement, grade or prediction. Verify against the IDSR before use. Contains IDSR data: do not publish it, and share it only with people authorised to see the school's IDSR. Rule-based: no AI was used. Prepared ${todayStr()} with GovCopilot Insight v${VERSION} (pilot version). Designed by and © W. Gopaul 2026.`; }
@@ -407,7 +438,7 @@ function renderB(m,an,on){ evidenceRows(an); const li=x=>`<li>${esc(x.text)} <su
   const p3=`<div class="page">${run}<div class="sec"><h2>3. Pupil groups <small>inclusion lens</small></h2>${an.disTable.length?`${disTableHTML(an,false)}<p class="note">Gap = school disadvantaged minus national non-disadvantaged; a positive gap means the school's disadvantaged pupils did better. ▲▲ marks a result significantly above national disadvantaged pupils.</p>`:'<p class="note">No disadvantaged comparison is shown: either the IDSR does not publish one for this school or it could not be read. Appendix B lists anything that needs checking.</p>'}</div>
     ${an.attendTable.length?`<div class="sec">${attendTableHTML(an,false)}<p class="note">${esc(attendNote(m,an))}</p></div>`:''}${prof.length?`<div class="sec"><h3>Pupil profile</h3><ul>${prof.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`:''}</div>`;
   const p4=`<div class="page">${run}<div class="sec"><h2>4. Trends over time</h2>${trendsHTML(an,false)}<p class="note">${esc(suspensionReasonsNote(m))}* = part-year figure. 2022 outcomes may reflect pandemic disruption.</p></div><div class="sec"><h3>How to read this briefing</h3><p style="margin:0 0 6pt">${esc(KEY)}</p><p style="margin:0"><b>Acronyms.</b> ${esc(ACR)}</p></div></div>`;
-  const p5=`<div class="page">${run}<div class="sec"><h2>5. Key questions for governors <small>grouped by inspection toolkit evaluation area</small></h2><p class="note" style="margin:0 0 8pt">Questions are prompts for assurance, generated by fixed rules from the patterns in the data. They do not assert a cause; leaders' answers and the school's own evidence decide what the data means. The IDSR does not evidence every toolkit area: safeguarding and personal development and well-being are not covered by this data.</p>${qHTML(an.questions,true)}</div></div>`;
+  const p5=`<div class="page">${run}<div class="sec"><h2>5. Key questions for governors <small>grouped by inspection toolkit evaluation area</small></h2><p class="note" style="margin:0 0 8pt">Questions are prompts for assurance, generated by fixed rules from the patterns in the data. They do not assert a cause; leaders' answers and the school's own evidence decide what the data means. Each question is linked to a theme in the ${esc(TOOLKIT.title)}. The descriptions of what the toolkit looks for are short paraphrases of its expected standard, not Ofsted's wording: read the toolkit itself for the full text. The IDSR does not evidence every toolkit area: safeguarding and personal development and wellbeing are not covered by this data.</p>${qHTML(an.questions,true)}</div></div>`;
   const p6=`<div class="page">${run}<div class="sec"><h2>Appendix A. Evidence trail <small>every headline traced to its IDSR source row</small></h2>${evidenceHTML(an)}<p class="note">Bandings and trends are quoted exactly as the IDSR publishes them ("sig+" = statistically significantly above; "non-sig" = within the confidence interval). Multi-year averages are the IDSR's own.</p></div>
     <div class="sec"><h2>Appendix B. Data coverage <small>what was extracted, what was not, and what to check by hand</small></h2>${coverageHTML(an)}</div><div class="foot"><p>${esc(sourceText(m))}</p></div></div>`;
   return `<div class="doc vb" id="doc">${p1}${p2}${p3}${p4}${p5}${p6}</div>`; }

@@ -143,3 +143,18 @@ test('questions follow the priority of their headline', () => {
   const an = T.analyse(fresh()); const pris = an.questions.map(q => q.pri);
   assert.equal(JSON.stringify(pris), JSON.stringify([...pris].sort((a, b) => a - b)));
 });
+
+test('every generated question is tied to a toolkit theme in the right area', () => {
+  const ctx2 = vm.createContext({ console });
+  vm.runInContext(fs.readFileSync(path.join(root, 'core.js'), 'utf8') + '\n' + fs.readFileSync(path.join(root, 'sample.js'), 'utf8') + '\n;globalThis.X={TOOLKIT,AREAS,refFor,analyse,normaliseModel,renderB,SAMPLE_MODEL};', ctx2);
+  const X = ctx2.X; const m = X.normaliseModel(JSON.parse(JSON.stringify(X.SAMPLE_MODEL))); const an = X.analyse(m);
+  for (const q of an.questions) { assert.ok(q.ref && X.TOOLKIT.refs[q.ref], 'no toolkit reference for: ' + q.q); }
+  assert.equal(X.refFor('att', 'Suspension rates for all pupils are above national.'), 'att_beh');
+  assert.equal(X.refFor('att', 'Attendance for all pupils is 93% against 95% nationally.'), 'att_lead');
+  assert.equal(X.refFor('inc', 'How is pupil premium funding being used for these pupils?'), 'inc_dis');
+  assert.equal(X.refFor('ach', 'Writing progress was below national in 2026.'), 'ach_prog');
+  assert.equal(X.refFor('ach', 'Reading – expected was below national in 2026.'), 'ach_nat');
+  const html = X.renderB(m, an, true);
+  assert.match(html, /What the toolkit looks for \(paraphrased\)/); assert.match(html, /\[Toolkit: Achievement: Inclusive achievement/);
+  assert.match(html, /State-funded school inspection toolkit, v2\.0/);
+});
