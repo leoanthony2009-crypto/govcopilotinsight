@@ -83,7 +83,7 @@ function buildDocx(m,an,on){
    ============================================================ */
 const $=id=>document.getElementById(id);
 /* Set this to a monitored address to show a "report a problem" route in error messages. */
-const SUPPORT_EMAIL='';
+const SUPPORT_EMAIL='w.gopaul@st-annes.bham.sch.uk';
 const reportTo=()=>SUPPORT_EMAIL?` and send it to ${SUPPORT_EMAIL}`:' and tell whoever gave you this tool';
 let MODEL=null,AN=null,VIEW='A',EDITED=false;
 const FOUND=[['School characteristics',m=>Object.keys(m.characteristics).length>0],['Year group profile',m=>m.yearGroups.length>0],['SEN register',m=>m.sen.needs.length>0],['Ethnicity',m=>m.ethnicity.length>0],['Staffing',m=>m.staffing.length>0],['Attendance & absence',m=>!!(m.annex['All pupils']||{})['Persistent absence']],['Suspensions',m=>!!m.suspensions],['Permanent exclusions',m=>!!m.exclusions],['Year-group absence',m=>!!m.ygAbsence.years],['Attainment measures',m=>Object.keys(m.annex['All pupils']||{}).some(k=>!BEHAV_RE.test(k))],['Progress measures',m=>Object.keys(m.annex['All pupils']||{}).some(k=>PROG_RE.test(k))],['Disadvantaged gap',m=>Object.values(m.annex['Disadvantaged pupils']||{}).some(rows=>rows.some(r=>r.gapN!=null))],['Prior-attainment groups',m=>!!m.annex['Low prior attainers']],['EYFS nationals',m=>Object.keys(m.eyfs).length>0]];
