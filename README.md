@@ -2,7 +2,7 @@
 
 Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page governor briefing, a full briefing with an evidence trail, and an editable Word document.
 
-**Status:** pilot, version 3.2. Checked against the IDSR release of 25 September 2026, mainly on primary-school data. Secondary and special-school handling exists but has had little testing.
+**Status:** pilot, version 3.3. Checked against the IDSR release of 25 September 2026, mainly on primary-school data. Secondary and special-school handling exists but has had little testing.
 
 ## How it works
 
@@ -33,7 +33,14 @@ There is no build step. Deploy by publishing the folder as a static site.
 
 ## Small numbers
 
-With "Hide small numbers" ticked (the default), counts of 5 or fewer are shown as "5 or fewer", and suspension and exclusion reasons are left out, on screen, in print and in the Word file. The line follows the IDSR, which suppresses cohorts of 5 or fewer. Percentages are shown as the IDSR gives them.
+With "Hide small numbers" ticked (the default), on screen, in print and in the Word file:
+
+- counts and cohort sizes of 5 or fewer are shown as "5 or fewer", and rows for cohorts of 5 or fewer are left out;
+- suspension and exclusion reasons are left out;
+- a suspension or persistent-absence percentage is withheld when, with its cohort size, it implies 5 or fewer pupils;
+- a total is not printed where subtracting a shown part would reveal a hidden one.
+
+The line follows the IDSR, which suppresses cohorts of 5 or fewer. Attainment percentages are shown as the IDSR gives them, even where they imply a small number of pupils: this is a deliberate choice, because hiding them would remove most higher-standard results for a one-form-entry school. Review it before sharing a briefing beyond the governing board.
 
 ## Governor questions and the Ofsted toolkit
 
@@ -42,10 +49,13 @@ Each question is produced by a fixed rule and linked to a theme in Ofsted's Stat
 ## Tests
 
 ```
-node --test tests/core.test.mjs
+node --test tests/core.test.mjs     # rule tests: Node 20 or later, no packages
+node tests/browser.cjs              # browser tests: needs Playwright
 ```
 
-Needs Node 20 or later and no packages. The tests cover the number reader, the banding and significance rules, year ordering, small-number handling, escaping of uploaded text and the template check. Run them before every deploy, and add a case whenever Ofsted changes the IDSR.
+The browser tests serve the site under its real security headers and use it as a person would: both briefings, the small-numbers switch, edits, Word export, uploads that should work and uploads that should be refused, hostile files, phone and narrow layouts. Fixtures are in `tests/fixtures/` and use invented figures only.
+
+Vendored library check: `vendor/docx-9.5.1.iife.js` is the unmodified npm `docx@9.5.1` build, sha256 `bb2908d72ffd8a3d896b455563733d3a2e708e1384a5140e05b3c6dd0b2f676d` (the rule tests assert this). The tests cover the number reader, the banding and significance rules, year ordering, small-number handling, escaping of uploaded text and the template check. Run them before every deploy, and add a case whenever Ofsted changes the IDSR.
 
 When Ofsted publishes a new IDSR release: check a real file by hand against its briefing, then add the release date to `TESTED_RELEASES` in `core.js`.
 

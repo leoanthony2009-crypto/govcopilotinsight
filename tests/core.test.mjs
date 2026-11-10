@@ -11,7 +11,7 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ctx = vm.createContext({ console });
 vm.runInContext(
   fs.readFileSync(path.join(root, 'core.js'), 'utf8') + '\n' + fs.readFileSync(path.join(root, 'sample.js'), 'utf8') +
-  '\n;globalThis.T={num,bandInfo,judge,analyse,normaliseModel,validateModel,latest,termNote,fmtGap,renderA,renderB,SAMPLE_MODEL,TESTED_RELEASES,setSuppress:v=>{SUPPRESS=v;}};', ctx);
+  '\n;globalThis.T={fewPupils,cnt,num,bandInfo,judge,analyse,normaliseModel,validateModel,latest,termNote,fmtGap,renderA,renderB,SAMPLE_MODEL,TESTED_RELEASES,setSuppress:v=>{SUPPRESS=v;}};', ctx);
 const T = ctx.T;
 const fresh = () => T.normaliseModel(JSON.parse(JSON.stringify(T.SAMPLE_MODEL)));
 const row = (m, g, k, year) => m.annex[g][k].find(r => r.year === year);
@@ -150,11 +150,64 @@ test('every generated question is tied to a toolkit theme in the right area', ()
   const X = ctx2.X; const m = X.normaliseModel(JSON.parse(JSON.stringify(X.SAMPLE_MODEL))); const an = X.analyse(m);
   for (const q of an.questions) { assert.ok(q.ref && X.TOOLKIT.refs[q.ref], 'no toolkit reference for: ' + q.q); }
   assert.equal(X.refFor('att', 'Suspension rates for all pupils are above national.'), 'att_beh');
-  assert.equal(X.refFor('att', 'Attendance for all pupils is 93% against 95% nationally.'), 'att_lead');
+  assert.equal(X.refFor('att', 'Attendance for all pupils is 93% against 95% nationally.'), 'att_att');
   assert.equal(X.refFor('inc', 'How is pupil premium funding being used for these pupils?'), 'inc_dis');
-  assert.equal(X.refFor('ach', 'Writing progress was below national in 2026.'), 'ach_prog');
+  assert.equal(X.refFor('ach', 'Year 1 phonics was 70% against 80% nationally.'), 'ach_found');
   assert.equal(X.refFor('ach', 'Reading – expected was below national in 2026.'), 'ach_nat');
   const html = X.renderB(m, an, true);
   assert.match(html, /What the toolkit looks for \(paraphrased\)/); assert.match(html, /\[Toolkit: Achievement: Inclusive achievement/);
   assert.match(html, /State-funded school inspection toolkit, v2\.0/);
+});
+
+test('number reader: footnote markers do not stop a figure being read', () => {
+  for (const [s, v] of [['83% *', 83], ['62%¹', 62], ['79%[1]', 79], ['71% (provisional)', 71], ['12.0%†', 12], ['+.5', 0.5], ['83%*', 83]]) assert.equal(T.num(s), v, s);
+  assert.equal(T.num('<5 *'), null);
+});
+test('small numbers: cohort sizes of 5 or fewer are never printed', () => {
+  T.setSuppress(true); const m = fresh();
+  for (const k of Object.keys(m.annex['Disadvantaged pupils'])) m.annex['Disadvantaged pupils'][k].forEach(r => { r.cohort = 4; });
+  for (const g of ['Low prior attainers', 'High prior attainers']) for (const k of Object.keys(m.annex[g])) m.annex[g][k].forEach(r => { r.cohort = 2; });
+  const an = T.analyse(m); const html = T.renderA(m, an, true) + T.renderB(m, an, true);
+  assert.doesNotMatch(html, /n = [1-5]\b/); assert.doesNotMatch(html, /n = [1-5]\)/);
+});
+test('small numbers: a suspension or absence percentage that implies 5 or fewer pupils is withheld', () => {
+  T.setSuppress(true); const m = fresh(); const r = m.annex['SEN']['1 or more suspensions'][0];
+  r.cohort = 40; r.school = '7.50%'; r.schoolN = 7.5; r.band = T.bandInfo('Above (sig+)');           // 3 pupils
+  let an = T.analyse(m); let html = T.renderA(m, an, true) + T.renderB(m, an, true);
+  assert.doesNotMatch(html, /7\.50%/); assert.match(html, /5 or fewer pupils/);
+  T.setSuppress(false); an = T.analyse(m); html = T.renderB(m, an, false); assert.match(html, /7\.50%/); T.setSuppress(true);
+});
+test('small numbers: no trend is given when a suspension total is hidden', () => {
+  T.setSuppress(true); const m = fresh(); const y = m.suspensions.years; m.suspensions.rows['Total number of suspensions'] = { [y[0]]: 2, [y[1]]: 3, [y[2]]: 4 };
+  const an = T.analyse(m); assert.doesNotMatch(texts(an.strengths) + texts(an.concerns), /Total suspensions/);
+});
+test('significant disadvantaged progress and multi-year progress results are reported', () => {
+  T.setSuppress(true); const m = fresh(); const r = m.annex['Disadvantaged pupils']['Reading progress'].find(x => x.year === '2026');
+  r.school = '-3.1'; r.schoolN = -3.1; r.band = T.bandInfo('Below (sig-)');
+  const an = T.analyse(m);
+  assert.match(texts(an.concerns), /Disadvantaged pupils: Reading progress -3\.1 in 2026 .* statistically significantly below/);
+  assert.match(texts(an.strengths), /Reading progress 1\.6 vs 0\.0/);          // the example's significant 3-year progress average
+  assert.match(texts(an.concerns), /Writing progress -1\.9 vs 0\.0/);
+});
+test('disadvantaged summary line in Version A is escaped', () => {
+  T.setSuppress(true); const m = fresh(); const r = m.annex['Disadvantaged pupils']['RWM expected standard'].find(x => x.year === '2026');
+  r.natOther = '<meta http-equiv=refresh content=0;url=https://example.invalid>'; r.nat = '<b>x</b>';
+  const an = T.analyse(m); const html = T.renderA(m, an, true) + T.renderB(m, an, true);
+  assert.doesNotMatch(html, /<meta http-equiv/i); assert.doesNotMatch(html, /<b>x<\/b>/);
+});
+test('release date: other formats are understood, and an unreadable date warns', () => {
+  const m = fresh();
+  for (const d of ['25th September 2027', '14 Nov 2031', '2031-11-14', '25/09/2027']) { m.school.release = d; assert.ok(T.validateModel(m).warn.some(w => /after the latest release/.test(w)), d); }
+  for (const d of ['', 'November 2031', 'soon']) { m.school.release = d; assert.ok(T.validateModel(m).warn.some(w => /could not be read/.test(w)), d || '(empty)'); }
+});
+test('multi-year rows: label variants are recognised and mixed periods are not mislabelled', () => {
+  T.setSuppress(true); const m = fresh(); const rows = m.annex['All pupils']['Phonics expected standard']; rows.find(r => !/^\d{4}/.test(r.year)).year = '3 year average';
+  const an = T.analyse(T.normaliseModel(m)); assert.match(texts(an.strengths), /Y1 phonics expected 89% vs 80%/);
+  assert.doesNotMatch(texts(an.strengths) + texts(an.concerns), /the IDSR's 2-year average[^.]*Writing expected/);
+});
+
+test('the vendored Word library is the file that was reviewed', async () => {
+  const { createHash } = await import('node:crypto');
+  const h = createHash('sha256').update(fs.readFileSync(path.join(root, 'vendor', 'docx-9.5.1.iife.js'))).digest('hex');
+  assert.equal(h, 'bb2908d72ffd8a3d896b455563733d3a2e708e1384a5140e05b3c6dd0b2f676d');
 });
