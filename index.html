@@ -52,6 +52,9 @@ button[disabled]{opacity:.45;cursor:not-allowed}
 details.help a{color:var(--accent)}
 details.about-box summary{font-weight:700;color:var(--fg);cursor:pointer}
 details.about-box .note{margin-top:8px}
+.brand .lede{font-size:17px;line-height:1.3;color:var(--fg);margin:8px 0 4px}
+.reqmsg{border-left:3px solid var(--line);padding-left:10px;font-style:italic}
+.brand a,.note a{color:var(--accent)}
 .status.ok{color:var(--fg)}
 .found{display:grid;grid-template-columns:1fr 1fr;gap:3px 10px;font-size:12.5px;margin:0;padding:0;list-style:none}
 .found li{color:var(--muted)}.found li.ok{color:var(--fg)}
@@ -213,12 +216,14 @@ details.help ol{margin:6px 0 0;padding-left:18px}
           <h1>IDSR Governor Briefing</h1>
         </div>
       </div>
-      <p>For governors, clerks and headteachers. Turn your school's Ofsted IDSR (Inspection Data Summary Report) into a one-page briefing, a full briefing and an editable Word document, with headlines, an evidence trail and questions for governors grouped by inspection toolkit area.</p>
+      <p class="lede"><b>Your school's IDSR, ready for the governors' meeting.</b></p>
+      <p>Drop in the IDSR file and get a one-page briefing, a full briefing with questions for governors, and an editable Word copy. For primary and secondary schools; special schools are not yet supported.</p>
       <ul class="about">
         <li><b>No AI.</b> Fixed rules read the tables; the same file always gives the same briefing.</li>
         <li><b>No upload.</b> The file is read in this browser and never leaves your computer.</li>
         <li><b>Traceable.</b> Every headline points to its row in the IDSR.</li>
       </ul>
+      <p class="note">See what a board receives: sample briefings for an invented school, <a href="sample-briefing-one-page.pdf" download>one page (PDF)</a> and <a href="sample-briefing-full.pdf" download>full briefing (PDF)</a>.</p>
     </div>
 
     <div class="opts">
@@ -230,7 +235,10 @@ details.help ol{margin:6px 0 0;padding-left:18px}
       <input type="file" id="file" accept=".html,.htm,text/html">
     </label>
     <details class="help" open><summary>How to get the file</summary>
-      <ol><li>On a laptop or desktop computer, sign in to the IDSR site (idsr.ofsted.gov.uk) through DfE Sign-in and open your school's IDSR.</li><li>Choose <b>Download this page</b>, or in your browser press Ctrl+S (⌘S on a Mac) and pick <b>Webpage, HTML only</b>.</li><li>Upload the saved .html file here. The PDF version will not work.</li></ol></details>
+      <ol><li>On a laptop or desktop computer, sign in to the IDSR site (idsr.ofsted.gov.uk) through DfE Sign-in and open your school's IDSR.</li><li>Choose <b>Download this page</b>, or in your browser press Ctrl+S (⌘S on a Mac) and pick <b>Webpage, HTML only</b>.</li><li>Upload the saved .html file here. The PDF version will not work.</li></ol>
+      <p class="note"><b>Governor without a DfE Sign-in account?</b> Ask your headteacher or clerk for the file. You can send them this message:</p>
+      <p class="note reqmsg" id="reqMsg">Please could you send me our school's latest Ofsted IDSR as a web page file? Sign in to the IDSR site through DfE Sign-in, open our school's IDSR, press Ctrl+S (or ⌘S on a Mac) and choose "Webpage, HTML only". The file name will end in .html. Please share it securely, as the IDSR is confidential. Thank you.</p>
+      <div class="row"><button id="btnCopyReq" type="button">Copy this message</button></div></details>
     <div class="row"><button id="btnSample" type="button">Load example school</button></div>
     <p class="note">The example uses invented figures. It is not a real school.</p>
     <div class="status" id="status">Nothing loaded yet.</div>
@@ -262,6 +270,13 @@ details.help ol{margin:6px 0 0;padding-left:18px}
     <p class="note" id="printHint"></p>
 
     <hr>
+    <details class="help about-box"><summary>How it's checked</summary>
+    <p class="note"><b>Checked against the IDSR.</b> <span id="checkedLine"></span> If your IDSR is newer than that, the briefing still loads but carries a warning.</p>
+    <p class="note"><b>Tested before each release.</b> At this version, 31 rule tests and 43 browser tests pass. They cover the number reader, banding and significance rules, small-number hiding, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs; founding schools are helping with that.</p>
+    <p class="note"><b>For data protection officers.</b> The page is static. The IDSR is opened by the browser on the user's own device and is never transmitted: the site's security policy forbids the page from connecting to any server, and there are no cookies, analytics, accounts or storage. The supplier therefore never receives the school's data. The site is hosted on Netlify, which keeps ordinary visit logs.</p>
+    <p class="note"><b>How the headlines are made.</b> Every rule is written out in the <a href="method.html">method note</a>, with one headline traced from the IDSR row to the sentence.</p>
+    <p class="note"><b>Who built it.</b> A serving headteacher and former school inspector, so that governors can use the IDSR without reading all of it.</p>
+    </details>
     <details class="help about-box"><summary>About, privacy and limits</summary>
     <p class="note"><strong>Your data stays on this device.</strong> The IDSR is read in your browser only; nothing is sent to us or stored, and the site's security policy blocks this page from connecting to any other server. No AI is used. You remain the data controller and Ofsted's IDSR conditions of use apply to anything you print or share.</p>
     <p class="note">This briefing supports governor scrutiny. It does not replace the original IDSR or professional judgement, and it is not an Ofsted judgement, grade or prediction. Bandings and significance are reproduced from the IDSR; every headline carries a reference to its source row in the evidence trail. Small cohorts move percentages a lot: check the pupil numbers (n) before drawing conclusions.</p>

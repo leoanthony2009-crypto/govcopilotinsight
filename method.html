@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Method note – GovCopilot Insight</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self'; base-uri 'none'; form-action 'none'">
+<style>
+body{font:16px/1.55 Arial,Helvetica,sans-serif;color:#1a1a1a;background:#fff;max-width:46rem;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.7rem;color:#0b5d5a;margin:0 0 4px} h2{font-size:1.2rem;color:#1f3864;margin:28px 0 6px;border-bottom:2px solid #1f3864;padding-bottom:3px}
+p,li{margin:0 0 8px} .sub{color:#555} a{color:#0b5d5a}
+table{border-collapse:collapse;width:100%;margin:8px 0 12px} th,td{text-align:left;padding:6px 8px;border-bottom:1px solid #cfd3db;vertical-align:top} th{background:#e9f0f0}
+.step{border-left:4px solid #0b5d5a;padding:6px 0 6px 12px;margin:10px 0} code{background:#f1f3f5;padding:1px 4px;border-radius:3px}
+@media (prefers-color-scheme:dark){body{background:#0f1620;color:#e8ebf0}h1{color:#7fd1cb}h2{color:#cfe0ff;border-color:#cfe0ff}th{background:#1c3a38}td,th{border-color:#3a4658}.sub{color:#aab4c2}a{color:#7fd1cb}code{background:#1e2a3a}}
+</style></head><body>
+<p><a href="./">← Back to the tool</a></p>
+<h1>Method note</h1>
+<p class="sub">GovCopilot Insight – IDSR Governor Briefing. How the briefing is made, in words. Applies to version 3.4.</p>
+
+<h2>What the tool does and does not do</h2>
+<p>It reads the tables in a school's Ofsted Inspection Data Summary Report (IDSR) and restates them as headlines and questions. Every step is a fixed rule. No AI is used, and the same file always gives the same briefing. It does not judge the school, predict an inspection outcome or explain why a result is as it is.</p>
+
+<h2>Reading the IDSR</h2>
+<ul>
+<li>Each measure table is matched by its column names. If the school-value, national or banding columns cannot be found, no briefing is produced.</li>
+<li>A figure is read only if it is one plain number. Markers such as "x", "c", "SUPP" or "&lt;5" are treated as "not published", never as a figure. Footnote marks after a number are ignored.</li>
+<li>For each measure the newest published year is used. If that year is missing, the briefing says which year it used instead.</li>
+<li>Part-year attendance figures are labelled as part-year.</li>
+</ul>
+
+<h2>Banding and significance are kept apart</h2>
+<p>For most measures the IDSR publishes two things:</p>
+<table><tr><th>What</th><th>Meaning</th><th>How the briefing shows it</th></tr>
+<tr><td>Banding</td><td>Where the school sits among all schools: above, close to average, or below.</td><td>▲, ≈ or ▼ with the word.</td></tr>
+<tr><td>Significance</td><td>Whether the difference from the national figure is larger than chance would explain ("sig+", "sig−", "non-sig").</td><td>▲▲ or ▼▼ in bold with "sig. above" or "sig. below".</td></tr></table>
+<p>A result is only called statistically significant when the IDSR itself marks it so. The tool performs no significance tests of its own.</p>
+
+<h2>Which results become headlines, and in what order</h2>
+<p>Broadly in this order:</p>
+<ol>
+<li>Results that are significant on the IDSR's multi-year average. These come first because a multi-year figure is less affected by one small cohort.</li>
+<li>Results that are significant in the latest single year, including for disadvantaged pupils.</li>
+<li>Persistent absence, suspensions and exclusions that are above national.</li>
+<li>The gap between the school's disadvantaged pupils and other pupils nationally. This is a gap to a national figure, not a significance test, and is labelled as such.</li>
+<li>Attendance bandings and other context. Attendance has no significance test in the IDSR.</li>
+</ol>
+<p>A result that is not significant is labelled "not statistically significant" wherever it is quoted. The order is fixed and cannot be changed by the user.</p>
+
+<h2>The overall picture line</h2>
+<p>This is a count of all-pupil results that carry a significance test: how many are significantly above national, significantly below, or neither, for the latest year and for the multi-year average. The measures overlap (for example, reading, writing and maths combined is built from the three subjects), so it is a count and not a score. It is left out when fewer than four results are tested.</p>
+
+<h2>Small cohorts</h2>
+<ul>
+<li>The briefing states how much one pupil moves a percentage: 100 ÷ the number of pupils. With 34 pupils, one pupil is about 2.9 percentage points.</li>
+<li>A disadvantaged gap smaller than one pupil's worth is not reported as a concern.</li>
+<li>Cohorts of 10 or fewer are marked †.</li>
+</ul>
+
+<h2>Hiding small numbers</h2>
+<p>With "Hide small numbers" ticked (the default):</p>
+<ul>
+<li>counts and cohort sizes of 5 or fewer are shown as "5 or fewer", and rows for cohorts of 5 or fewer are left out;</li>
+<li>suspension and exclusion reasons are left out;</li>
+<li>a suspension or persistent-absence percentage is withheld when, together with its cohort size, it implies 5 or fewer pupils;</li>
+<li>a total is not printed where subtracting a shown part would reveal a hidden one.</li>
+</ul>
+<p>Attainment percentages are shown as the IDSR gives them. The threshold follows the IDSR, which suppresses cohorts of 5 or fewer.</p>
+
+<h2>Questions for governors</h2>
+<p>Each question is produced by a rule that fires on a pattern in the data, and is linked to a theme in Ofsted's State-funded school inspection toolkit. The short descriptions of what the toolkit looks for are paraphrases written for this tool, not Ofsted's wording. Questions do not assert a cause. Safeguarding and personal development and wellbeing are not evidenced by IDSR data, so no questions are generated for them.</p>
+
+<h2>Worked example: from an IDSR row to a sentence</h2>
+<p>This uses the built-in example school, whose figures are invented.</p>
+<div class="step"><b>1. The IDSR row.</b> In the table "All pupils – Writing expected standard", the multi-year row reads:
+<table><tr><th>Year</th><th>Pupils</th><th>School</th><th>National</th><th>Banding</th></tr>
+<tr><td>3-year</td><td>103</td><td>61%</td><td>72%</td><td>Below (sig-)</td></tr>
+<tr><td>2026</td><td>34</td><td>65%</td><td>73%</td><td>Below (non-sig)</td></tr></table></div>
+<div class="step"><b>2. Reading it.</b> School 61, national 72. The banding text contains "Below" (banding: below) and "sig-" (significance: significantly below national).</div>
+<div class="step"><b>3. The rule.</b> The multi-year row is significant, so it qualifies for the first group of headlines. It joins the other significant multi-year results that are below national: Writing greater depth (6% against 13%) and Writing progress (−1.9 against 0.0).</div>
+<div class="step"><b>4. The sentence.</b> "Below national over the IDSR's 3-year average, each statistically significant: Writing expected 61% vs 72%; Writing greater depth 6% vs 13%; Writing progress -1.9 vs 0.0."</div>
+<div class="step"><b>5. The single year.</b> The 2026 row is below national but "non-sig", so it produces no headline of its own. It appears in the table as "▼ below" in normal weight, and in a question labelled "not statistically significant". One pupil in a cohort of 34 is 100 ÷ 34 = 2.9 percentage points, so the 8-point difference is about 3 pupils.</div>
+<div class="step"><b>6. The evidence trail.</b> Appendix A of the full briefing lists the row, year, number of pupils, school and national figures and the banding exactly as published, against the headline's reference number.</div>
+
+<h2>Limits</h2>
+<ul>
+<li>Checked mainly on primary-school data. Secondary handling has had less testing; special schools are not yet supported.</li>
+<li>Similar-schools comparisons in the IDSR are not yet used.</li>
+<li>The briefing supports scrutiny. It does not replace the IDSR or professional judgement.</li>
+</ul>
+<p class="sub">Not affiliated with or endorsed by Ofsted or the Department for Education. © W. Gopaul 2026.</p>
+</body></html>

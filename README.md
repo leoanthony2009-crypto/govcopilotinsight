@@ -2,7 +2,7 @@
 
 Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page governor briefing, a full briefing with an evidence trail, and an editable Word document.
 
-**Status:** pilot, version 3.3. Checked against the IDSR release of 25 September 2026, mainly on primary-school data. Secondary and special-school handling exists but has had little testing.
+**Status:** pilot, version 3.4. Checked against the IDSR release of 25 September 2026, mainly on primary-school data. Secondary and special-school handling exists but has had little testing.
 
 ## How it works
 
@@ -20,6 +20,8 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `app.js` | Word export and page behaviour |
 | `sample.js` | The example school. **Every school figure in it is invented.** National comparison figures are published statistics |
 | `vendor/docx-9.5.1.iife.js` | The Word library (MIT licence, see `vendor/docx-LICENSE.txt`), hosted with the site so nothing loads from a third party |
+| `method.html` | Method note: every rule in words, with one headline traced from the IDSR row to the sentence |
+| `sample-briefing-one-page.pdf`, `sample-briefing-full.pdf` | Sample briefings for the invented example school. Rebuild with `node tests/make-sample.cjs` after any change to the briefing |
 | `_headers` | Security headers for Netlify, including the content security policy |
 | `tests/core.test.mjs` | Rule tests |
 
@@ -51,11 +53,14 @@ Each question is produced by a fixed rule and linked to a theme in Ofsted's Stat
 ```
 node --test tests/core.test.mjs     # rule tests: Node 20 or later, no packages
 node tests/browser.cjs              # browser tests: needs Playwright
+node tests/make-sample.cjs          # rebuild the two sample PDFs
 ```
 
 The browser tests serve the site under its real security headers and use it as a person would: both briefings, the small-numbers switch, edits, Word export, uploads that should work and uploads that should be refused, hostile files, phone and narrow layouts. Fixtures are in `tests/fixtures/` and use invented figures only.
 
-Vendored library check: `vendor/docx-9.5.1.iife.js` is the unmodified npm `docx@9.5.1` build, sha256 `bb2908d72ffd8a3d896b455563733d3a2e708e1384a5140e05b3c6dd0b2f676d` (the rule tests assert this). The tests cover the number reader, the banding and significance rules, year ordering, small-number handling, escaping of uploaded text and the template check. Run them before every deploy, and add a case whenever Ofsted changes the IDSR.
+Vendored library check: `vendor/docx-9.5.1.iife.js` is the unmodified npm `docx@9.5.1` build, sha256 `bb2908d72ffd8a3d896b455563733d3a2e708e1384a5140e05b3c6dd0b2f676d` (the rule tests assert this). When the test counts change, update the figures in the "How it's checked" panel in `index.html`.
+
+The tests cover the number reader, the banding and significance rules, year ordering, small-number handling, escaping of uploaded text and the template check. Run them before every deploy, and add a case whenever Ofsted changes the IDSR.
 
 When Ofsted publishes a new IDSR release: check a real file by hand against its briefing, then add the release date to `TESTED_RELEASES` in `core.js`.
 
