@@ -98,6 +98,9 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 .doc th{background:#e4f0ef;color:#0b5d5a;text-align:left;font-weight:700;padding:3.5pt 5pt;border-bottom:1pt solid #9aa3b5;vertical-align:bottom}
 .doc td{padding:var(--cell) 5pt;border-bottom:.6pt solid #cfd3db;vertical-align:top}
 .doc tr:nth-child(even) td{background:#f5f6f8}
+.doc th.rh{background:transparent;color:inherit;font-weight:400;font-size:inherit;padding:var(--cell) 5pt;border-bottom:.6pt solid #cfd3db;vertical-align:top}
+.doc tr:nth-child(even) th.rh{background:#f5f6f8}
+.doc.va th.rh{padding:1.8pt 4pt;font-size:9pt}
 .doc td.n,.doc th.n{text-align:right;white-space:nowrap}
 .doc td.c,.doc th.c{text-align:center;white-space:nowrap}
 .doc td.b,.doc th.b{white-space:nowrap}
@@ -182,7 +185,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
   .doc .conf{max-width:none;text-align:left}
   .doc .running{flex-direction:column;gap:2px}
   .doc h2 small{display:block;margin-left:0}
-  .doc.va td,.doc.vb td{padding:4px 6px}.doc.va th,.doc.vb th{padding:5px 6px}
+  .doc.va td,.doc.vb td,.doc.va th.rh,.doc.vb th.rh{padding:4px 6px}.doc.va th,.doc.vb th{padding:5px 6px}
   .doc.vb .page+.page{margin-top:24px;padding-top:18px}
   .doc .tag{white-space:normal}
 }
@@ -272,7 +275,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
     <hr>
     <details class="help about-box"><summary>How it's checked</summary>
     <p class="note"><b>Checked against the IDSR.</b> <span id="checkedLine"></span> If your IDSR is newer than that, the briefing still loads but carries a warning.</p>
-    <p class="note"><b>Tested before each release.</b> At this version, 31 rule tests and 43 browser tests pass. They cover the number reader, banding and significance rules, small-number hiding, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs; founding schools are helping with that.</p>
+    <p class="note"><b>Tested before each release.</b> Rule tests and browser tests are run before every release, and a release is only made when all of them pass. They cover the number reader, banding and significance rules, small-number hiding, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs; founding schools are helping with that.</p>
     <p class="note"><b>For data protection officers.</b> The page is static. The IDSR is opened by the browser on the user's own device and is never transmitted: the site's security policy forbids the page from connecting to any server, and there are no cookies, analytics, accounts or storage. The supplier therefore never receives the school's data. The site is hosted on Netlify, which keeps ordinary visit logs.</p>
     <p class="note"><b>How the headlines are made.</b> Every rule is written out in the <a href="method.html">method note</a>, with one headline traced from the IDSR row to the sentence.</p>
     <p class="note"><b>Who built it.</b> Built by a serving headteacher, so that governors can use the IDSR without reading all of it.</p>

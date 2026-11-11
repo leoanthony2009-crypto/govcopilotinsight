@@ -8,5 +8,7 @@ const ROOT = path.join(__dirname, '..'), PORT = 8795, URL = `http://127.0.0.1:${
   await p.pdf({ path: path.join(ROOT, 'sample-briefing-one-page.pdf'), preferCSSPageSize: true, printBackground: true });
   await p.click('#tabB'); await p.waitForTimeout(400);
   await p.pdf({ path: path.join(ROOT, 'sample-briefing-full.pdf'), preferCSSPageSize: true, printBackground: true });
+  const fs = require('fs'), crypto = require('crypto'); const h = crypto.createHash('sha256'); for (const f of ['core.js', 'sample.js', 'index.html']) h.update(fs.readFileSync(path.join(ROOT, f)));
+  fs.writeFileSync(path.join(ROOT, 'sample-briefing.sha256'), h.digest('hex') + '\n');
   await b.close(); srv.kill(); console.log('sample PDFs written');
 })();

@@ -7,19 +7,19 @@ function buildDocx(m,an,on){
   const {Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,ShadingType,AlignmentType,BorderStyle,HeadingLevel,Header,Footer,PageNumber,LevelFormat,PageBreak,VerticalAlign}=D;
   const NAVY='0B5D5A',TEAL='1E7A3C',AMBER='8A5500',GREY='E4F0EF',LINE='CFD3DB',MUTED='444444',FONT='Arial';
   const PAGE_W=11906,MARGIN=794,CW=PAGE_W-2*MARGIN;
-  const run=(t,o={})=>new TextRun({text:t,font:FONT,size:o.size||20,bold:o.bold,color:o.color,italics:o.italics});
+  const run=(t,o={})=>new TextRun({text:t,font:FONT,size:o.size||24,bold:o.bold,color:o.color,italics:o.italics});
   const para=(ch,o={})=>new Paragraph({children:Array.isArray(ch)?ch:[run(ch,o)],spacing:{before:o.before??0,after:o.after??80,line:o.line??276},alignment:o.align,keepNext:o.keepNext});
   const noB={style:BorderStyle.NONE,size:0,color:'FFFFFF'}, hair={style:BorderStyle.SINGLE,size:4,color:LINE};
   const cell=(ch,w,o={})=>new TableCell({children:Array.isArray(ch)?ch:[ch],width:{size:w,type:WidthType.DXA},shading:o.fill?{type:ShadingType.CLEAR,fill:o.fill,color:'auto'}:undefined,margins:{top:o.pad??60,bottom:o.pad??60,left:90,right:90},borders:o.borders||{top:hair,bottom:hair,left:noB,right:noB},verticalAlign:VerticalAlign.TOP,columnSpan:o.span});
-  const tcell=(t,w,o={})=>cell(para([run(t,{size:o.size||19,bold:o.bold,color:o.color})],{after:0,align:o.align,line:240}),w,o);
+  const tcell=(t,w,o={})=>cell(para([run(t,{size:o.size||22,bold:o.bold,color:o.color})],{after:0,align:o.align,line:240}),w,o);
   const table=(ws,rows)=>new Table({width:{size:ws.reduce((a,b)=>a+b,0),type:WidthType.DXA},columnWidths:ws,rows});
   const R=AlignmentType.RIGHT;
-  const hrow=(labels,ws,al=[])=>new TableRow({tableHeader:true,cantSplit:true,children:labels.map((l,i)=>tcell(l,ws[i],{bold:true,color:NAVY,fill:GREY,size:17,align:al[i]}))});
+  const hrow=(labels,ws,al=[])=>new TableRow({tableHeader:true,cantSplit:true,children:labels.map((l,i)=>tcell(l,ws[i],{bold:true,color:NAVY,fill:GREY,size:20,align:al[i]}))});
   const jt=j=>j?`${j.arrow} ${j.word}`:''; const jc=j=>!j?MUTED:j.dir>0?TEAL:j.dir<0?'8F4208':'555555';
-  const h2=(t,note)=>new Paragraph({heading:HeadingLevel.HEADING_1,children:[run(t,{size:25,bold:true,color:'FFFFFF'}),...(note?[run('   '+note,{size:17,color:'E4F0EF'})]:[])],shading:{type:ShadingType.CLEAR,fill:NAVY,color:'auto'},spacing:{before:240,after:140},keepNext:true});
-  const h3=(t,c=NAVY)=>new Paragraph({heading:HeadingLevel.HEADING_2,children:[run(t,{size:22,bold:true,color:c})],spacing:{before:160,after:80},keepNext:true});
-  const note=t=>para([run(t,{size:17,color:MUTED})],{after:120,line:250});
-  const bullets=(items,ref)=>items.map(t=>new Paragraph({children:[run(t,{size:20})],numbering:{reference:ref,level:0},spacing:{after:70,line:270}}));
+  const h2=(t,note)=>new Paragraph({heading:HeadingLevel.HEADING_1,children:[run(t,{size:28,bold:true,color:'FFFFFF'}),...(note?[run('   '+note,{size:20,color:'E4F0EF'})]:[])],shading:{type:ShadingType.CLEAR,fill:NAVY,color:'auto'},spacing:{before:240,after:140},keepNext:true});
+  const h3=(t,c=NAVY)=>new Paragraph({heading:HeadingLevel.HEADING_2,children:[run(t,{size:26,bold:true,color:c})],spacing:{before:160,after:80},keepNext:true});
+  const note=t=>para([run(t,{size:20,color:MUTED})],{after:120,line:270});
+  const bullets=(items,ref)=>items.map(t=>new Paragraph({children:[run(t,{size:24})],numbering:{reference:ref,level:0},spacing:{after:80,line:300}}));
   const body=[]; const s=m.school; evidenceRows(an);
   body.push(new Paragraph({heading:HeadingLevel.TITLE,children:[run(s.name,{size:40,bold:true,color:NAVY})],spacing:{after:40}}));
   body.push(para([run('IDSR Governor Briefing',{size:19,bold:true,color:MUTED}),run(` · Inspection Data Summary Report released ${s.release||'–'} · ${s.phase} · ${s.type} · ${s.la} · URN ${s.urn}`,{size:19,color:MUTED})],{after:60}));
@@ -35,9 +35,10 @@ function buildDocx(m,an,on){
   const iA=body.length;   // start of the evidence sections (moved after the questions below)
   if(!special&&an.attTable.length){
     body.push(h2('3. Attainment and progress','all pupils, latest published year per measure'));
-    const aw=[3000,900,1000,600,1500,1000,1518,800]; const rows=[hrow(['Measure','School','National','n','vs national',an.avgHead,an.avgHead+' vs national','Year'],aw,[null,R,R,R,null,R,null,AlignmentType.CENTER])];
-    an.attTable.forEach(r=>rows.push(new TableRow({cantSplit:true,children:[tcell(r.name+(r.n!=null&&r.n<11?' †':''),aw[0]),tcell(r.school,aw[1],{align:R}),tcell(r.nat,aw[2],{align:R}),tcell(r.n==null?'':cnt(r.n),aw[3],{align:R}),tcell(jt(r.j),aw[4],{color:jc(r.j)}),tcell(r.avg,aw[5],{align:R}),tcell(jt(r.avgJ),aw[6],{color:jc(r.avgJ)}),tcell(r.year,aw[7],{align:AlignmentType.CENTER})]})));
-    if(an.progTable.length){ rows.push(new TableRow({cantSplit:true,children:[tcell(`${an.achLabel.charAt(0).toUpperCase()+an.achLabel.slice(1)} progress (national = 0.0)`,CW,{bold:true,color:NAVY,fill:GREY,size:17,span:8})]})); an.progTable.forEach(r=>rows.push(new TableRow({cantSplit:true,children:[tcell(r.name,aw[0]),tcell(r.school,aw[1],{align:R}),tcell(r.nat,aw[2],{align:R}),tcell(r.n==null?'':cnt(r.n),aw[3],{align:R}),tcell(jt(r.j),aw[4],{color:jc(r.j)}),tcell('',aw[5]),tcell('',aw[6]),tcell(r.year,aw[7],{align:AlignmentType.CENTER})]}))); }
+    const S=an.hasSim; const aw=S?[2500,800,900,550,1300,1300,950,1318,700]:[3000,900,1000,600,1500,1000,1518,800]; const C=AlignmentType.CENTER;
+    const rows=[hrow(['Measure','School','National','n','vs national',...(S?['Similar schools (as published)']:[]),an.avgHead,an.avgHead+' vs national','Year'],aw,[null,R,R,R,null,...(S?[null]:[]),R,null,C])];
+    an.attTable.forEach(r=>{ let k=0; const w=()=>aw[k++]; rows.push(new TableRow({cantSplit:true,children:[tcell(r.name+(r.n!=null&&r.n<11?' †':''),w()),tcell(r.school,w(),{align:R}),tcell(r.nat,w(),{align:R}),tcell(r.n==null?'':cnt(r.n),w(),{align:R}),tcell(jt(r.j),w(),{color:jc(r.j)}),...(S?[tcell([r.sim,r.simText].filter(Boolean).join(' · '),w())]:[]),tcell(r.avg,w(),{align:R}),tcell(jt(r.avgJ),w(),{color:jc(r.avgJ)}),tcell(r.year,w(),{align:C})]})); });
+    if(an.progTable.length){ rows.push(new TableRow({cantSplit:true,children:[tcell(`${an.achLabel.charAt(0).toUpperCase()+an.achLabel.slice(1)} progress (national = 0.0)`,CW,{bold:true,color:NAVY,fill:GREY,size:20,span:aw.length})]})); an.progTable.forEach(r=>rows.push(new TableRow({cantSplit:true,children:[tcell(r.name,aw[0]),tcell(r.school,aw[1],{align:R}),tcell(r.nat,aw[2],{align:R}),tcell(r.n==null?'':cnt(r.n),aw[3],{align:R}),tcell(jt(r.j),aw[4],{color:jc(r.j)}),...aw.slice(5,-1).map(x=>tcell('',x)),tcell(r.year,aw[aw.length-1],{align:AlignmentType.CENTER})]}))); }
     body.push(table(aw,rows)); body.push(note(smallNote(an)+` The multi-year averages are the IDSR's own figures.`+(an.provisional.length?` ${an.provisional.join(', ')} data is provisional.`:'')));
     if(an.groupProgTable.length){ const n=an.progTable.length; const pw=[2800].concat(Array(n*2).fill(0).map((_,i)=>i%2?Math.floor((CW-2800)/n)-900:900)); const rows2=[hrow(['Progress by prior attainment'].concat(an.progTable.flatMap(p=>[p.name.replace(' progress',''),''])),pw,[null].concat(an.progTable.flatMap(()=>[R,null])))];
       an.groupProgTable.forEach(g=>rows2.push(new TableRow({cantSplit:true,children:[tcell(g.label,pw[0])].concat(g.cells.flatMap((c,i)=>[tcell(c?c.v:'–',pw[1+i*2],{align:R}),tcell(c?jt(c.j):'',pw[2+i*2],{color:c?jc(c.j):MUTED})]))}))); body.push(para('',{after:120})); body.push(table(pw,rows2)); body.push(note('Progress scores compare pupils with others nationally who had the same starting points. National average = 0.0.')); }
@@ -73,7 +74,7 @@ function buildDocx(m,an,on){
   body.push(new Paragraph({children:[run(sourceText(m),{size:17,color:MUTED})],border:{top:{style:BorderStyle.SINGLE,size:6,color:'9AA3B5',space:6}},spacing:{before:240}}));
   const lvl=(t,c,bold)=>[{level:0,format:LevelFormat.BULLET,text:t,alignment:AlignmentType.LEFT,style:{run:{color:c,font:'Arial',bold},paragraph:{indent:{left:360,hanging:260}}}}];
   const doc=new Document({creator:'IDSR Governor Briefing',title:`${s.name} – IDSR Governor Briefing`,
-    styles:{default:{document:{run:{font:FONT,size:20,language:{value:'en-GB'}}}},paragraphStyles:[{id:'Heading1',name:'Heading 1',basedOn:'Normal',next:'Normal',quickFormat:true,run:{font:FONT,size:25,bold:true,color:'FFFFFF'},paragraph:{spacing:{before:240,after:140},keepNext:true,outlineLevel:0}},{id:'Heading2',name:'Heading 2',basedOn:'Normal',next:'Normal',quickFormat:true,run:{font:FONT,size:22,bold:true,color:NAVY},paragraph:{spacing:{before:160,after:80},keepNext:true,outlineLevel:1}}]},
+    styles:{default:{document:{run:{font:FONT,size:24,language:{value:'en-GB'}}}},paragraphStyles:[{id:'Heading1',name:'Heading 1',basedOn:'Normal',next:'Normal',quickFormat:true,run:{font:FONT,size:25,bold:true,color:'FFFFFF'},paragraph:{spacing:{before:240,after:140},keepNext:true,outlineLevel:0}},{id:'Heading2',name:'Heading 2',basedOn:'Normal',next:'Normal',quickFormat:true,run:{font:FONT,size:22,bold:true,color:NAVY},paragraph:{spacing:{before:160,after:80},keepNext:true,outlineLevel:1}}]},
     numbering:{config:[{reference:'sq',levels:lvl('■',TEAL)},{reference:'tri',levels:lvl('▲','B8730A')},{reference:'dot',levels:lvl('●',NAVY)},{reference:'q',levels:lvl('Q',NAVY,true)}]},
     sections:[{properties:{page:{size:{width:PAGE_W,height:16838},margin:{top:MARGIN,bottom:900,left:MARGIN,right:MARGIN,header:450,footer:450}}},
       headers:{default:new Header({children:[para([run(s.name+' · IDSR Governor Briefing',{size:15,color:MUTED}),run('\t'+(m.invented?'Example · invented figures · not a real school':CONF),{size:15,color:NAVY,bold:true})],{after:0})]})},
