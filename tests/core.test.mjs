@@ -211,3 +211,16 @@ test('the vendored Word library is the file that was reviewed', async () => {
   const h = createHash('sha256').update(fs.readFileSync(path.join(root, 'vendor', 'docx-9.5.1.iife.js'))).digest('hex');
   assert.equal(h, 'bb2908d72ffd8a3d896b455563733d3a2e708e1384a5140e05b3c6dd0b2f676d');
 });
+
+test('overall picture: a plain count of significant results, with no adjectives', () => {
+  T.setSuppress(true); const an = T.analyse(fresh());
+  assert.match(an.overall, /Latest year \(15 results with a significance test\): 0 significantly above national, 0 significantly below, 15 no significant difference\./);
+  assert.match(an.overall, /Multi-year average \(15 results\): 3 significantly above national, 3 significantly below, 9 no significant difference\./);
+  assert.match(an.overall, /a count, not a score/); assert.doesNotMatch(an.overall, /strong|weak|good|poor|concerning|excellent/i);
+  assert.doesNotMatch(texts(an.strengths) + texts(an.concerns), /of \d+ attainment measures above national/);
+});
+test('special schools are labelled as not yet supported and get no overall picture', () => {
+  const m = fresh(); m.phase.isSpecial = true;
+  assert.ok(T.validateModel(m).warn.some(w => /Special schools are not yet supported/.test(w)));
+  assert.equal(T.analyse(m).overall, '');
+});
