@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /tests/
+Disallow: /README.md
 
 Sitemap: https://governorbrief.co.uk/sitemap.xml

@@ -2,7 +2,7 @@
 
 Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page governor briefing, a full briefing with an evidence trail, and an editable Word document.
 
-**Status:** pilot, version 3.4. Checked against the IDSR release of 25 September 2026, mainly on primary-school data. Secondary and special-school handling exists but has had little testing.
+**Status:** pilot, version 3.4. Checked against the IDSR release of 25 September 2026, mainly on primary-school data. Secondary handling has had little testing; special schools are not yet supported.
 
 ## How it works
 
@@ -23,7 +23,12 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `method.html` | Method note: every rule in words, with one headline traced from the IDSR row to the sentence |
 | `sample-briefing-one-page.pdf`, `sample-briefing-full.pdf` | Sample briefings for the invented example school. Rebuild with `node tests/make-sample.cjs` after any change to the briefing |
 | `_headers` | Security headers for Netlify, including the content security policy |
-| `_redirects` | Forwards the old `govcopilot.netlify.app` address to `governorbrief.co.uk` |
+| `_redirects` | Forwards the old `govcopilot.netlify.app` address to `governorbrief.co.uk`, and returns "not found" for the tests folder and this README |
+| `robots.txt`, `sitemap.xml` | Tell search engines which pages to index |
+| `404.html` | The "page not found" page |
+| `link-preview.png` | The picture shown when the site's link is shared |
+| `site.webmanifest`, `favicon.*`, `icon-*.png`, `apple-touch-icon.png`, `logo-*.svg` | App name, icons and logos |
+| `tests/browser.cjs`, `tests/serve.cjs`, `tests/make-sample.cjs`, `tests/fixtures/` | Browser checks, the local test server, the sample-PDF builder and invented test files |
 | `tests/core.test.mjs` | Rule tests |
 
 There is no build step. Deploy by publishing the folder as a static site.
@@ -72,3 +77,8 @@ When Ofsted publishes a new IDSR release: check a real file by hand against its 
 - Source data: Ofsted IDSR, © Crown copyright, provided to the school under Ofsted's IDSR conditions of use; not for publication.
 
 Designed by and © W. Gopaul 2026. All rights reserved.
+
+## Hosting notes
+
+- Do not rename or delete the Netlify site (`govcopilot`). The `www` address and old links point at `govcopilot.netlify.app`; if that name were released, someone else could claim it.
+- Keep auto-renew, registrar lock and two-step sign-in switched on for the domain and for Netlify.

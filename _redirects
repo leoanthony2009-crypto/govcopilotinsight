@@ -1,3 +1,7 @@
 # Send the old Netlify address to the real domain. Deploy previews are unaffected.
 https://govcopilot.netlify.app/*  https://governorbrief.co.uk/:splat  301!
 http://govcopilot.netlify.app/*   https://governorbrief.co.uk/:splat  301!
+
+# Development files are not part of the public site.
+/tests/*    /404.html  404!
+/README.md  /404.html  404!

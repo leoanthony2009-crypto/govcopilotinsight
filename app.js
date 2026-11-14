@@ -117,7 +117,7 @@ function fitScale(){ const d=$('doc'), w=$('docwrap'); if(!d) return; if(window.
   const avail=w.clientWidth; const dw=d.offsetWidth; const sc=Math.min(1,avail/dw); d.style.transform=sc<1?`scale(${sc})`:''; w.style.height=sc<1?Math.ceil(d.offsetHeight*sc)+'px':''; }
 const fitRO=('ResizeObserver' in window)?new ResizeObserver(()=>fitScale()):null;
 function fitCheck(){ const el=$('fitcheck'); const d=$('doc'); if(!d){ el.textContent=''; return; }
-  if(window.innerWidth<960){ el.textContent=VIEW==='A'?'Print check: open this page on a laptop or desktop to confirm Version A fits one page before printing.':''; return; }
+  if(window.innerWidth<=960){ el.textContent=VIEW==='A'?'Print check: open this page on a laptop or desktop to confirm Version A fits one page before printing.':''; return; }
   el.textContent='';
   const b=document.createElement('b'); b.textContent='Print check: '; el.appendChild(b);
   if(VIEW==='A'){ const over=docFits()-A_LIMIT; el.appendChild(document.createTextNode(over<=0?'Version A fits one side of A4 landscape.':`Version A is about ${Math.ceil(over*25.4/96)} mm too tall for one page. Print Version B instead${EDITED?', or shorten your edits':''}.`)); if(over>0) el.classList.add('warn'); else el.classList.remove('warn'); }
@@ -133,7 +133,7 @@ function render(){ if(!MODEL) return;
   $('printHint').textContent=VIEW==='A'?'Version A prints on one side of A4 landscape. Switch to Version B for the full five-section briefing (recommended for emailing).':'Version B prints on A4 portrait, one section per page. Switch to Version A for the one-page summary.';
   document.title=`${MODEL.school.name} – IDSR Governor Briefing`; setPageSize(); }
 function wrapTables(){ document.querySelectorAll('#doc table').forEach(t=>{ if(t.parentElement.classList.contains('tscroll')) return; const w=document.createElement('div'); w.className='tscroll'; w.tabIndex=0; w.setAttribute('role','region'); const cap=t.querySelector('caption'); w.setAttribute('aria-label',(cap?cap.textContent.trim():'Table')+' (scrolls sideways on small screens)'); t.parentNode.insertBefore(w,t); w.appendChild(t); }); }
-function showDocOnMobile(){ if(window.innerWidth<960){ const d=$('doc'); if(d) d.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}); } }
+function showDocOnMobile(){ if(window.innerWidth<=960){ const d=$('doc'); if(d) d.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}); } }
 function setPageSize(){ let st=$('pagesize'); if(!st){ st=document.createElement('style'); st.id='pagesize'; document.head.appendChild(st); } st.textContent=VIEW==='A'?'@page{size:A4 landscape;margin:10mm 11mm}':'@page{size:A4 portrait;margin:13mm 14mm 16mm}'; }
 function showCoverage(an){ const c=an.coverage; const el=$('coverage'); el.textContent='';
   const add=(label,text)=>{ const b=document.createElement('b'); b.textContent=label; el.appendChild(b); el.appendChild(document.createTextNode(text)); };
@@ -154,13 +154,16 @@ function load(model,label,opts){ opts=opts||{}; let v;
     if(v.warn.length) setStatus(`${base} Check before use: ${v.warn.join(' ')}`,'warn'); else setStatus(base,opts.quiet?'quiet':'ok'); }
   catch(e){ console.error(e); clearDoc('No briefing was produced for this file. See the message above.'); setStatus(`We read the file but could not build a briefing from it, so nothing has been produced. Ofsted may have changed the IDSR layout. Please keep the file${reportTo()}.`,'err'); } }
 const MAX_FILE=15*1048576;
-function handleFile(file){ if(!file) return; if(!$('attest').checked){ needAttest(); return; }
+function handleFile(file){ if(!file) return; if(!$('attest').checked){ $('file').value=''; needAttest(); return; }
   if(file.size>MAX_FILE){ setStatus(`That file is ${(file.size/1048576).toFixed(1)} MB, which is larger than an IDSR page should be (limit ${MAX_FILE/1048576} MB). Save the IDSR as "Webpage, HTML only" and try again.`,'err'); return; }
   setStatus('Reading '+file.name+'…'); const fr=new FileReader();
   fr.onload=()=>{ let model; try{ model=parseIDSR(fr.result); }catch(e){ clearDoc(); setStatus(e.message,'err'); return; } load(model,'Loaded'); };
   fr.onerror=()=>{ clearDoc(); setStatus('Could not read that file.','err'); }; fr.readAsText(file); $('file').value=''; }
-function needAttest(){ setStatus('Tick the box to confirm you are authorised, then upload the file.','err'); $('attestErr').hidden=false; $('attest').closest('.opts').classList.add('err'); $('attest').focus(); }
-$('attest').addEventListener('change',e=>{ if(e.target.checked){ $('attestErr').hidden=true; e.target.closest('.opts').classList.remove('err'); } if(e.target.checked&&/tick the box/i.test($('status').textContent)) setStatus('',''); });
+function needAttest(){ const a=$('attest'), e=$('attestErr'); a.setAttribute('aria-invalid','true'); a.setAttribute('aria-describedby','attestErr'); a.closest('.opts').classList.add('err'); e.hidden=true; e.hidden=false; a.focus(); }
+$('attest').addEventListener('change',e=>{ if(e.target.checked){ $('attestErr').hidden=true; e.target.removeAttribute('aria-invalid'); e.target.removeAttribute('aria-describedby'); e.target.closest('.opts').classList.remove('err'); } });
+// A file dropped outside the upload area must not make the browser navigate away from the briefing.
+['dragover','drop'].forEach(ev=>window.addEventListener(ev,e=>e.preventDefault()));
+if('IntersectionObserver' in window) new IntersectionObserver(([e])=>$('toOpts').classList.toggle('inpanel',e.isIntersecting)).observe($('controls'));
 $('drop').addEventListener('click',e=>{ if(!$('attest').checked){ e.preventDefault(); needAttest(); } });
 $('file').addEventListener('change',e=>handleFile(e.target.files[0]));
 const drop=$('drop'); ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');})); ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');})); drop.addEventListener('drop',e=>handleFile(e.dataTransfer.files[0]));
