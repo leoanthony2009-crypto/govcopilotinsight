@@ -1,6 +1,7 @@
 // Static server that applies the repo's _headers file, so tests run under the real security policy.
+// Like the live site, it does not serve _headers, _redirects, the tests folder or the README.
 const http=require('http'),fs=require('fs'),path=require('path');
 const ROOT=process.argv[2], PORT=+process.argv[3]||8765;
 const hdrs={}; fs.readFileSync(path.join(ROOT,'_headers'),'utf8').split('\n').forEach(l=>{ const m=l.match(/^\s+([A-Za-z-]+):\s*(.+)$/); if(m) hdrs[m[1]]=m[2]; });
-const T={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.ico':'image/x-icon','.webmanifest':'application/manifest+json'};
-http.createServer((q,s)=>{ let p=decodeURIComponent(q.url.split('?')[0]); if(p==='/') p='/index.html'; const f=path.join(ROOT,p); if(!f.startsWith(ROOT)||!fs.existsSync(f)){ s.writeHead(404,hdrs); return s.end('nf'); } s.writeHead(200,{...hdrs,'Content-Type':T[path.extname(f)]||'application/octet-stream'}); s.end(fs.readFileSync(f)); }).listen(PORT,'127.0.0.1',()=>console.log('up',PORT));
+const T={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.ico':'image/x-icon','.webmanifest':'application/manifest+json','.txt':'text/plain; charset=utf-8','.xml':'application/xml','.pdf':'application/pdf','.json':'application/json'};
+http.createServer((q,s)=>{ let p=decodeURIComponent(q.url.split('?')[0]); if(p==='/') p='/index.html'; const f=path.join(ROOT,p); if(!f.startsWith(ROOT)||!fs.existsSync(f)||/^\/(_|tests\/|README\.md)/.test(p)){ s.writeHead(404,hdrs); return s.end('nf'); } s.writeHead(200,{...hdrs,'Content-Type':T[path.extname(f)]||'application/octet-stream'}); s.end(fs.readFileSync(f)); }).listen(PORT,'127.0.0.1',()=>console.log('up',PORT));

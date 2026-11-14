@@ -74,6 +74,64 @@ const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'gc-'));
   ok('phone: the discard question is on screen', await p.evaluate(() => { const r = document.getElementById('notice').getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; })); await p.close();
   p = await page({ width: 900, height: 700 }); await p.setViewportSize({ width: 1440, height: 1000 }); await p.waitForTimeout(500); ok('narrow then wide: Version A is re-fitted to one page', /fits one side/.test(await p.textContent('#fitcheck')) && await pages(p) === 1); await p.close();
 
+  // --- consent gate: no file is read until the box is ticked, and the page says why
+  p = await page(); let chooser = 0; p.on('filechooser', () => chooser++);
+  const gate = () => p.evaluate(() => { const a = document.getElementById('attest'), e = document.getElementById('attestErr'); return { err: !e.hidden, mark: a.closest('.opts').classList.contains('err'), focus: document.activeElement.id, invalid: a.getAttribute('aria-invalid'), by: a.getAttribute('aria-describedby'), alert: e.getAttribute('role'), notice: !document.getElementById('notice').hidden }; });
+  const dropFile = f => p.evaluate(h => { const dt = new DataTransfer(); dt.items.add(new File([h], 'idsr.html', { type: 'text/html' })); document.getElementById('drop').dispatchEvent(new DragEvent('drop', { dataTransfer: dt, bubbles: true, cancelable: true })); }, fs.readFileSync(path.join(FX, f), 'utf8'));
+  const untick = async () => { await p.check('#attest'); await p.uncheck('#attest'); await p.focus('#btnSample'); };
+  ok('consent: the upload control is a named button and the error is hidden until needed', !(await gate()).err && await p.getAttribute('#drop', 'role') === 'button' && !(await p.getAttribute('#drop', 'aria-disabled')) && /Choose IDSR file/.test(await p.textContent('#drop')));
+  await p.click('#drop'); await p.waitForTimeout(250); let g = await gate();
+  ok('consent: choosing a file without the tick opens no file picker, shows one error tied to the box and moves focus there', chooser === 0 && g.err && g.mark && g.focus === 'attest' && g.alert === 'alert' && g.invalid === 'true' && g.by === 'attestErr' && !g.notice, JSON.stringify(g));
+  await p.check('#attest'); await p.waitForTimeout(150); g = await gate();
+  ok('consent: ticking the box clears the error', !g.err && !g.mark && g.invalid === null && g.by === null, JSON.stringify(g));
+  let keys = true; for (const k of ['Enter', ' ']) { await untick(); await p.focus('#drop'); await p.keyboard.press(k); await p.waitForTimeout(200); g = await gate(); keys = keys && chooser === 0 && g.err && g.focus === 'attest'; }
+  ok('consent: Enter and Space without the tick do the same', keys, JSON.stringify(g));
+  await untick(); await dropFile('primary.html'); await p.waitForTimeout(450); g = await gate();
+  ok('consent: a file dropped without the tick is not read', /Example Primary School/.test(await doc(p)) && g.err && g.focus === 'attest', JSON.stringify(g));
+  await p.setInputFiles('#file', path.join(FX, 'primary.html')); await p.waitForTimeout(450);
+  ok('consent: a file handed straight to the input without the tick is not read, and the input is emptied', /Example Primary School/.test(await doc(p)) && await p.evaluate(() => document.getElementById('file').value === ''));
+  await p.check('#attest'); await p.click('#drop'); await p.waitForTimeout(250); const afterClick = chooser; await p.focus('#drop'); await p.keyboard.press('Enter'); await p.waitForTimeout(250);
+  ok('consent: with the tick, click and Enter open the file picker', afterClick === 1 && chooser === 2, `${afterClick},${chooser}`);
+  const before = await doc(p); await dropFile('primary.html'); await p.waitForTimeout(450); ok('consent: with the tick, a dropped file builds a briefing', !/Example Primary School/.test(await doc(p)) && (await doc(p)) !== before);
+  ok('a file dropped outside the upload area does not navigate away', await p.evaluate(() => { const e = new DragEvent('drop', { bubbles: true, cancelable: true }); document.body.dispatchEvent(e); return e.defaultPrevented; }));
+  await p.close();
+
+  // --- name, independence statement, search basics and the redirect file
+  p = await page();
+  ok('heading: the product name is the page heading, with the independence statement beside it and in the footer', await p.evaluate(() => { const h = [...document.querySelectorAll('h1')].filter(x => !x.closest('#doc')); return h.length === 1 && h[0].textContent.trim() === 'GovernorBrief' && /not an Ofsted or DfE service/i.test(document.querySelector('.brand .eyebrow').textContent) && /not affiliated with or endorsed by Ofsted/i.test(document.querySelector('#controls > p.note:last-child').textContent); }));
+  ok('both briefings say in their footer that the tool is independent', /independent tool not affiliated with Ofsted or the DfE/.test(await doc(p)) && await (async () => { await p.click('#tabB'); await p.waitForTimeout(300); const b = /independent tool not affiliated with or endorsed by Ofsted or the DfE/.test(await doc(p)); await p.click('#tabA'); await p.waitForTimeout(300); return b; })());
+  ok('panel sections are headings', await p.evaluate(() => ['Choose your IDSR file', 'Data coverage', 'Output'].every(t => [...document.querySelectorAll('#controls h2')].some(h => h.textContent.trim() === t))));
+  const mth = await (await p.request.get(URL + 'method.html')).text(), wm = await (await p.request.get(URL + 'site.webmanifest')).text(), raw = await (await p.request.get(URL)).text();
+  ok('rename: GovernorBrief in both page titles and the manifest; the old name appears nowhere a visitor sees', /<title>GovernorBrief/.test(raw) && /<title>[^<]*GovernorBrief/.test(mth) && /"name":\s*"GovernorBrief/.test(wm) && !/GovCopilot/i.test(raw + mth + wm + await p.evaluate(() => document.body.innerText)));
+  const SITE = 'https://governorbrief.co.uk/';
+  ok('canonical link on both pages, and a link-preview picture that exists', await p.evaluate(() => [...document.querySelectorAll('link[rel="canonical"]')].map(l => l.getAttribute('href')).join()) === SITE && mth.includes(`<link rel="canonical" href="${SITE}method.html">`) && raw.includes(`property="og:image" content="${SITE}link-preview.png"`) && (await p.request.get(URL + 'link-preview.png')).status() === 200);
+  const rb = await p.request.get(URL + 'robots.txt'), rbt = await rb.text(), sm = await p.request.get(URL + 'sitemap.xml'), locs = ((await sm.text()).match(/<loc>[^<]+<\/loc>/g) || []).map(x => x.slice(5, -6));
+  ok('robots.txt allows the site, keeps crawlers out of the tests folder and points to the sitemap', rb.status() === 200 && /^Allow: \/$/m.test(rbt) && /^Disallow: \/tests\/$/m.test(rbt) && !/^Disallow: \/\s*$/m.test(rbt) && rbt.includes(`Sitemap: ${SITE}sitemap.xml`));
+  let live = sm.status() === 200 && locs.length >= 2 && locs.includes(SITE) && locs.includes(SITE + 'method.html'); for (const l of locs) live = live && l.startsWith(SITE) && (await p.request.get(URL + l.slice(SITE.length))).status() === 200;
+  ok('sitemap.xml is served and every address in it is a real page', live, locs.join(','));
+  const rd = fs.readFileSync(path.join(ROOT, '_redirects'), 'utf8').split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#')).map(l => l.split(/\s+/)), old = rd.filter(r => /govcopilot\.netlify\.app/.test(r[0]));
+  ok('_redirects: the old address goes to the new one, path kept, permanent and forced, for http and https', old.length === 2 && old.every(r => r.length === 3 && /^https?:\/\/govcopilot\.netlify\.app\/\*$/.test(r[0]) && r[1] === SITE + ':splat' && r[2] === '301!') && old.some(r => r[0].startsWith('https:')) && old.some(r => r[0].startsWith('http:')), JSON.stringify(rd));
+  ok('development files are not public: the tests folder and README return "not found"', rd.some(r => r[0] === '/tests/*' && r[2] === '404!') && rd.some(r => r[0] === '/README.md' && r[2] === '404!') && (await p.request.get(URL + 'tests/fixtures/hostile_markup.html')).status() === 404 && (await p.request.get(URL + 'README.md')).status() === 404 && fs.existsSync(path.join(ROOT, '404.html')));
+  await p.close();
+
+  // --- readable text and touch targets (every panel section opened first)
+  const sizes = p => p.evaluate(() => { document.querySelectorAll('#controls details').forEach(d => d.open = true); const vis = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; }, tag = e => `${e.tagName.toLowerCase()}${e.id ? '#' + e.id : ''}`;
+    const small = [...document.querySelectorAll('#controls *, #notice, #notice *, #toOpts')].filter(e => vis(e) && !e.classList.contains('vh') && [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()) && parseFloat(getComputedStyle(e).fontSize) < 15).map(e => tag(e) + ' ' + getComputedStyle(e).fontSize);
+    const short = [...document.querySelectorAll('button')].filter(e => vis(e) && e.getBoundingClientRect().height < 44).map(e => tag(e) + ' ' + e.getBoundingClientRect().height);
+    const boxes = [...document.querySelectorAll('.opts input[type="checkbox"]')].map(e => e.getBoundingClientRect()).every(r => r.width >= 24 && r.height >= 24);
+    const pr = document.getElementById('controls').getBoundingClientRect(), wide = [...document.querySelectorAll('#controls *')].filter(e => vis(e) && !e.classList.contains('vh') && (e.getBoundingClientRect().right > pr.right + 0.5 || e.getBoundingClientRect().left < pr.left - 0.5)).map(tag);
+    return { body: parseFloat(getComputedStyle(document.body).fontSize), small, short, boxes, wide, side: document.documentElement.scrollWidth - innerWidth }; });
+  p = await page(); await p.click('#drop'); let z = await sizes(p);
+  ok('desktop: body text at least 17px, nothing in the panel under 15px, buttons at least 44px high, tick boxes 24px, nothing sticks out', z.body >= 17 && z.small.length === 0 && z.short.length === 0 && z.boxes && z.wide.length === 0 && z.side <= 0, JSON.stringify(z)); await p.close();
+  for (const w of [390, 320]) { p = await page({ width: w, height: 800 }); await p.click('#drop'); z = await sizes(p);
+    ok(`${w}px wide: body text at least 16px, nothing under 15px, buttons 44px, nothing sticks out`, z.body >= 16 && z.small.length === 0 && z.short.length === 0 && z.boxes && z.wide.length === 0 && z.side <= 0, JSON.stringify(z));
+    ok(`${w}px wide: the floating options button is hidden while the options are on screen`, await p.evaluate(() => getComputedStyle(document.getElementById('toOpts')).display === 'none'));
+    await p.click('#btnEdit'); await p.click('#doc h1'); await p.keyboard.type('ZZ '); await p.click('#btnReset'); await p.waitForTimeout(400);
+    ok(`${w}px wide: the keep-or-discard buttons are not covered by anything`, await p.evaluate(() => { const b = [...document.querySelectorAll('#notice button')]; return b.length === 2 && b.every(x => { const r = x.getBoundingClientRect(); return [[r.left + 4, r.top + 4], [r.left + r.width / 2, r.top + r.height / 2], [r.right - 4, r.bottom - 4]].every(([x0, y0]) => document.elementFromPoint(x0, y0) === x); }); })); await p.close(); }
+
+  { p = await page(); const said = await p.evaluate(() => document.body.textContent.match(/(\d+) rule tests and (\d+) browser tests/)); const rules = (fs.readFileSync(path.join(__dirname, 'core.test.mjs'), 'utf8').match(/^test\(/gm) || []).length; await p.close();
+    ok('"How it\'s checked" states the real test counts', !!said && +said[1] === rules && +said[2] === R.length + 3, `page says ${said && said[1]} and ${said && said[2]}; actual ${rules} and ${R.length + 3}`); }
+
   ok('no outside network requests', ext.length === 0, ext.join(',')); ok('no page errors', errs.length === 0, errs.join(' | '));
   console.log(R.join('\n')); const failed = R.filter(x => x.startsWith('FAIL')).length; console.log(`${R.length - failed} passed, ${failed} failed`);
   await b.close(); srv.kill(); process.exit(failed ? 1 : 0);
