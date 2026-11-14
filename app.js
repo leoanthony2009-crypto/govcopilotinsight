@@ -87,7 +87,7 @@ function buildDocx(m,an,on){
    ============================================================ */
 const $=id=>document.getElementById(id);
 /* Set this to a monitored address to show a "report a problem" route in error messages. */
-const SUPPORT_EMAIL='w.gopaul@st-annes.bham.sch.uk';
+const SUPPORT_EMAIL='enquiry@governorbrief.co.uk';
 /* Ask for a description only: an IDSR must never be emailed to us. */
 const reportTo=()=>SUPPORT_EMAIL?`. To report this, email ${SUPPORT_EMAIL} with the message above and the IDSR release date. Do not attach or forward the IDSR itself`:' and tell whoever gave you this tool what the message above says';
 let MODEL=null,AN=null,VIEW='A',EDITED=false;

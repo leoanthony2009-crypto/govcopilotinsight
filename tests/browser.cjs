@@ -114,6 +114,12 @@ const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'gc-'));
   ok('development files are not public: the tests folder and README return "not found"', rd.some(r => r[0] === '/tests/*' && r[2] === '404!') && rd.some(r => r[0] === '/README.md' && r[2] === '404!') && (await p.request.get(URL + 'tests/fixtures/hostile_markup.html')).status() === 404 && (await p.request.get(URL + 'README.md')).status() === 404 && fs.existsSync(path.join(ROOT, '404.html')));
   await p.close();
 
+  // --- contact route and booking
+  p = await page();
+  ok('contact: a booking button opens a ready-written email to the enquiry address, and it asks for no IDSR', await p.evaluate(() => { const a = document.getElementById('btnBook'), u = a && a.getAttribute('href'); return !!u && u.startsWith('mailto:enquiry@governorbrief.co.uk?subject=') && /face-to-face/i.test(decodeURIComponent(u)) && /do not attach or forward an IDSR/i.test(decodeURIComponent(u)) && a.getBoundingClientRect().height >= 44 && /enquiry@governorbrief\.co\.uk/.test(document.querySelector('#controls > p.note:last-child').textContent); }));
+  ok('contact: one product address everywhere; no personal or school address in the published files', ['index.html', 'app.js', 'core.js', 'method.html', '404.html'].every(f => { const s = fs.readFileSync(path.join(ROOT, f), 'utf8'), m = s.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}/g) || []; return m.every(x => x === 'enquiry@governorbrief.co.uk'); }) && /enquiry@governorbrief\.co\.uk/.test(fs.readFileSync(path.join(ROOT, 'app.js'), 'utf8')));
+  await p.close();
+
   // --- readable text and touch targets (every panel section opened first)
   const sizes = p => p.evaluate(() => { document.querySelectorAll('#controls details').forEach(d => d.open = true); const vis = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; }, tag = e => `${e.tagName.toLowerCase()}${e.id ? '#' + e.id : ''}`;
     const small = [...document.querySelectorAll('#controls *, #notice, #notice *, #toOpts')].filter(e => vis(e) && !e.classList.contains('vh') && [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()) && parseFloat(getComputedStyle(e).fontSize) < 15).map(e => tag(e) + ' ' + getComputedStyle(e).fontSize);
