@@ -154,16 +154,17 @@ function load(model,label,opts){ opts=opts||{}; let v;
     if(v.warn.length) setStatus(`${base} Check before use: ${v.warn.join(' ')}`,'warn'); else setStatus(base,opts.quiet?'quiet':'ok'); }
   catch(e){ console.error(e); clearDoc('No briefing was produced for this file. See the message above.'); setStatus(`We read the file but could not build a briefing from it, so nothing has been produced. Ofsted may have changed the IDSR layout. Please keep the file${reportTo()}.`,'err'); } }
 const MAX_FILE=15*1048576;
-function handleFile(file){ if(!file) return; if(!$('attest').checked){ setStatus('Please tick the box above the upload area first.','err'); return; }
+function handleFile(file){ if(!file) return; if(!$('attest').checked){ needAttest(); return; }
   if(file.size>MAX_FILE){ setStatus(`That file is ${(file.size/1048576).toFixed(1)} MB, which is larger than an IDSR page should be (limit ${MAX_FILE/1048576} MB). Save the IDSR as "Webpage, HTML only" and try again.`,'err'); return; }
   setStatus('Reading '+file.name+'…'); const fr=new FileReader();
   fr.onload=()=>{ let model; try{ model=parseIDSR(fr.result); }catch(e){ clearDoc(); setStatus(e.message,'err'); return; } load(model,'Loaded'); };
   fr.onerror=()=>{ clearDoc(); setStatus('Could not read that file.','err'); }; fr.readAsText(file); $('file').value=''; }
-$('attest').addEventListener('change',e=>{ if(e.target.checked&&/tick the box/i.test($('status').textContent)) setStatus('',''); $('drop').setAttribute('aria-disabled',e.target.checked?'false':'true'); $('drop').querySelector('span').textContent=e.target.checked?'Drag the file here or click to choose.':'Drag the file here or click to choose. Tick the box above first.'; });
-$('drop').addEventListener('click',e=>{ if(!$('attest').checked){ e.preventDefault(); setStatus('Please tick the box above the upload area first.','err'); } });
+function needAttest(){ setStatus('Tick the box to confirm you are authorised, then upload the file.','err'); $('attestErr').hidden=false; $('attest').closest('.opts').classList.add('err'); $('attest').focus(); }
+$('attest').addEventListener('change',e=>{ if(e.target.checked){ $('attestErr').hidden=true; e.target.closest('.opts').classList.remove('err'); } if(e.target.checked&&/tick the box/i.test($('status').textContent)) setStatus('',''); });
+$('drop').addEventListener('click',e=>{ if(!$('attest').checked){ e.preventDefault(); needAttest(); } });
 $('file').addEventListener('change',e=>handleFile(e.target.files[0]));
 const drop=$('drop'); ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');})); ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');})); drop.addEventListener('drop',e=>handleFile(e.dataTransfer.files[0]));
-drop.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); if($('attest').checked) $('file').click(); else setStatus('Please tick the box above the upload area first.','err'); } });
+drop.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); if($('attest').checked) $('file').click(); else needAttest(); } });
 
 function setView(v){ if(v===VIEW&&MODEL) return; guardEdits(()=>{ VIEW=v; const A=v==='A'; $('tabA').classList.toggle('on',A); $('tabB').classList.toggle('on',!A); $('tabA').setAttribute('aria-selected',A?'true':'false'); $('tabB').setAttribute('aria-selected',A?'false':'true'); $('tabA').tabIndex=A?0:-1; $('tabB').tabIndex=A?-1:0; render(); showDocOnMobile(); }); }
 $('tabA').addEventListener('click',()=>setView('A')); $('tabB').addEventListener('click',()=>setView('B'));
