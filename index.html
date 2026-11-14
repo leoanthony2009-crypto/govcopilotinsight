@@ -35,7 +35,9 @@ h2.sect{font-size:19px;line-height:1.25;color:var(--fg);margin:0}
 button{font:inherit;font-weight:700;padding:10px 16px;min-height:44px;border-radius:6px;border:1px solid var(--control);background:var(--panel);color:var(--fg);cursor:pointer}
 button:hover{border-color:var(--accent)}
 button:focus-visible,.drop:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.primary,a.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+a.btn{display:flex;align-items:center;justify-content:center;flex:1 1 100%;min-height:44px;padding:10px 16px;border:1px solid var(--control);border-radius:6px;font-weight:700;text-decoration:none;text-align:center}
+a.btn:hover{text-decoration:underline}
 button.on{background:var(--accent-soft);border-color:var(--accent)}
 button[disabled]{opacity:.45;cursor:not-allowed}
 .status{color:var(--muted);min-height:1.2em}
@@ -83,6 +85,21 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 .docwrap{max-width:100%;min-width:0}
 .toopts{display:none}
 @media screen and (max-width:960px){.stage{flex-direction:column;align-items:stretch;padding-bottom:84px}.toopts:not([hidden]){display:block;position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:5;padding:10px 14px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:16px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)}}
+.more{background:var(--panel);border-top:1px solid var(--line);padding:48px max(16px,env(safe-area-inset-right,0px)) 64px max(16px,env(safe-area-inset-left,0px))}
+.more-in{max-width:1080px;margin:0 auto}
+.more .kicker{font-weight:700;color:var(--muted);margin:0 0 8px;font-size:15px}
+.more h2{font-size:32px;line-height:1.15;margin:0 0 12px;max-width:22em}
+.more .lead{font-size:19px;line-height:1.45;margin:0 0 28px;max-width:38em}
+.more-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media screen and (max-width:960px){.more-grid{grid-template-columns:1fr}.more h2{font-size:26px}}
+.more .card{border:1px solid var(--control);border-top:4px solid var(--accent);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.more .card h3{font-size:19px;line-height:1.25;margin:0}.more .card p{margin:0}
+.more .facts{font-weight:700}
+.more a{color:var(--accent)}.more a.btn.primary{color:var(--accent-ink)}
+.more .briefs{list-style:none;margin:0;padding:0}.more .briefs li{border-top:1px solid var(--line);padding:10px 0 0}.more .briefs a{font-weight:700;display:block}.more .briefs span{display:block;color:var(--muted);font-size:15px;margin-top:2px}
+.more .indep{color:var(--muted);font-size:15px;margin:28px 0 0}
+.more .steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;counter-reset:s;font-weight:700;font-size:15px}.more .steps li{counter-increment:s;display:flex;align-items:center}.more .steps li::before{content:counter(s);display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--accent-ink);margin-right:6px;font-size:14px}
+@media print{.more{display:none!important}}
 @media print{.toopts{display:none!important}}
 .toopts.inpanel{display:none!important}
 .stage:has(#notice:not([hidden]) button) .toopts{display:none!important}
@@ -261,8 +278,8 @@ details.help ol{margin:6px 0 0;padding-left:18px}
     <hr>
     <h2 class="sect">Output</h2>
     <div class="tabs" role="tablist" aria-label="Output version">
-      <button type="button" role="tab" id="tabA" class="on" aria-selected="true" aria-controls="docwrap">One page</button>
-      <button type="button" role="tab" id="tabB" aria-selected="false" aria-controls="docwrap">Full briefing</button>
+      <button type="button" role="tab" id="tabA" class="on" aria-selected="true" aria-controls="docwrap">One page (Version A)</button>
+      <button type="button" role="tab" id="tabB" aria-selected="false" aria-controls="docwrap">Full briefing (Version B)</button>
     </div>
     <div class="opts">
       <label><input type="checkbox" id="optSuppress" checked> Hide small numbers: counts of 5 or fewer are shown as "5 or fewer", and suspension and exclusion reasons are left out. Percentages are still shown as the IDSR gives them, and for small groups they can point to individual pupils: check them before sharing beyond the board.</label>
@@ -279,9 +296,15 @@ details.help ol{margin:6px 0 0;padding-left:18px}
     <p class="note" id="printHint"></p>
 
     <hr>
+    <h2 class="sect">Bring GovernorBrief to your board</h2>
+    <p class="note">A practical 90-minute face-to-face workshop for governors and trustees. <a href="#board">About the workshop</a>.</p>
+    <div class="row"><a class="btn primary" id="btnBook" href="mailto:enquiry@governorbrief.co.uk?subject=Workshop%20request%3A%20From%20Information%20to%20Assurance&amp;body=Hello%2C%0A%0AWe%20would%20like%20to%20request%20the%2090-minute%20face-to-face%20workshop%2C%20From%20Information%20to%20Assurance.%0A%0AOrganisation%3A%0AMy%20name%20and%20role%3A%0ABest%20phone%20number%3A%0APreferred%20dates%3A%0ADevelopment%20priority%20for%20our%20board%3A%0ALikely%20number%20attending%3A%0A%0APlease%20do%20not%20attach%20or%20forward%20an%20IDSR%20with%20this%20email.%0A">Request a workshop</a></div>
+    <p class="note">Any other question: <a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a>. Please never email an IDSR to us.</p>
+
+    <hr>
     <details class="help about-box"><summary>How it's checked</summary>
     <p class="note"><b>Checked against the IDSR.</b> <span id="checkedLine"></span> If your IDSR is newer than that, the briefing still loads but carries a warning.</p>
-    <p class="note"><b>Tested before each release.</b> At this version, 31 rule tests and 69 browser tests pass. They cover the number reader, banding and significance rules, small-number hiding, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs; founding schools are helping with that.</p>
+    <p class="note"><b>Tested before each release.</b> At this version, 31 rule tests and 72 browser tests pass. They cover the number reader, banding and significance rules, small-number hiding, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs; founding schools are helping with that.</p>
     <p class="note"><b>For data protection officers.</b> The page is static. The IDSR is opened by the browser on the user's own device and is never transmitted: the site's security policy stops this page sending data to any server in the background, the code contains nothing that sends it, and there are no cookies, analytics scripts, accounts or storage. The supplier therefore never receives the school's data. The site is hosted on Netlify, which, like any web host, keeps ordinary visit logs (such as the IP address and time of each visit).</p>
     <p class="note"><b>How the headlines are made.</b> Every rule is written out in the <a href="method.html">method note</a>, with one headline traced from the IDSR row to the sentence.</p>
     <p class="note"><b>Who built it.</b> Built by a serving headteacher, so that governors can use the IDSR without reading all of it.</p>
@@ -291,12 +314,43 @@ details.help ol{margin:6px 0 0;padding-left:18px}
     <p class="note">This briefing supports governor scrutiny. It does not replace the original IDSR or professional judgement, and it is not an Ofsted judgement, grade or prediction. Bandings and significance are reproduced from the IDSR; every headline carries a reference to its source row in the evidence trail. Small cohorts move percentages a lot: check the pupil numbers (n) before drawing conclusions.</p>
     <p class="note">Not affiliated with or endorsed by Ofsted or the Department for Education. Source data: Ofsted IDSR, © Crown copyright, provided to the school under Ofsted's IDSR conditions of use; not for publication. <span id="ver"></span></p>
     </details>
-    <p class="note" style="border-top:1px solid var(--line);padding-top:10px"><strong>GovernorBrief · Pilot version.</strong> An independent tool, not affiliated with or endorsed by Ofsted or the Department for Education. Designed by and © W. Gopaul 2026. All rights reserved.</p>
+    <p class="note" style="border-top:1px solid var(--line);padding-top:10px"><strong>GovernorBrief · Pilot version.</strong> An independent tool, not affiliated with or endorsed by Ofsted or the Department for Education. Contact: <a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a>. Designed by and © W. Gopaul 2026. All rights reserved.</p>
   </aside>
 
   <main class="stage"><a class="toopts" id="toOpts" href="#controls" hidden>↑ Options &amp; downloads</a><div class="notice" id="notice" role="status" aria-live="polite" hidden></div><div class="docwrap" id="docwrap" role="tabpanel" aria-label="Briefing"><div class="placeholder" id="placeholder">Tick the box and choose an IDSR file, or load the example school to see the three outputs.</div></div></main>
 </div>
 
+<section class="more" id="board" aria-labelledby="boardTitle">
+  <div class="more-in">
+    <p class="kicker">GovernorBrief</p>
+    <h2 id="boardTitle">Three minutes before the meeting. Better questions around the table.</h2>
+    <p class="lead">Short, practical briefings to help governors and trustees ask purposeful questions, understand evidence and strengthen assurance.</p>
+    <div class="more-grid">
+      <div class="card">
+        <h3>Latest three-minute briefs</h3>
+        <p>Browse by safeguarding, standards, inclusion, finance, leadership or governance effectiveness.</p>
+        <p class="facts">Free · 12 short issues · Fortnightly, with initial releases March–July 2027</p>
+        <ul class="briefs">
+          <li><a href="#controls">IDSR Governor Briefing</a><span>Available now · Standards · turn your school's IDSR into a briefing, with questions for governors</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Bring GovernorBrief to your board</h3>
+        <p>A practical 90-minute face-to-face workshop to help governors move from receiving reports to asking better questions and securing meaningful follow-up.</p>
+        <p class="facts">From Information to Assurance · 90 minutes · At your school or venue</p>
+        <p><a class="btn primary" id="btnWorkshop" href="mailto:enquiry@governorbrief.co.uk?subject=Workshop%20request%3A%20From%20Information%20to%20Assurance&amp;body=Hello%2C%0A%0AWe%20would%20like%20to%20request%20the%2090-minute%20face-to-face%20workshop%2C%20From%20Information%20to%20Assurance.%0A%0AOrganisation%3A%0AMy%20name%20and%20role%3A%0ABest%20phone%20number%3A%0APreferred%20dates%3A%0ADevelopment%20priority%20for%20our%20board%3A%0ALikely%20number%20attending%3A%0A%0APlease%20do%20not%20attach%20or%20forward%20an%20IDSR%20with%20this%20email.%0A">Request a workshop</a></p>
+        <p>Tell us your organisation, preferred dates and development priority. We will discuss the session and confirm availability before any booking is made.</p>
+        <ol class="steps" aria-label="How booking works"><li>Enquiry</li><li>Discussion</li><li>Proposal</li><li>Confirmation</li></ol>
+      </div>
+      <div class="card">
+        <h3>About the facilitator</h3>
+        <p>Wendell Gopaul brings experience of headship, school inspection, MAT board vice-chairing and education consultancy.</p>
+        <p>Contact: <a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a></p>
+      </div>
+    </div>
+    <p class="indep">GovernorBrief is an independent service. It is not affiliated with or endorsed by Ofsted or the Department for Education.</p>
+  </div>
+</section>
 <script src="vendor/docx-9.5.1.iife.js"></script>
 <script src="core.js"></script>
 <script src="sample.js"></script>
