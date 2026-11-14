@@ -23,6 +23,7 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `method.html` | Method note: every rule in words, with one headline traced from the IDSR row to the sentence |
 | `sample-briefing-one-page.pdf`, `sample-briefing-full.pdf` | Sample briefings for the invented example school. Rebuild with `node tests/make-sample.cjs` after any change to the briefing |
 | `_headers` | Security headers for Netlify, including the content security policy |
+| `_redirects` | Forwards the old `govcopilot.netlify.app` address to `governorbrief.co.uk` |
 | `tests/core.test.mjs` | Rule tests |
 
 There is no build step. Deploy by publishing the folder as a static site.
