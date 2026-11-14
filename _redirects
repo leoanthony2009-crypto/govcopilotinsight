@@ -1,0 +1,3 @@
+# Send the old Netlify address to the real domain. Deploy previews are unaffected.
+https://govcopilot.netlify.app/*  https://governorbrief.co.uk/:splat  301!
+http://govcopilot.netlify.app/*   https://governorbrief.co.uk/:splat  301!
