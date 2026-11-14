@@ -144,7 +144,7 @@ function showCoverage(an){ const c=an.coverage; const el=$('coverage'); el.textC
 const PLACEHOLDER='Tick the box and upload an IDSR, or load the example school to see the three outputs.';
 /* A failed or refused file never leaves an earlier school's briefing on screen. */
 function clearDoc(msg){ MODEL=null; AN=null; EDITED=false; const w=$('docwrap'); w.textContent=''; w.style.height=''; const ph=document.createElement('div'); ph.className='placeholder'; ph.id='placeholder'; ph.textContent=msg||PLACEHOLDER; w.appendChild(ph);
-  $('toOpts').hidden=true; $('coverage').textContent=''; $('fitcheck').textContent=''; $('printHint').textContent=''; showFound(null); document.title='GovCopilot Insight'; }
+  $('toOpts').hidden=true; $('coverage').textContent=''; $('fitcheck').textContent=''; $('printHint').textContent=''; showFound(null); document.title='GovernorBrief'; }
 function load(model,label,opts){ opts=opts||{}; let v;
   try{ v=validateModel(model); }catch(e){ console.error(e); v={fatal:['The file could not be checked.'],warn:[]}; }
   if(v.fatal.length){ clearDoc('No briefing was produced for this file. See the message above.'); showFound(model);

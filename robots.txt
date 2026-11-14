@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://governorbrief.co.uk/sitemap.xml

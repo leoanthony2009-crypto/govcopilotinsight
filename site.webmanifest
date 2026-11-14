@@ -1,6 +1,6 @@
 {
-  "name": "GovCopilot Insight",
-  "short_name": "GovCopilot",
+  "name": "GovernorBrief",
+  "short_name": "GovernorBrief",
   "description": "Turn your school's Ofsted IDSR into a governor briefing.",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },

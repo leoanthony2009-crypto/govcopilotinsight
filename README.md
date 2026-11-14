@@ -1,4 +1,4 @@
-# GovCopilot Insight – IDSR Governor Briefing
+# GovernorBrief – IDSR briefing for governors
 
 Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page governor briefing, a full briefing with an evidence trail, and an editable Word document.
 
