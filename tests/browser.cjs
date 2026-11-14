@@ -136,6 +136,11 @@ const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'gc-'));
     await p.click('#btnEdit'); await p.click('#doc h1'); await p.keyboard.type('ZZ '); await p.click('#btnReset'); await p.waitForTimeout(400);
     ok(`${w}px wide: the keep-or-discard buttons are not covered by anything`, await p.evaluate(() => { const b = [...document.querySelectorAll('#notice button')]; return b.length === 2 && b.every(x => { const r = x.getBoundingClientRect(); return [[r.left + 4, r.top + 4], [r.left + r.width / 2, r.top + r.height / 2], [r.right - 4, r.bottom - 4]].every(([x0, y0]) => document.elementFromPoint(x0, y0) === x); }); })); await p.close(); }
 
+  { p = await page(); await p.waitForTimeout(500);
+    ok('brand: the logo is shown, headings use the self-hosted brand typeface and body text is navy', await p.evaluate(async () => { await document.fonts.ready; const l = document.querySelector('.brand-row img.logo-l'); const c = getComputedStyle(document.body).color; return !!l && l.naturalWidth > 0 && l.getBoundingClientRect().width >= 220 && document.fonts.check('700 20px "Plus Jakarta Sans"') && /Plus Jakarta Sans/.test(getComputedStyle(document.querySelector('h2.sect')).fontFamily) && c === 'rgb(15, 31, 46)'; }));
+    ok('brand: the site footer carries the full independence line and the enquiry address', await p.evaluate(() => { const f = document.querySelector('footer.sitefoot'); return !!f && /It is not affiliated with, endorsed by or produced by Ofsted or the Department for Education, and it does not replace the IDSR\./.test(f.textContent) && !!f.querySelector('a[href="mailto:enquiry@governorbrief.co.uk"]') && f.querySelector('img').naturalWidth > 0; }));
+    await p.close(); }
+
   { p = await page(); const said = await p.evaluate(() => document.body.textContent.match(/(\d+) rule tests and (\d+) browser tests/)); const rules = (fs.readFileSync(path.join(__dirname, 'core.test.mjs'), 'utf8').match(/^test\(/gm) || []).length; await p.close();
     ok('"How it\'s checked" states the real test counts', !!said && +said[1] === rules && +said[2] === R.length + 3, `page says ${said && said[1]} and ${said && said[2]}; actual ${rules} and ${R.length + 3}`); }
 
