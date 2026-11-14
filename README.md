@@ -28,6 +28,10 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `404.html` | The "page not found" page |
 | `link-preview.png` | The picture shown when the site's link is shared |
 | `site.webmanifest`, `favicon.*`, `icon-*.png`, `apple-touch-icon.png`, `logo-*.svg` | App name, icons and logos |
+| `workshop.html` | The workshop page: who it is for, outline, booking steps, pilot terms, facilitator and contact |
+| `privacy.html`, `accessibility.html`, `terms.html` | Privacy notice, accessibility statement and terms of use |
+| `site.css` | Shared brand styles for every page except the tool page, which carries its own copy so it works as one file |
+| `sample-briefing-preview.png` | Picture of the sample one-page briefing (invented school), made from the sample PDF |
 | `fonts/` | Plus Jakarta Sans (headline typeface from the brand guidelines), hosted on the site itself so nothing loads from outside. SIL Open Font Licence, see `fonts/OFL.txt` |
 | `tests/browser.cjs`, `tests/serve.cjs`, `tests/make-sample.cjs`, `tests/fixtures/` | Browser checks, the local test server, the sample-PDF builder and invented test files |
 | `tests/core.test.mjs` | Rule tests |

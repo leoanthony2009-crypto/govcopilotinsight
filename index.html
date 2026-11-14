@@ -26,7 +26,21 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:17px
 @media screen and (max-width:960px){.app{grid-template-columns:1fr}}
 .panel{background:var(--panel);border-right:1px solid var(--line);padding-block:20px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px;display:flex;flex-direction:column;gap:16px;position:sticky;top:0;height:100vh;overflow-y:auto}
 @media screen and (max-width:960px){.panel{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding-right:max(16px,env(safe-area-inset-right,0px))}}
-.brand-row{display:block;margin:-6px 0 0 -14px}.brand-row img{display:block;width:264px;max-width:100%;height:auto}
+.skip{position:absolute;left:-9999px}.skip:focus{left:8px;top:8px;z-index:10;background:var(--panel);padding:10px 14px;border-radius:6px}
+.topbar{background:var(--panel);border-bottom:1px solid var(--line)}
+.tb-in{display:flex;align-items:center;flex-wrap:wrap;gap:4px 20px;padding:6px max(16px,env(safe-area-inset-right,0px)) 6px max(16px,env(safe-area-inset-left,0px))}
+.tb-logo{display:block;flex:none;margin-left:-12px}.tb-logo img{display:block;width:232px;height:auto}
+.tb-nav{display:flex;flex-wrap:wrap;gap:0 4px;margin-left:auto}
+.tb-nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;font-weight:700;color:var(--fg);text-decoration:none;border-radius:6px}
+.tb-nav a:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px}
+.tb-nav a[aria-current="page"]{color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);border-radius:0}
+a.btn.tb-cta{flex:none;display:inline-flex}
+@media screen and (max-width:860px){.tb-nav{margin-left:-12px;width:100%;order:3}a.btn.tb-cta{margin-left:auto}}
+@media screen and (max-width:520px){a.btn.tb-cta{display:none!important}}
+@media screen and (max-width:520px){.tb-nav{gap:0;margin-left:-8px}.tb-nav a{padding:0 8px}}
+@media print{.topbar,.skip{display:none!important}}
+.sample-shot{display:block;margin:12px 0 0}.sample-shot img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px;box-shadow:0 4px 14px rgba(15,31,46,.12);background:#fff}
+.sitefoot .footnav a{display:inline-block;padding:6px 0}
 .logo-d{display:none!important}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .logo-l{display:none!important}:root:not([data-theme="light"]) .logo-d{display:block!important}}
 :root[data-theme="dark"] .logo-l{display:none!important}:root[data-theme="dark"] .logo-d{display:block!important}
@@ -111,7 +125,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 .more .card{border-top:6px solid var(--accent-soft)}.more .card.feature{border-top-color:var(--accent)}
 .more .card h3{font-family:var(--head);font-size:21px;line-height:1.25;letter-spacing:-.01em;margin:0}.more .card p{margin:0}
 .more .facts{font-weight:700;background:var(--accent-soft);border-radius:6px;padding:8px 12px}
-.more .card a{color:var(--accent)}.more a.btn.primary{color:var(--accent-ink)}
+.more .card a{color:var(--accent)}.more .card a.btn{flex:none;color:var(--fg)}.more a.btn.primary{color:var(--accent-ink)}
 .more .briefs{list-style:none;margin:0;padding:0}.more .briefs li{border-top:1px solid var(--line);padding:10px 0 0}.more .briefs a{font-weight:700;display:block}.more .briefs span{display:block;color:var(--muted);font-size:15px;margin-top:2px}
 .more .steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;counter-reset:s;font-weight:700;font-size:15px}.more .steps li{counter-increment:s;display:flex;align-items:center}.more .steps li::before{content:counter(s);display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--accent-ink);margin-right:6px;font-size:14px}
 .sitefoot{background:var(--navy);color:#fff;padding:36px 0 44px}
@@ -253,10 +267,15 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 }
 </style>
 
+<a class="skip" href="#docwrap">Skip to main content</a>
+<header class="topbar"><div class="tb-in">
+  <a class="tb-logo" href="/"><img class="logo-l" src="/logo-lockup-light.svg" alt="GovernorBrief – IDSR briefing for governors. Home" width="558" height="160"><img class="logo-d" src="/logo-lockup-white.svg" alt="GovernorBrief – IDSR briefing for governors. Home" width="558" height="160"></a>
+  <nav class="tb-nav" aria-label="Main"><a href="/" aria-current="page">Briefing tool</a><a href="workshop.html">Workshop</a><a href="workshop.html#facilitator">About</a><a href="workshop.html#contact">Contact</a></nav>
+  <a class="btn primary tb-cta" href="mailto:enquiry@governorbrief.co.uk?subject=Workshop%20request%3A%20From%20Information%20to%20Assurance&amp;body=Hello%2C%0A%0AWe%20would%20like%20to%20request%20the%2090-minute%20face-to-face%20workshop%2C%20From%20Information%20to%20Assurance.%0A%0AOrganisation%3A%0AMy%20name%20and%20role%3A%0ABest%20phone%20number%3A%0APreferred%20dates%3A%0ADevelopment%20priority%20for%20our%20board%3A%0ALikely%20number%20attending%3A%0A%0APlease%20do%20not%20attach%20or%20forward%20an%20IDSR%20with%20this%20email.%0A">Request a workshop</a>
+</div></header>
 <div class="app">
   <aside class="panel" id="controls">
     <div class="brand">
-      <div class="brand-row"><img class="logo-l" src="/logo-lockup-light.svg" alt="" width="558" height="160"><img class="logo-d" src="/logo-lockup-white.svg" alt="" width="558" height="160"></div>
       <h1 class="vh">GovernorBrief</h1>
       <span class="eyebrow">Independent tool · not an Ofsted or DfE service · pilot</span>
       <p class="lede"><b>Your school's IDSR, ready for the governors' meeting.</b></p>
@@ -266,6 +285,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
         <li><b>No upload.</b> The file is read in this browser and is never sent anywhere.</li>
         <li><b>Traceable.</b> Every headline points to its row in the IDSR.</li>
       </ul>
+      <a class="sample-shot" href="sample-briefing-one-page.pdf"><img src="/sample-briefing-preview.png" alt="Sample one-page governor briefing for an invented primary school" width="842" height="595" loading="lazy"></a>
       <p class="note">See what a board receives: sample briefings for an invented school, <a href="sample-briefing-one-page.pdf" download>one page (PDF)</a> and <a href="sample-briefing-full.pdf" download>full briefing (PDF)</a>.</p>
     </div>
 
@@ -317,14 +337,14 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 
     <hr>
     <h2 class="sect">Bring GovernorBrief to your board</h2>
-    <p class="note">A practical 90-minute face-to-face workshop for governors and trustees. <a href="#board">About the workshop</a>.</p>
+    <p class="note">A practical 90-minute face-to-face workshop for governors and trustees. <a href="workshop.html">About the workshop</a>.</p>
     <div class="row"><a class="btn primary" id="btnBook" href="mailto:enquiry@governorbrief.co.uk?subject=Workshop%20request%3A%20From%20Information%20to%20Assurance&amp;body=Hello%2C%0A%0AWe%20would%20like%20to%20request%20the%2090-minute%20face-to-face%20workshop%2C%20From%20Information%20to%20Assurance.%0A%0AOrganisation%3A%0AMy%20name%20and%20role%3A%0ABest%20phone%20number%3A%0APreferred%20dates%3A%0ADevelopment%20priority%20for%20our%20board%3A%0ALikely%20number%20attending%3A%0A%0APlease%20do%20not%20attach%20or%20forward%20an%20IDSR%20with%20this%20email.%0A">Request a workshop</a></div>
     <p class="note">Any other question: <a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a>. Please never email an IDSR to us.</p>
 
     <hr>
     <details class="help about-box"><summary>How it's checked</summary>
     <p class="note"><b>Checked against the IDSR.</b> <span id="checkedLine"></span> If your IDSR is newer than that, the briefing still loads but carries a warning.</p>
-    <p class="note"><b>Tested before each release.</b> At this version, 31 rule tests and 74 browser tests pass. They cover the number reader, banding and significance rules, small-number hiding, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs; founding schools are helping with that.</p>
+    <p class="note"><b>Tested before each release.</b> At this version, 31 rule tests and 84 browser tests pass. They cover the number reader, banding and significance rules, small-number hiding, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs; founding schools are helping with that.</p>
     <p class="note"><b>For data protection officers.</b> The page is static. The IDSR is opened by the browser on the user's own device and is never transmitted: the site's security policy stops this page sending data to any server in the background, the code contains nothing that sends it, and there are no cookies, analytics scripts, accounts or storage. The supplier therefore never receives the school's data. The site is hosted on Netlify, which, like any web host, keeps ordinary visit logs (such as the IP address and time of each visit).</p>
     <p class="note"><b>How the headlines are made.</b> Every rule is written out in the <a href="method.html">method note</a>, with one headline traced from the IDSR row to the sentence.</p>
     <p class="note"><b>Who built it.</b> Built by a serving headteacher, so that governors can use the IDSR without reading all of it.</p>
@@ -351,10 +371,11 @@ details.help ol{margin:6px 0 0;padding-left:18px}
       <div class="card">
         <h3>Latest three-minute briefs</h3>
         <p>Browse by safeguarding, standards, inclusion, finance, leadership or governance effectiveness.</p>
-        <p class="facts">Free · 12 short issues · Fortnightly, with initial releases March–July 2027</p>
+        <p class="facts">First issue March 2027 · Free · 12 short issues · Fortnightly, with initial releases March–July 2027</p>
         <ul class="briefs">
           <li><a href="#controls">IDSR Governor Briefing</a><span>Available now · Standards · turn your school's IDSR into a briefing, with questions for governors</span></li>
         </ul>
+        <p><a class="btn" id="btnNotify" href="mailto:enquiry@governorbrief.co.uk?subject=Tell%20me%20when%20the%20first%20GovernorBrief%20issue%20is%20out&amp;body=Hello%2C%0A%0APlease%20email%20me%20when%20the%20first%20three-minute%20brief%20is%20published.%0A%0AMy%20name%20and%20role%3A%0AOrganisation%3A%0A">Email me when the first issue is out</a></p>
       </div>
       <div class="card feature">
         <h3>Bring GovernorBrief to your board</h3>
@@ -363,10 +384,13 @@ details.help ol{margin:6px 0 0;padding-left:18px}
         <p><a class="btn primary" id="btnWorkshop" href="mailto:enquiry@governorbrief.co.uk?subject=Workshop%20request%3A%20From%20Information%20to%20Assurance&amp;body=Hello%2C%0A%0AWe%20would%20like%20to%20request%20the%2090-minute%20face-to-face%20workshop%2C%20From%20Information%20to%20Assurance.%0A%0AOrganisation%3A%0AMy%20name%20and%20role%3A%0ABest%20phone%20number%3A%0APreferred%20dates%3A%0ADevelopment%20priority%20for%20our%20board%3A%0ALikely%20number%20attending%3A%0A%0APlease%20do%20not%20attach%20or%20forward%20an%20IDSR%20with%20this%20email.%0A">Request a workshop</a></p>
         <p>Tell us your organisation, preferred dates and development priority. We will discuss the session and confirm availability before any booking is made.</p>
         <ol class="steps" aria-label="How booking works"><li>Enquiry</li><li>Discussion</li><li>Proposal</li><li>Confirmation</li></ol>
+        <p><a href="workshop.html">What the workshop covers and how pilot sessions work</a></p>
       </div>
       <div class="card">
         <h3>About the facilitator</h3>
         <p>Wendell Gopaul brings experience of headship, school inspection, MAT board vice-chairing and education consultancy.</p>
+        <p>Serving primary headteacher since 2016. Ofsted inspector from 2014 to 2017, and a school inspector again since 2022.</p>
+        <p><a href="workshop.html#facilitator">More about the facilitator</a></p>
         <p>Contact: <a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a></p>
       </div>
     </div>
@@ -377,7 +401,8 @@ details.help ol{margin:6px 0 0;padding-left:18px}
     <img src="/logo-lockup-white.svg" alt="GovernorBrief – IDSR briefing for governors" width="558" height="160">
     <div>
       <p class="indep">GovernorBrief is an independent tool. It is not affiliated with, endorsed by or produced by Ofsted or the Department for Education, and it does not replace the IDSR.</p>
-      <p><a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a> · governorbrief.co.uk · <a href="method.html">Method note</a></p>
+      <p><a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a> · governorbrief.co.uk</p>
+      <p class="footnav"><a href="workshop.html">Workshop</a> · <a href="method.html">Method note</a> · <a href="privacy.html">Privacy</a> · <a href="accessibility.html">Accessibility</a> · <a href="terms.html">Terms</a></p>
       <p class="small">Please never email an IDSR to us. Pilot version. Designed by and © W. Gopaul 2026. All rights reserved.</p>
     </div>
   </div>
