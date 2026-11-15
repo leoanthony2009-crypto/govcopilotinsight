@@ -27,7 +27,8 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `method.html` | Method note: every rule in words, with one headline traced from the IDSR row to the sentence |
 | `sample-briefing-one-page.pdf`, `sample-briefing-full.pdf` | Sample briefings for the invented example school. Rebuild with `node tests/make-sample.cjs` after any change to the briefing |
 | `_headers` | Security headers for Netlify, including the content security policy |
-| `_redirects` | Forwards the old `govcopilot.netlify.app` address to `governorbrief.co.uk`, and returns "not found" for the tests folder and this README |
+| `_redirects` | Forwards the old `govcopilot.netlify.app` address to `governorbrief.co.uk`, and returns "not found" for the tests folder, this README and the `.claude` and `.agents` folders |
+| `.claude/skills/` | Marketing skills that Claude loads when working in this repository (copywriting, SEO, launch, pricing and others), copied from `coreyhaines31/marketingskills` under the MIT licence. Development files, not part of the public site. See `.claude/skills/README.md` |
 | `robots.txt`, `sitemap.xml` | Tell search engines which pages to index |
 | `404.html` | The "page not found" page |
 | `link-preview.png` | The picture shown when the site's link is shared |
