@@ -7,7 +7,7 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 ## How it works
 
 - **Rule-based. No AI.** Fixed rules read the IDSR tables; the same file always gives the same briefing.
-- **No upload.** The file is read in the browser. There is no server, no storage and no analytics.
+- **No upload.** The IDSR file is read in the browser and never sent anywhere. The site has no storage and no analytics. The only thing the site ever sends is the workshop enquiry form on `/contact`, which goes to Netlify Forms.
 - **Traceable.** Every headline points to its IDSR row in the evidence trail, and a data-coverage appendix lists what was read, what was missing and what to check by hand.
 - **Fails loudly.** If the expected tables or columns are not found, no briefing is produced. An IDSR released after the last checked release loads with a warning.
 
@@ -18,7 +18,7 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `index.html` | Landing page at `/`: headline, the three offers (Read, Prepare, Develop), about and closing call to action |
 | `idsr.html` | The IDSR briefing tool at `/idsr`: page markup and styles. Netlify serves `idsr.html` at the clean address `/idsr` |
 | `briefs/index.html`, `briefs/assurance-or-information.html` | The 3 Minutes Before the Meeting series at `/briefs/`, and the first briefing. Titles not yet written are listed as forthcoming, never as links |
-| `contact.html`, `enquiry-sent.html` | Workshop enquiry at `/contact`, using Netlify Forms (form name `workshop-enquiry`, with a hidden spam-trap field). Netlify shows `/enquiry-sent` only after it has accepted a submission. Set the email notification for the form in Netlify: Forms, then Form notifications |
+| `contact.html`, `enquiry-sent.html` | Workshop enquiry at `/contact`, using Netlify Forms (form name `workshop-enquiry`, with a hidden spam-trap field). After a submission Netlify shows `/enquiry-sent`; that page can also be opened directly, so it says "submitted", not "received". The local test server cannot imitate Netlify's spam filter or notifications |
 | `google25717b871bec80ca.html` | Proves ownership of the site to Google Search Console. Do not delete it |
 | `core.js` | Parser, analysis rules and the two on-screen briefings |
 | `app.js` | Word export and page behaviour |
@@ -34,7 +34,7 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `site.webmanifest`, `favicon.*`, `icon-*.png`, `apple-touch-icon.png`, `logo-*.svg` | App name, icons and logos |
 | `workshop.html` | The workshop page at `/workshop`: outcomes, timed structure, practical details and the expression-of-interest enquiry route. No fee or availability is published |
 | `privacy.html`, `accessibility.html`, `terms.html` | Privacy notice, accessibility statement and terms of use |
-| `site.css`, `site.js` | Shared styles and a small script (copyright year, copy-the-questions button, enquiry form) for every page except the tool page, which carries its own copy of the header and footer styles so it works as one file |
+| `site.css`, `site.js` | Shared styles and a small script (copyright year, copy-the-questions button, enquiry form) The tool page loads `site.js` only for the copyright year, and carries its own copy of the header and footer styles; a test checks that the navigation and footer are identical on every page |
 | `sample-briefing-preview.png` | Picture of the sample one-page briefing (invented school), made from the sample PDF |
 | `fonts/` | Plus Jakarta Sans (headlines) and Inter (body text), hosted on the site itself so nothing loads from outside. SIL Open Font Licence, see the `OFL-*.txt` files. The briefings themselves stay in Arial so the one-page version still fits A4 |
 | `tests/browser.cjs`, `tests/serve.cjs`, `tests/make-sample.cjs`, `tests/fixtures/` | Browser checks, the local test server, the sample-PDF builder and invented test files |
@@ -45,6 +45,7 @@ There is no build step. Deploy by publishing the folder as a static site.
 ## Privacy and security
 
 - The content security policy in `_headers` sets `connect-src 'none'`, so the page cannot send data to any server, and scripts load only from this site. This is what makes "your data stays on this device" checkable by a school's data protection officer. It only applies on a host that honours `_headers` (Netlify does).
+- Forms may post only to this site (`form-action 'self'` in the header), which the enquiry form on `/contact` needs. Every other page forbids forms in its own policy tag, and the IDSR tool page is also sent a second policy header (`form-action 'none'`), so the tool cannot submit a form even if its tag were removed.
 - The policy also stops the site being shown inside another page (`frame-ancestors 'none'`).
 - Never commit a real IDSR, or figures taken from one, to this repository. Test files must use invented numbers.
 
@@ -73,7 +74,7 @@ node tests/make-sample.cjs          # rebuild the two sample PDFs
 
 The browser tests serve the site under its real security headers and use it as a person would: both briefings, the small-numbers switch, edits, Word export, uploads that should work and uploads that should be refused, hostile files, phone and narrow layouts. Fixtures are in `tests/fixtures/` and use invented figures only.
 
-Vendored library check: `vendor/docx-9.5.1.iife.js` is the unmodified npm `docx@9.5.1` build, sha256 `bb2908d72ffd8a3d896b455563733d3a2e708e1384a5140e05b3c6dd0b2f676d` (the rule tests assert this). When the test counts change, update the figures in the "How it's checked" panel in `index.html`.
+Vendored library check: `vendor/docx-9.5.1.iife.js` is the unmodified npm `docx@9.5.1` build, sha256 `bb2908d72ffd8a3d896b455563733d3a2e708e1384a5140e05b3c6dd0b2f676d` (the rule tests assert this). When the test counts change, update the figures in the "How it's checked" panel in `idsr.html`.
 
 The tests cover the number reader, the banding and significance rules, year ordering, small-number handling, escaping of uploaded text and the template check. Run them before every deploy, and add a case whenever Ofsted changes the IDSR.
 
@@ -91,3 +92,12 @@ Designed by and © W. Gopaul 2026. All rights reserved.
 
 - Do not rename or delete the Netlify site (`govcopilot`). The `www` address and old links point at `govcopilot.netlify.app`; if that name were released, someone else could claim it.
 - Keep auto-renew, registrar lock and two-step sign-in switched on for the domain and for Netlify.
+
+## Release checklist
+
+1. Run `node --test tests/core.test.mjs` and `node tests/browser.cjs`. Both must pass.
+2. Open the Netlify deploy preview for the pull request and check the home page, `/idsr` (load the example school) and `/briefs/`.
+3. Send one test enquiry from `/contact` on the preview. Check that it appears under Forms in Netlify and that the notification email reaches the enquiry mailbox. Check the Spam list if it does not.
+4. In Netlify, Forms must show form detection as enabled and an email notification set for `workshop-enquiry`.
+5. Delete test enquiries from Netlify afterwards. Real enquiries that do not lead to a workshop are deleted within 12 months (see the privacy notice); Netlify does not do this automatically.
+6. Merge, then check the live site.

@@ -27,7 +27,7 @@
         if(!v) msg=d[1]; else if(d[0]==='email'&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) msg='Enter an email address in the correct format, with an @ sign and a full stop';
         if(msg){ el.setAttribute('aria-invalid','true'); el.setAttribute('aria-describedby','e-'+d[0]); er.textContent='Error: '+msg; er.hidden=false; bad.push([d[0],msg]); }
         else { el.removeAttribute('aria-invalid'); el.removeAttribute('aria-describedby'); er.hidden=true; er.textContent=''; } });
-      if(bad.length){ e.preventDefault(); var ul=sum.querySelector('ul'); ul.textContent=''; bad.forEach(function(b){ var li=document.createElement('li'), a=document.createElement('a'); a.href='#f-'+b[0]; a.textContent=b[1]; li.appendChild(a); ul.appendChild(li); }); sum.hidden=false; sum.focus(); return; }
+      if(bad.length){ e.preventDefault(); if(document.title.indexOf('Error: ')!==0) document.title='Error: '+document.title; var ul=sum.querySelector('ul'); ul.textContent=''; bad.forEach(function(b){ var li=document.createElement('li'), a=document.createElement('a'); a.href='#f-'+b[0]; a.textContent=b[1]; li.appendChild(a); ul.appendChild(li); }); sum.hidden=false; sum.focus(); return; }
       sum.hidden=true; var btn=f.querySelector('button[type="submit"]'); btn.disabled=true; btn.textContent='Sending…';
       // The form now submits normally. The "enquiry sent" page appears only if the host accepts it.
     });
