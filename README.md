@@ -18,7 +18,7 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `index.html` | Landing page at `/`: headline, the three offers (Read, Prepare, Develop), about and closing call to action |
 | `idsr.html` | The IDSR briefing tool at `/idsr`: page markup and styles. Netlify serves `idsr.html` at the clean address `/idsr` |
 | `briefs/index.html`, `briefs/assurance-or-information.html`, `briefs/using-ai-safely.html`, `briefs/keeping-good-staff.html` | The 3 Minutes Before the Meeting series at `/briefs/`, and briefings 01 to 03. Titles not yet written are listed as forthcoming, never as links |
-| `contact.html`, `enquiry-sent.html` | Workshop enquiry at `/contact`, using Netlify Forms (form name `workshop-enquiry`, with a hidden spam-trap field). After a submission Netlify shows `/enquiry-sent`; that page can also be opened directly, so it says "submitted", not "received". The local test server cannot imitate Netlify's spam filter or notifications |
+| `contact.html`, `enquiry-sent.html` | Workshop enquiry at `/contact`, using Netlify Forms (form name `enquiry`, with a hidden spam-trap field; `/contact?type=workshop` or `?type=review` chooses the enquiry type in advance). After a submission Netlify shows `/enquiry-sent`; that page can also be opened directly, so it says "submitted", not "received". The local test server cannot imitate Netlify's spam filter or notifications |
 | `google25717b871bec80ca.html` | Proves ownership of the site to Google Search Console. Do not delete it |
 | `core.js` | Parser, analysis rules and the two on-screen briefings |
 | `app.js` | Word export and page behaviour |
@@ -32,6 +32,7 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `404.html` | The "page not found" page |
 | `link-preview.png` | The picture shown when the site's link is shared |
 | `site.webmanifest`, `favicon.*`, `icon-*.png`, `apple-touch-icon.png`, `logo-*.svg` | App name, icons and logos |
+| `services.html` | Services page at `/services`: the workshop and the School Performance & Assurance Review, both as pilots with proposed prices |
 | `workshop.html` | The workshop page at `/workshop`: outcomes, timed structure, practical details and the expression-of-interest enquiry route. No fee or availability is published |
 | `privacy.html`, `accessibility.html`, `terms.html` | Privacy notice, accessibility statement and terms of use |
 | `site.css`, `site.js` | Shared styles and a small script (copyright year, copy-the-questions button, enquiry form) The tool page loads `site.js` only for the copyright year, and carries its own copy of the header and footer styles; a test checks that the navigation and footer are identical on every page |
