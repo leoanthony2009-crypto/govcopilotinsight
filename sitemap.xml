@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://governorbrief.co.uk/</loc></url>
-  <url><loc>https://governorbrief.co.uk/workshop.html</loc></url>
-  <url><loc>https://governorbrief.co.uk/method.html</loc></url>
-  <url><loc>https://governorbrief.co.uk/privacy.html</loc></url>
-  <url><loc>https://governorbrief.co.uk/accessibility.html</loc></url>
-  <url><loc>https://governorbrief.co.uk/terms.html</loc></url>
+  <url><loc>https://governorbrief.co.uk/briefs/</loc></url>
+  <url><loc>https://governorbrief.co.uk/briefs/assurance-or-information</loc></url>
+  <url><loc>https://governorbrief.co.uk/idsr</loc></url>
+  <url><loc>https://governorbrief.co.uk/workshop</loc></url>
+  <url><loc>https://governorbrief.co.uk/contact</loc></url>
+  <url><loc>https://governorbrief.co.uk/method</loc></url>
+  <url><loc>https://governorbrief.co.uk/privacy</loc></url>
+  <url><loc>https://governorbrief.co.uk/accessibility</loc></url>
+  <url><loc>https://governorbrief.co.uk/terms</loc></url>
 </urlset>

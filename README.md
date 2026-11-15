@@ -15,7 +15,10 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 
 | File | What it holds |
 | --- | --- |
-| `index.html` | Page markup and styles |
+| `index.html` | Landing page at `/`: headline, the three offers (Read, Prepare, Develop), about and closing call to action |
+| `idsr.html` | The IDSR briefing tool at `/idsr`: page markup and styles. Netlify serves `idsr.html` at the clean address `/idsr` |
+| `briefs/index.html`, `briefs/assurance-or-information.html` | The 3 Minutes Before the Meeting series at `/briefs/`, and the first briefing. Titles not yet written are listed as forthcoming, never as links |
+| `contact.html` | Workshop enquiry at `/contact`. The form sends nothing to the site: it checks the answers and opens a ready-written email in the visitor's own email program |
 | `core.js` | Parser, analysis rules and the two on-screen briefings |
 | `app.js` | Word export and page behaviour |
 | `sample.js` | The example school. **Every school figure in it is invented.** National comparison figures are published statistics |
@@ -28,11 +31,11 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `404.html` | The "page not found" page |
 | `link-preview.png` | The picture shown when the site's link is shared |
 | `site.webmanifest`, `favicon.*`, `icon-*.png`, `apple-touch-icon.png`, `logo-*.svg` | App name, icons and logos |
-| `workshop.html` | The workshop page: who it is for, outline, booking steps, pilot terms, facilitator and contact |
+| `workshop.html` | The workshop page at `/workshop`: outcomes, timed structure, practical details and the expression-of-interest enquiry route. No fee or availability is published |
 | `privacy.html`, `accessibility.html`, `terms.html` | Privacy notice, accessibility statement and terms of use |
-| `site.css` | Shared brand styles for every page except the tool page, which carries its own copy so it works as one file |
+| `site.css`, `site.js` | Shared styles and a small script (copyright year, copy-the-questions button, enquiry form) for every page except the tool page, which carries its own copy of the header and footer styles so it works as one file |
 | `sample-briefing-preview.png` | Picture of the sample one-page briefing (invented school), made from the sample PDF |
-| `fonts/` | Plus Jakarta Sans (headline typeface from the brand guidelines), hosted on the site itself so nothing loads from outside. SIL Open Font Licence, see `fonts/OFL.txt` |
+| `fonts/` | Plus Jakarta Sans (headlines) and Inter (body text), hosted on the site itself so nothing loads from outside. SIL Open Font Licence, see the `OFL-*.txt` files. The briefings themselves stay in Arial so the one-page version still fits A4 |
 | `tests/browser.cjs`, `tests/serve.cjs`, `tests/make-sample.cjs`, `tests/fixtures/` | Browser checks, the local test server, the sample-PDF builder and invented test files |
 | `tests/core.test.mjs` | Rule tests |
 
