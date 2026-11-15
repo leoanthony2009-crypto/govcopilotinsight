@@ -110,6 +110,7 @@ p{margin:0 0 14px}
 .brief .check h2{color:#fff;border-top:0;padding:0;margin:0 0 8px}.brief .check p{margin:0}
 .brief .tagline{font-family:var(--head);font-weight:500;font-size:19px;color:var(--link);margin:-8px 0 18px}
 .brief .check .four{margin-top:10px;font-size:19px;line-height:1.7}
+.brief .reading{padding-left:1.2em}
 .brief .source{font-size:16px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
 .brief .remind{font-style:italic;color:var(--muted);border-top:1px solid var(--line);padding-top:16px;margin-top:28px}
 .status{min-height:1.4em;font-weight:700;margin:8px 0 0}
@@ -166,6 +167,8 @@ form.enq{display:grid;gap:18px;max-width:40em}
   .brief ol.qs li{font-size:11pt;padding:6pt 8pt 6pt 34pt;margin-bottom:4pt}.brief ol.qs li::before{top:5pt;left:6pt;width:20pt;height:20pt;line-height:20pt}.brief .check{padding:8pt 10pt}.brief .check .four{font-size:11pt;line-height:1.4}.brief .remind{margin-top:10pt;padding-top:8pt}.brief .source{font-size:9pt;padding-top:6pt}
   .brief .meta{font-size:9pt}.brief h2{margin-top:9pt}.brief .printonly{margin-top:6pt;font-size:9pt}
   .brief .tagline{font-size:11pt;margin:-4pt 0 8pt}.brief ul,.brief ol{margin-bottom:6pt}.band,.blk{padding:0}
+  .brief .reading li{font-size:9pt;margin-bottom:1pt}.brief .reading{margin-bottom:4pt}.brief h2{margin-top:7pt;margin-bottom:4pt}.brief p{margin-bottom:5pt}.brief .remind{margin-top:7pt;padding-top:6pt}
+  .brief h1{font-size:18pt;margin-bottom:6pt}.brief ol.qs li{padding-top:5pt;padding-bottom:5pt;margin-bottom:3pt}.brief .check{padding:6pt 10pt}.brief .printonly{margin-top:3pt}.brief .source{margin-bottom:3pt}
   @page{margin:12mm}
   .brief ol.qs li{background:#fff;border:1pt solid #000}.brief ol.qs li::before{background:#000}
   .brief .check{background:#fff;color:#000;border:1pt solid #000}.brief .tagline,.brief .source{color:#000}.brief .check h2{color:#000}
