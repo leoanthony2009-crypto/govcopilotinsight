@@ -20,7 +20,10 @@
   if(f){
     f.setAttribute('novalidate','');
     var sum=document.getElementById('errsum');
-    var fields=[['name','Enter your name'],['email','Enter your professional email address'],['organisation','Enter the name of your school or organisation'],['organisation-type','Choose your organisation type'],['location','Enter your town or general location'],['participants','Enter the approximate number of participants'],['preferred-dates','Enter your preferred dates or period'],['development-priority','Enter your main development priority']];
+    var fields=[['name','Enter your name'],['email','Enter your professional email address'],['organisation','Enter the name of your school or organisation'],['enquiry-type','Choose the type of enquiry']];
+    // A link such as /contact?type=workshop chooses the enquiry type in advance.
+    var want=(/[?&]type=([a-z]+)/.exec(window.location.search)||[])[1], sel=document.getElementById('f-enquiry-type');
+    if(want&&sel){ for(var k=0;k<sel.options.length;k++){ if(sel.options[k].getAttribute('data-key')===want) sel.selectedIndex=k; } }
     f.addEventListener('submit',function(e){
       var bad=[];
       fields.forEach(function(d){ var el=document.getElementById('f-'+d[0]), er=document.getElementById('e-'+d[0]), v=el.value.trim(), msg='';
