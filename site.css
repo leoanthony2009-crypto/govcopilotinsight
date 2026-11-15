@@ -36,7 +36,7 @@ p{margin:0 0 14px}
 .tb-nav a:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
 .tb-nav a[aria-current="page"]{box-shadow:inset 0 -3px 0 var(--teal)}
 @media screen and (max-width:900px){.tb-nav{margin-left:-10px;width:100%}.tb-nav a{padding:0 10px}}
-@media screen and (max-width:560px){.tb-logo img{width:200px}.tb-nav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-right:-16px;padding-right:16px;width:calc(100% + 26px)}.tb-nav::-webkit-scrollbar{display:none}.tb-nav a{padding:0 8px;font-size:16px;white-space:nowrap;flex:none}}
+@media screen and (max-width:560px){.tb-logo img{width:200px}.tb-nav a{padding:0 8px;font-size:16px;white-space:nowrap}}
 
 /* buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:11px 22px;border:2px solid var(--control);border-radius:8px;font:700 17px/1.2 var(--font);text-decoration:none;text-align:center;color:var(--fg);background:transparent;cursor:pointer}
@@ -164,6 +164,7 @@ form.enq{display:grid;gap:18px;max-width:40em}
   .btn.primary,.pill.live{background:#8FD6D1;border-color:#8FD6D1;color:#0C212B}.btn.primary:hover{background:#B5E6E2;border-color:#B5E6E2}
   .ticks li::before{background:#8FD6D1;color:#0C212B}
   .errsum{border-color:#FFB4A9}
+  .band{background:#0A1C24}
 }
 .printonly{display:none}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
@@ -172,7 +173,7 @@ form.enq{display:grid;gap:18px;max-width:40em}
   .printonly{display:block;margin-top:12pt;font-size:10pt}
   body{font-size:11.5pt;background:#fff;color:#000}
   .band{background:#fff;color:#000;padding:0 0 8pt}.band h1{color:#000;font-size:22pt}.band .lead{color:#000}.eyebrow{color:#000}
-  .brief{padding:0;max-width:none;font-size:9.6pt;line-height:1.36}.brief h1{font-size:20pt;margin-bottom:8pt}.brief h2{font-size:13pt;margin:12pt 0 5pt;padding-top:6pt}.brief p{margin-bottom:6pt}.brief li{margin-bottom:3pt}
+  .brief{padding:0;max-width:none;font-size:9.8pt;line-height:1.36}.brief h1{font-size:20pt;margin-bottom:8pt}.brief h2{font-size:13pt;margin:12pt 0 5pt;padding-top:6pt}.brief p{margin-bottom:6pt}.brief li{margin-bottom:3pt}
   .brief ol.qs li{font-size:11pt;padding:6pt 8pt 6pt 34pt;margin-bottom:4pt}.brief ol.qs li::before{top:5pt;left:6pt;width:20pt;height:20pt;line-height:20pt}.brief .check{padding:8pt 10pt}.brief .check .four{font-size:11pt;line-height:1.4}.brief .remind{margin-top:10pt;padding-top:8pt}.brief .source{font-size:9pt;padding-top:6pt}
   .brief .meta{font-size:9pt}.brief h2{margin-top:9pt}.brief .printonly{margin-top:6pt;font-size:9pt}
   .brief .tagline{font-size:11pt;margin:-4pt 0 8pt}.brief ul,.brief ol{margin-bottom:6pt}.band,.blk{padding:0}
