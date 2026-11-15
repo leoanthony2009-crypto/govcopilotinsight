@@ -31,14 +31,14 @@ body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:17px;l
 @media screen and (max-width:960px){.panel{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding-right:max(16px,env(safe-area-inset-right,0px))}}
 .skip{position:absolute;left:-9999px}.skip:focus{left:8px;top:8px;z-index:10;background:var(--panel);padding:10px 14px;border-radius:6px}
 .topbar{background:var(--panel);border-bottom:1px solid var(--line)}
-.tb-in{display:flex;align-items:center;flex-wrap:wrap;gap:0 20px;padding:4px max(16px,env(safe-area-inset-right,0px)) 4px max(16px,env(safe-area-inset-left,0px))}
+.tb-in{max-width:1240px;margin:0 auto;display:flex;align-items:center;flex-wrap:wrap;gap:0 20px;padding:4px max(16px,env(safe-area-inset-right,0px)) 4px max(16px,env(safe-area-inset-left,0px))}
 .tb-logo{display:block;flex:none;margin-left:-13px}.tb-logo img{display:block;width:250px;height:auto}
 .tb-nav{display:flex;flex-wrap:wrap;gap:0 2px;margin-left:auto}
 .tb-nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;font-weight:700;font-size:17px;color:var(--fg);text-decoration:none}
 .tb-nav a:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
 .tb-nav a[aria-current="page"]{box-shadow:inset 0 -3px 0 var(--teal)}
 @media screen and (max-width:900px){.tb-nav{margin-left:-10px;width:100%}.tb-nav a{padding:0 10px}}
-@media screen and (max-width:560px){.tb-logo img{width:200px}.tb-nav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-right:-16px;padding-right:16px;width:calc(100% + 26px)}.tb-nav::-webkit-scrollbar{display:none}.tb-nav a{padding:0 8px;font-size:16px;white-space:nowrap;flex:none}}
+@media screen and (max-width:560px){.tb-logo img{width:200px}.tb-nav a{padding:0 8px;font-size:16px;white-space:nowrap}}
 @media print{.topbar,.skip{display:none!important}}
 .sample-shot{display:block;margin:12px 0 0}.sample-shot img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px;box-shadow:0 4px 14px rgba(15,31,46,.12);background:#fff}
 .logo-d{display:none!important}
@@ -263,7 +263,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
       <span class="eyebrow">Independent tool · not an Ofsted or DfE service · pilot</span>
       <p class="lede"><b>Your school's IDSR, ready for the governors' meeting.</b></p>
       <p class="note"><a href="#drop">Skip to choosing your file</a></p>
-      <p>Choose your school's IDSR (Inspection Data Summary Report) file and get a one-page briefing, a full briefing with questions for governors, and an editable Word copy. For primary and secondary schools; special schools are not yet supported.</p>
+      <p>Choose your school's IDSR (Inspection Data Summary Report) file and get a one-page briefing, a full briefing with questions for governors, and an editable Word copy. Built and checked mainly on primary school IDSRs. Secondary IDSRs load but have had little testing, so check those briefings with extra care. Special schools are not yet supported.</p>
       <ul class="about">
         <li><b>No AI.</b> Fixed rules read the tables; the same file always gives the same briefing.</li>
         <li><b>No upload.</b> The file is read in this browser and is never sent anywhere.</li>
@@ -322,8 +322,8 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 
     <hr>
     <h2 class="sect">More from GovernorBrief</h2>
-    <p class="note"><a href="/briefs/">3 Minutes Before the Meeting</a>: short briefings with three questions for your next meeting.</p>
-    <p class="note">From Information to Assurance: a practical 90-minute face-to-face workshop for governors and trustees. <a href="/workshop">About the workshop</a>.</p>
+    <p class="note"><a href="/briefs/">3 Minutes Before the Meeting</a>: short briefings with three questions for your next meeting. <a href="/subscribe">Get new ones by email</a>.</p>
+    <p class="note"><b>Want your board to practise using a briefing like this?</b> From Information to Assurance is a practical 90-minute face-to-face workshop for governors and trustees. <a href="/workshop">About the workshop</a>.</p>
     <p class="note">GovernorBrief also offers governance and school improvement support. <a href="/services">See our services</a>.</p>
     <div class="row"><a class="btn primary" id="btnBook" href="/contact">Make an enquiry</a></div>
     <p class="note">Any other question: <a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a>. Please never email an IDSR to us.</p>
@@ -331,7 +331,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
     <hr>
     <details class="help about-box"><summary>How it's checked</summary>
     <p class="note"><b>Checked against the IDSR.</b> <span id="checkedLine"></span> If your IDSR is newer than that, the briefing still loads but carries a warning.</p>
-    <p class="note"><b>Tested before each release.</b> At this version, 31 rule tests and 112 browser tests pass. They cover the number reader, banding and significance rules, small-number hiding, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs; founding schools are helping with that.</p>
+    <p class="note"><b>Tested before each release.</b> At this version, 31 rule tests and 116 browser tests pass. They cover the number reader, banding and significance rules, small-number hiding, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs.</p>
     <p class="note"><b>For data protection officers.</b> The page is static. The IDSR is opened by the browser on the user's own device and is never transmitted: the site's security policy stops this page sending data to any server in the background, the code contains nothing that sends it, and there are no cookies, analytics scripts, accounts or storage. The supplier therefore never receives the school's data. The site is hosted on Netlify, which, like any web host, keeps ordinary visit logs (such as the IP address and time of each visit).</p>
     <p class="note"><b>How the headlines are made.</b> Every rule is written out in the <a href="/method">method note</a>, with one headline traced from the IDSR row to the sentence.</p>
     <p class="note"><b>Who built it.</b> Built by a serving headteacher, so that governors can use the IDSR without reading all of it.</p>
@@ -341,7 +341,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
     <p class="note">This briefing supports governor scrutiny. It does not replace the original IDSR or professional judgement, and it is not an Ofsted judgement, grade or prediction. Bandings and significance are reproduced from the IDSR; every headline carries a reference to its source row in the evidence trail. Small cohorts move percentages a lot: check the pupil numbers (n) before drawing conclusions.</p>
     <p class="note">Not affiliated with or endorsed by Ofsted or the Department for Education. Source data: Ofsted IDSR, © Crown copyright, provided to the school under Ofsted's IDSR conditions of use; not for publication. <span id="ver"></span></p>
     </details>
-    <p class="note" style="border-top:1px solid var(--line);padding-top:10px"><strong>GovernorBrief · Pilot version.</strong> An independent tool, not affiliated with or endorsed by Ofsted or the Department for Education. Contact: <a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a>. Designed by and © W. Gopaul 2026. All rights reserved.</p>
+    <p class="note" style="border-top:1px solid var(--line);padding-top:10px"><strong>GovernorBrief · Pilot version.</strong> An independent tool, not affiliated with or endorsed by Ofsted or the Department for Education. Contact: <a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a>. © GovernorBrief 2026. All rights reserved.</p>
   </aside>
 
   <main class="stage"><a class="toopts" id="toOpts" href="#controls" hidden>↑ Options &amp; downloads</a><div class="notice" id="notice" role="status" aria-live="polite" hidden></div><div class="docwrap" id="docwrap" role="tabpanel" aria-label="Briefing"><div class="placeholder" id="placeholder">Tick the box and choose an IDSR file, or load the example school to see the three outputs.</div></div></main>

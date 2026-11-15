@@ -18,7 +18,7 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `index.html` | Landing page at `/`: headline, the three offers (Read, Prepare, Develop), about and closing call to action |
 | `idsr.html` | The IDSR briefing tool at `/idsr`: page markup and styles. Netlify serves `idsr.html` at the clean address `/idsr` |
 | `briefs/index.html`, `briefs/assurance-or-information.html`, `briefs/using-ai-safely.html`, `briefs/keeping-good-staff.html` | The 3 Minutes Before the Meeting series at `/briefs/`, and briefings 01 to 03. Titles not yet written are listed as forthcoming, never as links |
-| `contact.html`, `enquiry-sent.html` | Workshop enquiry at `/contact`, using Netlify Forms (form name `enquiry`, with a hidden spam-trap field; `/contact?type=workshop` or `?type=review` chooses the enquiry type in advance). After a submission Netlify shows `/enquiry-sent`; that page can also be opened directly, so it says "submitted", not "received". The local test server cannot imitate Netlify's spam filter or notifications |
+| `contact.html`, `enquiry-sent.html` | Workshop enquiry at `/contact`, using Netlify Forms (form name `enquiry`, with a hidden spam-trap field; `/contact?type=workshop` chooses the enquiry type in advance). After a submission Netlify shows `/enquiry-sent`; that page can also be opened directly, so it says "submitted", not "received". The local test server cannot imitate Netlify's spam filter or notifications |
 | `subscribe.html`, `subscribed.html` | Sign-up for new briefings by email at `/subscribe`, using Netlify Forms (form name `briefing-updates`, one email field and the same hidden spam-trap field). After a submission Netlify shows `/subscribed`. Sign-ups are only collected: nothing is emailed automatically, so each new briefing has to be sent to the list by hand, and anyone who asks to stop has to be removed by hand. Check that Netlify's form notification covers this form as well as `enquiry` |
 | `google25717b871bec80ca.html` | Proves ownership of the site to Google Search Console. Do not delete it |
 | `core.js` | Parser, analysis rules and the two on-screen briefings |
@@ -34,8 +34,8 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `404.html` | The "page not found" page |
 | `link-preview.png` | The picture shown when the site's link is shared |
 | `site.webmanifest`, `favicon.*`, `icon-*.png`, `apple-touch-icon.png`, `logo-*.svg` | App name, icons and logos |
-| `services.html` | Services page at `/services`: the workshop and the School Performance & Assurance Review, both as pilots with proposed prices |
-| `workshop.html` | The workshop page at `/workshop`: outcomes, timed structure, practical details and the expression-of-interest enquiry route. No fee or availability is published |
+| `services.html` | Services page at `/services`: the workshop, as a pilot with its pilot price and delivery area. The School Performance & Assurance Review was taken off the site in November 2026 until a first workshop pilot has been delivered |
+| `workshop.html` | The workshop page at `/workshop`: outcomes, timed structure, practical details and the expression-of-interest enquiry route. The pilot price is published; no dates or availability are |
 | `privacy.html`, `accessibility.html`, `terms.html` | Privacy notice, accessibility statement and terms of use |
 | `site.css`, `site.js` | Shared styles and a small script (copyright year, copy-the-questions button, enquiry form) The tool page loads `site.js` only for the copyright year, and carries its own copy of the header and footer styles; a test checks that the navigation and footer are identical on every page |
 | `sample-briefing-preview.png` | Picture of the sample one-page briefing (invented school), made from the sample PDF |
@@ -89,7 +89,17 @@ When Ofsted publishes a new IDSR release: check a real file by hand against its 
 - Not affiliated with or endorsed by Ofsted or the Department for Education.
 - Source data: Ofsted IDSR, © Crown copyright, provided to the school under Ofsted's IDSR conditions of use; not for publication.
 
-Designed by and © W. Gopaul 2026. All rights reserved.
+Designed by Wendell Gopaul. © GovernorBrief 2026. All rights reserved.
+
+## Sending briefing emails
+
+Sign-ups from `/subscribe` are only collected; nothing is sent automatically. The privacy notice promises the steps below, so follow them every time.
+
+1. **Confirm first.** When a sign-up arrives, send that address one short email asking them to reply to confirm. Add them to the list only when they reply. Delete unconfirmed addresses within one month.
+2. **Never put the list in To or Cc.** Send each briefing with mail merge (one email per person) from the enquiry mailbox, so no subscriber sees another's address. Do not rely on typing addresses into Bcc by hand.
+3. **Every email carries the same footer:** who it is from (GovernorBrief, enquiry@governorbrief.co.uk), why they are receiving it, and "To stop these emails, reply with STOP".
+4. **Stopping.** When someone asks to stop, remove them from the list the same day. Within one month, delete their address from the list, the mailbox and the Netlify form store. Keep a dated note that the request was handled, without the address.
+5. **Scope.** Subscribers agreed to briefing emails only. Do not use the list to promote the workshop or anything else.
 
 ## Hosting notes
 
@@ -101,6 +111,6 @@ Designed by and © W. Gopaul 2026. All rights reserved.
 1. Run `node --test tests/core.test.mjs` and `node tests/browser.cjs`. Both must pass.
 2. Open the Netlify deploy preview for the pull request and check the home page, `/idsr` (load the example school) and `/briefs/`.
 3. Send one test enquiry from `/contact` on the preview. Check that it appears under Forms in Netlify and that the notification email reaches the enquiry mailbox. Check the Spam list if it does not.
-4. In Netlify, Forms must show form detection as enabled and an email notification set for `workshop-enquiry`.
+4. In Netlify, Forms must show form detection as enabled and an email notification set for both forms, `enquiry` and `briefing-updates`.
 5. Delete test enquiries from Netlify afterwards. Real enquiries that do not lead to a workshop are deleted within 12 months (see the privacy notice); Netlify does not do this automatically.
 6. Merge, then check the live site.
