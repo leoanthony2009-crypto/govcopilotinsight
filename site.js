@@ -1,4 +1,4 @@
-// Small helpers for the pages around the IDSR tool. This script sends nothing itself; the enquiry form is an ordinary HTML form.
+// Small helpers for the pages around the IDSR tool. This script sends nothing itself; the enquiry and sign-up forms are ordinary HTML forms.
 (function(){
   'use strict';
   var y=document.querySelectorAll('[data-year]'); for(var i=0;i<y.length;i++) y[i].textContent=String(new Date().getFullYear());
@@ -14,16 +14,11 @@
   }); }
   var pr=document.getElementById('printBrief'); if(pr) pr.addEventListener('click',function(){ window.print(); });
 
-  // Workshop enquiry: checks the answers in the browser, then lets the form go to the site's host (Netlify Forms).
-  // Without JavaScript the form still works; the browser's own required-field checks apply instead.
-  var f=document.getElementById('enquiry');
-  if(f){
+  // Forms: checks the answers in the browser, then lets the form go to the site's host (Netlify Forms).
+  // Without JavaScript the forms still work; the browser's own required-field checks apply instead.
+  var wire=function(f,fields,label){
     f.setAttribute('novalidate','');
     var sum=document.getElementById('errsum');
-    var fields=[['name','Enter your name'],['email','Enter your professional email address'],['organisation','Enter the name of your school or organisation'],['enquiry-type','Choose the type of enquiry']];
-    // A link such as /contact?type=workshop chooses the enquiry type in advance.
-    var want=(/[?&]type=([a-z]+)/.exec(window.location.search)||[])[1], sel=document.getElementById('f-enquiry-type');
-    if(want&&sel){ for(var k=0;k<sel.options.length;k++){ if(sel.options[k].getAttribute('data-key')===want) sel.selectedIndex=k; } }
     f.addEventListener('submit',function(e){
       var bad=[];
       fields.forEach(function(d){ var el=document.getElementById('f-'+d[0]), er=document.getElementById('e-'+d[0]), v=el.value.trim(), msg='';
@@ -32,8 +27,20 @@
         else { el.removeAttribute('aria-invalid'); el.removeAttribute('aria-describedby'); er.hidden=true; er.textContent=''; } });
       if(bad.length){ e.preventDefault(); if(document.title.indexOf('Error: ')!==0) document.title='Error: '+document.title; var ul=sum.querySelector('ul'); ul.textContent=''; bad.forEach(function(b){ var li=document.createElement('li'), a=document.createElement('a'); a.href='#f-'+b[0]; a.textContent=b[1]; li.appendChild(a); ul.appendChild(li); }); sum.hidden=false; sum.focus(); return; }
       sum.hidden=true; var btn=f.querySelector('button[type="submit"]'); btn.disabled=true; btn.textContent='Sending…';
-      // The form now submits normally. The "enquiry sent" page appears only if the host accepts it.
+      // The form now submits normally. The "submitted" page appears only if the host accepts it.
     });
-    window.addEventListener('pageshow',function(){ var btn=f.querySelector('button[type="submit"]'); btn.disabled=false; btn.textContent='Send enquiry'; });
+    window.addEventListener('pageshow',function(){ var btn=f.querySelector('button[type="submit"]'); btn.disabled=false; btn.textContent=label; });
+  };
+
+  // Workshop enquiry. A link such as /contact?type=workshop chooses the enquiry type in advance.
+  var f=document.getElementById('enquiry');
+  if(f){
+    var want=(/[?&]type=([a-z]+)/.exec(window.location.search)||[])[1], sel=document.getElementById('f-enquiry-type');
+    if(want&&sel){ for(var k=0;k<sel.options.length;k++){ if(sel.options[k].getAttribute('data-key')===want) sel.selectedIndex=k; } }
+    wire(f,[['name','Enter your name'],['email','Enter your professional email address'],['organisation','Enter the name of your school or organisation'],['enquiry-type','Choose the type of enquiry']],'Send enquiry');
   }
+
+  // Sign-up for new briefings by email.
+  var sub=document.getElementById('subscribe');
+  if(sub) wire(sub,[['email','Enter your email address']],'Sign up');
 })();

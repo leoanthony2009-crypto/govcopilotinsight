@@ -7,7 +7,7 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 ## How it works
 
 - **Rule-based. No AI.** Fixed rules read the IDSR tables; the same file always gives the same briefing.
-- **No upload.** The IDSR file is read in the browser and never sent anywhere. The site has no storage and no analytics. The only thing the site ever sends is the workshop enquiry form on `/contact`, which goes to Netlify Forms.
+- **No upload.** The IDSR file is read in the browser and never sent anywhere. The site has no storage and no analytics. The only things the site ever sends are the workshop enquiry form on `/contact` and the briefing sign-up form on `/subscribe` (an email address), which both go to Netlify Forms.
 - **Traceable.** Every headline points to its IDSR row in the evidence trail, and a data-coverage appendix lists what was read, what was missing and what to check by hand.
 - **Fails loudly.** If the expected tables or columns are not found, no briefing is produced. An IDSR released after the last checked release loads with a warning.
 
@@ -19,6 +19,7 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `idsr.html` | The IDSR briefing tool at `/idsr`: page markup and styles. Netlify serves `idsr.html` at the clean address `/idsr` |
 | `briefs/index.html`, `briefs/assurance-or-information.html`, `briefs/using-ai-safely.html`, `briefs/keeping-good-staff.html` | The 3 Minutes Before the Meeting series at `/briefs/`, and briefings 01 to 03. Titles not yet written are listed as forthcoming, never as links |
 | `contact.html`, `enquiry-sent.html` | Workshop enquiry at `/contact`, using Netlify Forms (form name `enquiry`, with a hidden spam-trap field; `/contact?type=workshop` or `?type=review` chooses the enquiry type in advance). After a submission Netlify shows `/enquiry-sent`; that page can also be opened directly, so it says "submitted", not "received". The local test server cannot imitate Netlify's spam filter or notifications |
+| `subscribe.html`, `subscribed.html` | Sign-up for new briefings by email at `/subscribe`, using Netlify Forms (form name `briefing-updates`, one email field and the same hidden spam-trap field). After a submission Netlify shows `/subscribed`. Sign-ups are only collected: nothing is emailed automatically, so each new briefing has to be sent to the list by hand, and anyone who asks to stop has to be removed by hand. Check that Netlify's form notification covers this form as well as `enquiry` |
 | `google25717b871bec80ca.html` | Proves ownership of the site to Google Search Console. Do not delete it |
 | `core.js` | Parser, analysis rules and the two on-screen briefings |
 | `app.js` | Word export and page behaviour |
@@ -47,7 +48,7 @@ There is no build step. Deploy by publishing the folder as a static site.
 ## Privacy and security
 
 - The content security policy in `_headers` sets `connect-src 'none'`, so the page cannot send data to any server, and scripts load only from this site. This is what makes "your data stays on this device" checkable by a school's data protection officer. It only applies on a host that honours `_headers` (Netlify does).
-- Forms may post only to this site (`form-action 'self'` in the header), which the enquiry form on `/contact` needs. Every other page forbids forms in its own policy tag, and the IDSR tool page is also sent a second policy header (`form-action 'none'`), so the tool cannot submit a form even if its tag were removed.
+- Forms may post only to this site (`form-action 'self'` in the header), which the enquiry form on `/contact` and the sign-up form on `/subscribe` need. Every other page forbids forms in its own policy tag, and the IDSR tool page is also sent a second policy header (`form-action 'none'`), so the tool cannot submit a form even if its tag were removed.
 - The policy also stops the site being shown inside another page (`frame-ancestors 'none'`).
 - Never commit a real IDSR, or figures taken from one, to this repository. Test files must use invented numbers.
 
