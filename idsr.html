@@ -44,7 +44,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:17px;l
 .logo-d{display:none!important}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .logo-l{display:none!important}:root:not([data-theme="light"]) .logo-d{display:block!important}}
 :root[data-theme="dark"] .logo-l{display:none!important}:root[data-theme="dark"] .logo-d{display:block!important}
-.brand h1{font-size:28px;margin:0;line-height:1.1;color:var(--fg)}
+.brand h1{font-family:var(--head);font-size:30px;letter-spacing:-.02em;margin:0 0 10px;line-height:1.1;color:var(--fg)}
 .brand p{margin:6px 0 0}
 .eyebrow{display:inline-block;font-size:15px;line-height:1.35;color:var(--fg);font-weight:700;margin:2px 0 0;padding:5px 10px;background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:0 4px 4px 0}
 h2.sect{font-family:var(--head);font-size:19px;line-height:1.25;color:var(--fg);margin:0;letter-spacing:-.01em}
@@ -82,7 +82,7 @@ button[disabled]{opacity:.45;cursor:not-allowed}
 details.help a{color:var(--accent)}
 details.about-box summary{font-weight:700;color:var(--fg);cursor:pointer}
 details.about-box .note{margin-top:8px}
-.brand .lede{font-family:var(--head);font-size:24px;line-height:1.2;letter-spacing:-.015em;color:var(--fg);margin:14px 0 6px}
+.brand .lede{font-size:20px;line-height:1.3;color:var(--fg);margin:14px 0 6px}
 .reqmsg{border-left:3px solid var(--control);font-style:italic}
 .brand a,.note a{color:var(--accent)}
 .status.ok{color:var(--fg)}
@@ -259,7 +259,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 <div class="app">
   <aside class="panel" id="controls">
     <div class="brand">
-      <h1 class="vh">GovernorBrief</h1>
+      <h1>IDSR briefing tool</h1>
       <span class="eyebrow">Independent tool · not an Ofsted or DfE service · pilot</span>
       <p class="lede"><b>Your school's IDSR, ready for the governors' meeting.</b></p>
       <p>Choose your school's IDSR (Inspection Data Summary Report) file and get a one-page briefing, a full briefing with questions for governors, and an editable Word copy. For primary and secondary schools; special schools are not yet supported.</p>
@@ -328,7 +328,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
     <hr>
     <details class="help about-box"><summary>How it's checked</summary>
     <p class="note"><b>Checked against the IDSR.</b> <span id="checkedLine"></span> If your IDSR is newer than that, the briefing still loads but carries a warning.</p>
-    <p class="note"><b>Tested before each release.</b> At this version, 31 rule tests and 97 browser tests pass. They cover the number reader, banding and significance rules, small-number hiding, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs; founding schools are helping with that.</p>
+    <p class="note"><b>Tested before each release.</b> At this version, 31 rule tests and 99 browser tests pass. They cover the number reader, banding and significance rules, small-number hiding, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs; founding schools are helping with that.</p>
     <p class="note"><b>For data protection officers.</b> The page is static. The IDSR is opened by the browser on the user's own device and is never transmitted: the site's security policy stops this page sending data to any server in the background, the code contains nothing that sends it, and there are no cookies, analytics scripts, accounts or storage. The supplier therefore never receives the school's data. The site is hosted on Netlify, which, like any web host, keeps ordinary visit logs (such as the IP address and time of each visit).</p>
     <p class="note"><b>How the headlines are made.</b> Every rule is written out in the <a href="/method">method note</a>, with one headline traced from the IDSR row to the sentence.</p>
     <p class="note"><b>Who built it.</b> Built by a serving headteacher, so that governors can use the IDSR without reading all of it.</p>

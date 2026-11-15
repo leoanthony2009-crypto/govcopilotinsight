@@ -1,7 +1,9 @@
 # Security headers for Netlify. The content security policy is what makes "nothing is sent" enforceable:
 # connect-src 'none' stops the page from contacting any server, and scripts can only load from this site.
+# Forms may only post to this site (form-action 'self'), which the workshop enquiry form on /contact needs. Every other page,
+# including the IDSR tool, tightens that to form-action 'none' in its own meta tag, so those pages cannot submit a form at all.
 /*
-  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; manifest-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; manifest-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: no-referrer

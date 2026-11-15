@@ -18,7 +18,8 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `index.html` | Landing page at `/`: headline, the three offers (Read, Prepare, Develop), about and closing call to action |
 | `idsr.html` | The IDSR briefing tool at `/idsr`: page markup and styles. Netlify serves `idsr.html` at the clean address `/idsr` |
 | `briefs/index.html`, `briefs/assurance-or-information.html` | The 3 Minutes Before the Meeting series at `/briefs/`, and the first briefing. Titles not yet written are listed as forthcoming, never as links |
-| `contact.html` | Workshop enquiry at `/contact`. The form sends nothing to the site: it checks the answers and opens a ready-written email in the visitor's own email program |
+| `contact.html`, `enquiry-sent.html` | Workshop enquiry at `/contact`, using Netlify Forms (form name `workshop-enquiry`, with a hidden spam-trap field). Netlify shows `/enquiry-sent` only after it has accepted a submission. Set the email notification for the form in Netlify: Forms, then Form notifications |
+| `google25717b871bec80ca.html` | Proves ownership of the site to Google Search Console. Do not delete it |
 | `core.js` | Parser, analysis rules and the two on-screen briefings |
 | `app.js` | Word export and page behaviour |
 | `sample.js` | The example school. **Every school figure in it is invented.** National comparison figures are published statistics |

@@ -13,7 +13,10 @@
 @font-face{font-family:"Plus Jakarta Sans";font-weight:500;font-style:normal;font-display:swap;src:url(/fonts/plus-jakarta-sans-500.woff2) format("woff2")}
 @media (prefers-color-scheme: dark){ :root{
   --bg:#0C212B; --panel:#12303E; --fg:#EEF1EE; --muted:#A9B8BD; --line:#2B4653;
-  --link:#8FD6D1; --soft:#17404A; --control:#8FA3AA; --teal:#2C8F95; color-scheme:dark } }
+  --link:#8FD6D1; --soft:#17404A; --control:#8FA3AA; --teal:#2C8F95; color-scheme:dark }
+  /* in dark mode white on teal is too faint for text, so filled controls turn light with dark text */
+  .btn.primary,.pill.live{background:#8FD6D1;border-color:#8FD6D1;color:#0C212B}.btn.primary:hover{background:#B5E6E2;border-color:#B5E6E2}
+  .ticks li::before{background:#8FD6D1;color:#0C212B} }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{background:var(--panel);color:var(--fg);font-family:var(--font);font-size:18px;line-height:1.6;margin:0}
@@ -113,6 +116,8 @@ p{margin:0 0 14px}
 .status{min-height:1.4em;font-weight:700;margin:8px 0 0}
 
 /* forms */
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.btn[disabled]{opacity:.6;cursor:progress}
 form.enq{display:grid;gap:18px;max-width:40em}
 .enq label{display:block;font-weight:700;margin:0 0 6px}
 .enq .hint{display:block;font-weight:400;color:var(--muted);font-size:16px}
@@ -129,6 +134,7 @@ form.enq{display:grid;gap:18px;max-width:40em}
 .prose h1{font-size:38px;margin:0 0 8px}
 .prose h2{font-size:23px;margin:34px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--teal)}
 .prose li{margin:0 0 8px}.prose .sub{color:var(--muted)}
+.prose{overflow-wrap:anywhere}.prose table{table-layout:fixed}
 .prose table{border-collapse:collapse;width:100%;margin:8px 0 14px}.prose th,.prose td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}.prose th{background:var(--soft)}
 .prose .step{border-left:4px solid var(--teal);padding:6px 0 6px 12px;margin:10px 0}.prose code{background:var(--soft);padding:1px 4px;border-radius:3px}
 
