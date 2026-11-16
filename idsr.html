@@ -30,15 +30,15 @@ body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:17px;l
 .panel{background:var(--panel);border-right:1px solid var(--line);padding-block:20px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px;display:flex;flex-direction:column;gap:16px;position:sticky;top:0;height:100vh;overflow-y:auto}
 @media screen and (max-width:960px){.panel{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding-right:max(16px,env(safe-area-inset-right,0px))}}
 .skip{position:absolute;left:-9999px}.skip:focus{left:8px;top:8px;z-index:10;background:var(--panel);padding:10px 14px;border-radius:6px}
-.topbar{background:var(--panel);border-bottom:1px solid var(--line)}
+.topbar{background:#102D3B;border-bottom:3px solid #C4AE7A}
 .tb-in{max-width:1240px;margin:0 auto;display:flex;align-items:center;flex-wrap:wrap;gap:0 20px;padding:4px max(16px,env(safe-area-inset-right,0px)) 4px max(16px,env(safe-area-inset-left,0px))}
-.tb-logo{display:block;flex:none;margin-left:-2px;padding:14px 0}.tb-logo img{display:block;width:253px;height:44px}
+.tb-logo{display:block;flex:none;margin-left:-3px;padding:12px 0}.tb-logo img{display:block;width:322px;height:56px}
 .tb-nav{display:flex;flex-wrap:wrap;gap:0 2px;margin-left:auto}
-.tb-nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;font-weight:700;font-size:17px;color:var(--fg);text-decoration:none}
+.tb-nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;font-weight:700;font-size:17px;color:#fff;text-decoration:none}
 .tb-nav a:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
-.tb-nav a[aria-current="page"]{box-shadow:inset 0 -3px 0 var(--teal)}
+.tb-nav a[aria-current="page"]{box-shadow:inset 0 -3px 0 #C4AE7A}
 @media screen and (max-width:900px){.tb-nav{margin-left:-10px;width:100%}.tb-nav a{padding:0 10px}}
-@media screen and (max-width:560px){.tb-logo{padding:10px 0}.tb-logo img{width:207px;height:36px}.tb-nav a{padding:0 8px;font-size:16px;white-space:nowrap}}
+@media screen and (max-width:560px){.tb-logo{padding:10px 0;margin-left:-2px}.tb-logo img{width:253px;height:44px}.tb-nav a{padding:0 8px;font-size:16px;white-space:nowrap}}
 @media print{.topbar,.skip{display:none!important}}
 .sample-shot{display:block;margin:12px 0 0}.sample-shot img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px;box-shadow:0 4px 14px rgba(15,31,46,.12);background:#fff}
 .logo-d{display:none!important}
@@ -254,7 +254,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 
 <a class="skip" href="#docwrap">Skip to main content</a>
 <header class="topbar"><div class="tb-in">
-  <a class="tb-logo" href="/"><img class="logo-l" src="/logo-header-light.svg" alt="GovernorBrief home" width="506" height="88"><img class="logo-d" src="/logo-header-white.svg" alt="GovernorBrief home" width="506" height="88"></a>
+  <a class="tb-logo" href="/"><img src="/logo-lockup-white.svg" alt="GovernorBrief home" width="506" height="88"></a>
   <nav class="tb-nav" aria-label="Main"><a href="/">Home</a><a href="/services">Services</a><a href="/briefs/">3-Minute Briefs</a><a href="/idsr" aria-current="page">IDSR Tool</a><a href="/contact">Contact</a></nav>
 </div></header>
 <div class="app">
