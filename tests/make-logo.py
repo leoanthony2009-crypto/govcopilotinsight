@@ -25,36 +25,36 @@ NAME = "GovernorBrief"
 STRAP = "From Information to Assurance."
 
 # ---------------------------------------------------------------- symbol
-# One joined-up monogram: the G's curve runs into the foot of the B's stem, and the
-# G's crossbar leaves that same stem, so the two letters share a single upright.
-# Drawn in a box 91.5 wide by 80 high. Stem and bars sit on even numbers, so at half
-# size (the 44 px header logo) every straight edge lands exactly on a pixel boundary.
-SYM_W, SYM_H = 91.5, 80
-
-
-def symbol(ring, b=None):
-    b = b or ring
-    cx, cy, R, stem = 40, 40, 36, 66
-    sx = cx + R * math.cos(math.radians(70))
-    sy = cy - R * math.sin(math.radians(70))
-    jy = cy + math.sqrt(R * R - (stem - cx) ** 2)
-    st = 'fill="none" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"'
-    g = f'<path d="M{sx:.2f},{sy:.2f} A{R},{R} 0 1 0 {stem},{jy:.2f} M{stem},40 H50" stroke="{ring}" {st}/>'
-    bb = f'<path d="M{stem},16 V64 M{stem},16 H74 a12,12 0 0 1 0,24 H{stem} M74,40 H75.5 a12,12 0 0 1 0,24 H{stem}" stroke="{b}" {st}/>'
-    return g + bb
+# Drawn in a 100 x 100 box; the ring fills 10..90.
+STANDARD = dict(theta=62, bar_to=72, stem=38, top=28, bot=72, r=11, hx=46.5, hx2=48, sw=8)
 
 
 def favicon_symbol(ring, b):
-    """The same monogram redrawn on a 32 x 32 pixel grid for browser tabs. Every straight edge
-    (the stem, the B's bars, the crossbar) sits exactly on a pixel boundary at 32 px,
+    """The symbol redrawn on a 32 x 32 pixel grid for browser tabs. Every straight edge
+    (the B's stem and bars, the G's crossbar) sits exactly on a pixel boundary at 32 px,
     and on a half pixel at 16 px, which is the sharpest a 1.5 px line can be."""
-    R, cy, stem = 9.5, 16.5, 20.5
-    cx = stem - math.sqrt(R * R - 36)
-    sx = cx + R * math.cos(math.radians(70))
-    sy = cy - R * math.sin(math.radians(70))
-    st = 'fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"'
-    g = f'<path d="M{sx:.2f},{sy:.2f} A{R},{R} 0 1 0 {stem},22.5 M{stem},16.5 H15.5" stroke="{ring}" {st}/>'
-    bb = f'<path d="M{stem},10.5 V22.5 M{stem},10.5 H22.5 a3,3 0 0 1 0,6 H{stem} M22.5,16.5 H23.5 a3,3 0 0 1 0,6 H{stem}" stroke="{b}" {st}/>'
+    R, c, sw = 12, 16.5, 3
+    sx = c + R * math.cos(math.radians(62))
+    sy = c - R * math.sin(math.radians(62))
+    st = f'fill="none" stroke-width="{sw}" stroke-linecap="round" stroke-linejoin="round"'
+    g = f'<path d="M{sx:.2f},{sy:.2f} A{R},{R} 0 1 0 {c + R},{c} L25,{c}" stroke="{ring}" {st}/>'
+    bb = (f'<path d="M12.5,10.5 V22.5 M12.5,10.5 H16.5 a3,3 0 0 1 0,6 H12.5 M16.5,16.5 H17.5 '
+          f'a3,3 0 0 1 0,6 H12.5" stroke="{b}" {st}/>')
+    return g + bb
+
+
+def symbol(p, ring, b=None):
+    """The G ring (open at the upper right, short crossbar) and the B inside it."""
+    b = b or ring
+    R = 36
+    sx = 50 + R * math.cos(math.radians(p["theta"]))
+    sy = 50 - R * math.sin(math.radians(p["theta"]))
+    mid = (p["top"] + p["bot"]) / 2
+    st = f'fill="none" stroke-width="{p["sw"]}" stroke-linecap="round" stroke-linejoin="round"'
+    g = f'<path d="M{sx:.2f},{sy:.2f} A{R},{R} 0 1 0 {50 + R},50 L{p["bar_to"]},50" stroke="{ring}" {st}/>'
+    bb = (f'<path d="M{p["stem"]},{p["top"]} V{p["bot"]} M{p["stem"]},{p["top"]} H{p["hx"]} '
+          f'a{p["r"]},{p["r"]} 0 0 1 0,{2 * p["r"]} H{p["stem"]} M{p["hx"]},{mid} H{p["hx2"]} '
+          f'a{p["r"]},{p["r"]} 0 0 1 0,{2 * p["r"]} H{p["stem"]}" stroke="{b}" {st}/>')
     return g + bb
 
 
@@ -115,7 +115,7 @@ def wordmark(size, x, baseline):
 
 
 # ---------------------------------------------------------------- lockups
-H = SYM_H       # height of the symbol in lockup units
+H = 80          # height of the symbol in lockup units
 GAP = 30        # symbol to wordmark
 PAD = 4         # breathing room so nothing is clipped; clear space is set where the logo is used
 
@@ -132,8 +132,8 @@ def lockup(kind, ink, b=None, bg=None, pad=PAD, mono=False):
     if b is None:
         b = ink if mono else (BRASS if ink == WHITE else TEAL)
     if kind != "wordmark":
-        parts.append(symbol(ink, b))
-        x = SYM_W + GAP
+        parts.append(f'<g transform="translate(-10 -10)">{symbol(STANDARD, ink, b)}</g>')
+        x = H + GAP
     if kind == "full":
         size = 56
         base = 2 + face(500).cap * size / 1000          # cap top sits just inside the ring's top
@@ -167,15 +167,14 @@ def lockup(kind, ink, b=None, bg=None, pad=PAD, mono=False):
     return svg(w, h, f'<g transform="translate({pad} {pad})">{"".join(parts)}</g>', label, bg)
 
 
-def tile(scale, ink=WHITE, b=None, bg=MIDNIGHT, rx=22, mono=False):
-    """The symbol alone, centred in a 100 x 100 square (with a rounded panel behind it if bg is set)."""
+def tile(p, scale, ink=WHITE, b=None, bg=MIDNIGHT, rx=22, mono=False):
+    t = (100 - 100 * scale) / 2
     if b is None:
         b = ink if mono else (BRASS if ink == WHITE else TEAL)
-    tx, ty = (100 - SYM_W * scale) / 2, (100 - SYM_H * scale) / 2
     r = f'<rect width="100" height="100" rx="{rx}" fill="{bg}"/>' if bg else ""
     return (f'<svg role="img" aria-label="{NAME}" xmlns="http://www.w3.org/2000/svg" width="100" height="100" '
-            f'viewBox="0 0 100 100"><title>{NAME}</title>{r}<g transform="translate({tx:g} {ty:g}) scale({scale:g})">'
-            f'{symbol(ink, b)}</g></svg>\n')
+            f'viewBox="0 0 100 100"><title>{NAME}</title>{r}<g transform="translate({t:g} {t:g}) scale({scale:g})">'
+            f'{symbol(p, ink, b)}</g></svg>\n')
 
 
 # ---------------------------------------------------------------- output
@@ -206,9 +205,9 @@ def main():
     write("logo-lockup-light.svg", lockup("full", MIDNIGHT))
     write("logo-lockup-white.svg", lockup("full", WHITE))
     write("logo-lockup-dark.svg", lockup("full", WHITE, bg=MIDNIGHT, pad=30))
-    write("logo-mark.svg", tile(0.68))
-    write("logo-mark-white.svg", tile(1, bg=None))
-    write("logo-mark-midnight.svg", tile(1, ink=MIDNIGHT, bg=None))
+    write("logo-mark.svg", tile(STANDARD, 0.76))
+    write("logo-mark-white.svg", tile(STANDARD, 0.92, bg=None))
+    write("logo-mark-midnight.svg", tile(STANDARD, 0.92, ink=MIDNIGHT, bg=None))
 
     # browser and phone icons
     write("favicon.svg", f'<svg role="img" aria-label="{NAME}" xmlns="http://www.w3.org/2000/svg" width="32" height="32" '
@@ -240,8 +239,8 @@ def main():
         write(f"brand/mono/{name}-midnight.svg", lockup(kind, MIDNIGHT, mono=True))
         write(f"brand/mono/{name}-white.svg", lockup(kind, WHITE, mono=True))
         write(f"brand/mono/{name}-black.svg", lockup(kind, "#000000", mono=True))
-    write("brand/mono/symbol-midnight.svg", tile(1, ink=MIDNIGHT, bg=None, mono=True))
-    write("brand/mono/symbol-white.svg", tile(1, bg=None, mono=True))
+    write("brand/mono/symbol-midnight.svg", tile(STANDARD, 0.92, ink=MIDNIGHT, bg=None, mono=True))
+    write("brand/mono/symbol-white.svg", tile(STANDARD, 0.92, bg=None, mono=True))
     print("logo files rebuilt")
 
 
