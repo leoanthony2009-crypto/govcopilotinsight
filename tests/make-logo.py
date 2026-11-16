@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """Rebuild every GovernorBrief logo and icon file from one definition.
 
-    python3 tests/make-logo.py            # standard one-colour logo
-    python3 tests/make-logo.py --accent   # also writes the teal/brass "B" alternative to brand/alt/
+    python3 tests/make-logo.py
+
+The B is digital teal on light backgrounds and warm brass on dark ones. One-colour
+versions for single-colour printing are written to brand/mono/.
 
 Needs: fonttools, brotli, uharfbuzz, Pillow (pip) and rsvg-convert (librsvg).
 The wordmark is drawn from the site's own Plus Jakarta Sans files and saved as
 outlines, so the logos never depend on a font being installed.
 """
-import io, math, os, subprocess, sys
+import io, math, os, subprocess
 
 import uharfbuzz as hb
 from fontTools.pens.boundsPen import BoundsPen
@@ -25,8 +27,20 @@ STRAP = "From Information to Assurance."
 # ---------------------------------------------------------------- symbol
 # Drawn in a 100 x 100 box; the ring fills 10..90.
 STANDARD = dict(theta=62, bar_to=72, stem=38, top=28, bot=72, r=11, hx=46.5, hx2=48, sw=8)
-# Heavier strokes for 32 px and below, where the standard drawing fills in.
-SMALL = dict(theta=62, bar_to=73, stem=38.5, top=28.5, bot=71.5, r=10.75, hx=46.5, hx2=48, sw=10)
+
+
+def favicon_symbol(ring, b):
+    """The symbol redrawn on a 32 x 32 pixel grid for browser tabs. Every straight edge
+    (the B's stem and bars, the G's crossbar) sits exactly on a pixel boundary at 32 px,
+    and on a half pixel at 16 px, which is the sharpest a 1.5 px line can be."""
+    R, c, sw = 12, 16.5, 3
+    sx = c + R * math.cos(math.radians(62))
+    sy = c - R * math.sin(math.radians(62))
+    st = f'fill="none" stroke-width="{sw}" stroke-linecap="round" stroke-linejoin="round"'
+    g = f'<path d="M{sx:.2f},{sy:.2f} A{R},{R} 0 1 0 {c + R},{c} L25,{c}" stroke="{ring}" {st}/>'
+    bb = (f'<path d="M12.5,10.5 V22.5 M12.5,10.5 H16.5 a3,3 0 0 1 0,6 H12.5 M16.5,16.5 H17.5 '
+          f'a3,3 0 0 1 0,6 H12.5" stroke="{b}" {st}/>')
+    return g + bb
 
 
 def symbol(p, ring, b=None):
@@ -112,9 +126,11 @@ def svg(w, h, body, label, bg=None):
             f'height="{h:.0f}" viewBox="0 0 {w:.0f} {h:.0f}"><title>{label}</title>{r}{body}</svg>\n')
 
 
-def lockup(kind, ink, b=None, bg=None, pad=PAD):
+def lockup(kind, ink, b=None, bg=None, pad=PAD, mono=False):
     """kind: 'primary' (symbol + name), 'full' (with strapline), 'wordmark' (name only)."""
     parts, x = [], 0.0
+    if b is None:
+        b = ink if mono else (BRASS if ink == WHITE else TEAL)
     if kind != "wordmark":
         parts.append(f'<g transform="translate(-10 -10)">{symbol(STANDARD, ink, b)}</g>')
         x = H + GAP
@@ -143,12 +159,18 @@ def lockup(kind, ink, b=None, bg=None, pad=PAD):
             parts = [f'<g transform="translate(0 {-top + 1:.2f})">{parts[0]}</g>']
             height = face(500).cap * size / 1000 + 2
     w, h = hi + 2 * pad, height + 2 * pad
+    if kind != "wordmark" and not bg:
+        # Width is a whole multiple of 22 against a height of 88, so the logo scales to whole
+        # pixels (253 x 44, 207 x 36, 322 x 56). At 44 px high the symbol's lines are exactly 4 px.
+        w = math.ceil(w / 22) * 22
     label = NAME + (". " + STRAP if kind == "full" else "")
     return svg(w, h, f'<g transform="translate({pad} {pad})">{"".join(parts)}</g>', label, bg)
 
 
-def tile(p, scale, ink=WHITE, b=None, bg=MIDNIGHT, rx=22):
+def tile(p, scale, ink=WHITE, b=None, bg=MIDNIGHT, rx=22, mono=False):
     t = (100 - 100 * scale) / 2
+    if b is None:
+        b = ink if mono else (BRASS if ink == WHITE else TEAL)
     r = f'<rect width="100" height="100" rx="{rx}" fill="{bg}"/>' if bg else ""
     return (f'<svg role="img" aria-label="{NAME}" xmlns="http://www.w3.org/2000/svg" width="100" height="100" '
             f'viewBox="0 0 100 100"><title>{NAME}</title>{r}<g transform="translate({t:g} {t:g}) scale({scale:g})">'
@@ -188,7 +210,9 @@ def main():
     write("logo-mark-midnight.svg", tile(STANDARD, 0.92, ink=MIDNIGHT, bg=None))
 
     # browser and phone icons
-    write("favicon.svg", tile(SMALL, 0.86))
+    write("favicon.svg", f'<svg role="img" aria-label="{NAME}" xmlns="http://www.w3.org/2000/svg" width="32" height="32" '
+          f'viewBox="0 0 32 32"><title>{NAME}</title><rect width="32" height="32" rx="7" fill="{MIDNIGHT}"/>'
+          f'{favicon_symbol(WHITE, BRASS)}</svg>\n')
     png("favicon.svg", "favicon-16.png", 16, 16)
     png("favicon.svg", "favicon-32.png", 32, 32)
     tmp = png("favicon.svg", "favicon-48.tmp.png", 48, 48)
@@ -210,12 +234,13 @@ def main():
     png("logo-mark-midnight.svg", "brand/png/symbol-midnight.png", 1024, 1024)
     png("logo-mark-white.svg", "brand/png/symbol-white.png", 1024, 1024)
 
-    if "--accent" in sys.argv:
-        write("brand/alt/logo-header-light.svg", lockup("primary", MIDNIGHT, b=TEAL))
-        write("brand/alt/logo-header-white.svg", lockup("primary", WHITE, b=BRASS))
-        write("brand/alt/logo-lockup-light.svg", lockup("full", MIDNIGHT, b=TEAL))
-        write("brand/alt/logo-lockup-white.svg", lockup("full", WHITE, b=BRASS))
-        write("brand/alt/logo-mark.svg", tile(STANDARD, 0.76, b=BRASS))
+    # one-colour versions, for single-colour printing, engraving, embroidery and fax-quality copies
+    for kind, name in (("primary", "logo-primary"), ("full", "logo-full")):
+        write(f"brand/mono/{name}-midnight.svg", lockup(kind, MIDNIGHT, mono=True))
+        write(f"brand/mono/{name}-white.svg", lockup(kind, WHITE, mono=True))
+        write(f"brand/mono/{name}-black.svg", lockup(kind, "#000000", mono=True))
+    write("brand/mono/symbol-midnight.svg", tile(STANDARD, 0.92, ink=MIDNIGHT, bg=None, mono=True))
+    write("brand/mono/symbol-white.svg", tile(STANDARD, 0.92, bg=None, mono=True))
     print("logo files rebuilt")
 
 

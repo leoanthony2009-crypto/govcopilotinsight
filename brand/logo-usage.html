@@ -11,7 +11,7 @@
 *{box-sizing:border-box}
 html,body{margin:0}
 body{font:400 9.6pt/1.42 Inter,Arial,sans-serif;color:#102d3b;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.sheet{width:210mm;height:297mm;margin:0 auto;padding:11mm 15mm 9mm;display:flex;flex-direction:column;gap:3.8mm;overflow:hidden}
+.sheet{width:210mm;height:297mm;margin:0 auto;padding:10mm 15mm 8mm;display:flex;flex-direction:column;gap:3.2mm;overflow:hidden}
 h1,h2{font-family:"Plus Jakarta Sans",Arial,sans-serif;margin:0;letter-spacing:-.012em}
 h1{font-size:19pt;font-weight:700;line-height:1.15}
 h2{font-size:10.5pt;font-weight:700;margin-bottom:2mm;padding-top:2mm;border-top:.6mm solid #c4ae7a}
@@ -20,14 +20,14 @@ p{margin:0}
 .top p{max-width:86mm;font-size:9pt;color:#3d5560}
 .row{display:grid;gap:5mm}
 .c3{grid-template-columns:1.25fr 1.25fr .7fr}.c2{grid-template-columns:1.12fr 1fr}
-.box{border:.3mm solid #d5dde0;border-radius:2mm;background:#f4f5f2;display:flex;align-items:center;justify-content:center;height:22mm;padding:3.5mm}
+.box{border:.3mm solid #d5dde0;border-radius:2mm;background:#f4f5f2;display:flex;align-items:center;justify-content:center;height:19mm;padding:3mm}
 .box.dark{background:#102d3b;border-color:#102d3b}
 .box img{max-width:100%;max-height:100%;display:block}
 .cap{font-size:8.2pt;margin-top:1.4mm;color:#3d5560}
 .cap b{color:#102d3b}
-.clear{position:relative;height:32mm;background:#f4f5f2;border:.3mm solid #d5dde0;border-radius:2mm;display:flex;align-items:center;justify-content:center}
-.zone{position:relative;padding:5.5mm;border:.3mm dashed #247e84;background:rgba(36,126,132,.07)}
-.zone img{display:block;height:11mm;width:auto}
+.clear{position:relative;height:28mm;background:#f4f5f2;border:.3mm solid #d5dde0;border-radius:2mm;display:flex;align-items:center;justify-content:center}
+.zone{position:relative;padding:5mm;border:.3mm dashed #247e84;background:rgba(36,126,132,.07)}
+.zone img{display:block;height:10mm;width:auto}
 .zone i{position:absolute;font:700 7.5pt Inter,Arial,sans-serif;color:#247e84;font-style:normal}
 .zone .t{top:1.6mm;left:50%;transform:translateX(-50%)}.zone .l{left:-8.5mm;top:50%;transform:translateY(-50%)}
 .zone .r{right:-8.5mm;top:50%;transform:translateY(-50%)}.zone .b{bottom:1.6mm;left:50%;transform:translateX(-50%)}
@@ -54,7 +54,7 @@ ul{margin:0;padding-left:4.2mm}li{margin-bottom:.9mm}
       <p class="cap"><b>Primary logo.</b> The default: website header, letterheads, slides, email signatures.</p></div>
     <div><div class="box dark"><img src="../logo-lockup-white.svg" alt="GovernorBrief logo with strapline, white"></div>
       <p class="cap"><b>With strapline.</b> Only where it can be large: covers, title slides, banners, the website footer.</p></div>
-    <div><div class="box"><img src="../logo-mark.svg" alt="GovernorBrief symbol" style="height:14mm"></div>
+    <div><div class="box"><img src="../logo-mark.svg" alt="GovernorBrief symbol" style="height:13mm"></div>
       <p class="cap"><b>Symbol.</b> Social profile pictures, app and browser icons.</p></div>
   </div>
 </section>
@@ -84,10 +84,10 @@ ul{margin:0;padding-left:4.2mm}li{margin-bottom:.9mm}
     <div class="sw">
       <div><span style="background:#102d3b"></span><b>Midnight teal</b><br>#102D3B<br>Logo on light</div>
       <div><span style="background:#fff"></span><b>White</b><br>#FFFFFF<br>Logo on dark</div>
-      <div><span style="background:#247e84"></span><b>Digital teal</b><br>#247E84<br>Accent only</div>
-      <div><span style="background:#c4ae7a"></span><b>Warm brass</b><br>#C4AE7A<br>Accent, dark only</div>
+      <div><span style="background:#247e84"></span><b>Digital teal</b><br>#247E84<br>The B, on light</div>
+      <div><span style="background:#c4ae7a"></span><b>Warm brass</b><br>#C4AE7A<br>The B, on dark</div>
     </div>
-    <p class="cap" style="margin-top:2mm">The logo is always one colour: midnight teal on white or soft ivory (#F4F5F2), white on midnight teal. Brass is too pale to read on white, so never use it for the logo or for text on a light background.</p>
+    <p class="cap" style="margin-top:2mm">On white or soft ivory (#F4F5F2) the logo is midnight teal with a digital teal B. On midnight teal it is white with a brass B. Brass is too pale to read on white, so never use the brass B, or brass text, on a light background. For one-colour printing use the files in brand/mono.</p>
   </div>
   <div>
     <h2>5. Please don't</h2>
@@ -111,9 +111,10 @@ ul{margin:0;padding-left:4.2mm}li{margin-bottom:.9mm}
     <tr><td>Professional print, signage</td><td>logo-header-light.svg, logo-lockup-light.svg</td><td>Vector files: sharp at any size.</td></tr>
     <tr><td>Social profile picture</td><td>brand/png/symbol-tile.png</td><td>1024 px square.</td></tr>
     <tr><td>Name without the symbol</td><td>brand/logo-wordmark-light.svg</td><td>Only where the symbol already appears nearby.</td></tr>
+    <tr><td>One-colour printing, stamps</td><td>brand/mono/logo-primary-black.svg</td><td>Also in midnight teal and white, with or without strapline.</td></tr>
   </table>
   <p class="cap" style="margin-top:2mm">Typeface: Plus Jakarta Sans. "Governor" is Medium, "Brief" is Bold. Headings in GovernorBrief materials use Plus Jakarta Sans Bold; body text uses Inter.</p>
 </section>
 
-<div class="foot"><span>GovernorBrief. From Information to Assurance.</span><span>Logo guidance, version 2, November 2026</span></div>
+<div class="foot"><span>GovernorBrief. From Information to Assurance.</span><span>Logo guidance, version 3, November 2026</span></div>
 </div></body></html>
