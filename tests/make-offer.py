@@ -1,6 +1,6 @@
 """Rebuild GovernorBrief-Offer-2026-27.pdf (the two-page marketing offer sheet).
 
-Source: tests/offer/offer.html (+ qr.svg, which points at /contact?type=workshop).
+Source: tests/offer/offer.html (+ qr.svg, which points at /contact?type=workshop&from=offer-pdf).
 Run from the repo root:  python3 tests/make-offer.py
 Update the wording in offer.html when the site changes (briefing count, price, roles).
 """

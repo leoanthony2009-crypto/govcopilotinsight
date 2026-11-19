@@ -23,10 +23,11 @@
     <p>The briefings stay free to read on this site, with or without signing up.</p>
     <div class="errsum" id="errsum" role="alert" tabindex="-1" hidden><h2>There is a problem</h2><ul></ul></div>
     <form class="enq" id="subscribe" name="briefing-updates" method="POST" action="/subscribed" data-netlify="true" netlify-honeypot="company-website">
-    <input type="hidden" name="form-name" value="briefing-updates">
+    <input type="hidden" name="form-name" value="briefing-updates"><input type="hidden" name="source" id="f-source" value="">
     <p class="hp" aria-hidden="true"><label>Leave this field empty <input name="company-website" tabindex="-1" autocomplete="off"></label></p>
     <div><label for="f-email">Email address<span class="hint">The address you would like the briefings sent to.</span></label><input id="f-email" name="email" type="email" required maxlength="200" autocomplete="email"><p class="err" id="e-email" hidden></p></div>
-    <p style="margin:0">By signing up you agree that GovernorBrief may email you when a new briefing is published. We will first send one email asking you to confirm, and add you to the list only when you reply. We use your address for nothing else and do not share it. You can stop at any time by replying to any of our emails or writing to <a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a>. Your address is sent to us through our website host, Netlify. See the <a href="/privacy">privacy notice</a>.</p>
+    <div><label class="check" for="f-workshop-info"><input id="f-workshop-info" name="workshop-info" type="checkbox" value="Yes"><span>You may also email me about GovernorBrief workshops for governing boards. <span class="hint" style="display:inline">Optional.</span></span></label></div>
+    <p style="margin:0">By signing up you agree that GovernorBrief may email you when a new briefing is published. We will first send one email asking you to confirm, and add you to the list only when you reply. Unless you tick the box about workshops, we use your address for nothing else. We do not share it. You can stop at any time by replying to any of our emails or writing to <a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a>. Your address is sent to us through our website host, Netlify. See the <a href="/privacy">privacy notice</a>.</p>
     <div><button class="btn primary" type="submit">Sign up</button></div>
     </form>
   </div>

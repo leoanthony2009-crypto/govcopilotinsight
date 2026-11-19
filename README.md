@@ -27,7 +27,7 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `sample.js` | The example school. **Every school figure in it is invented.** National comparison figures are published statistics |
 | `vendor/docx-9.5.1.iife.js` | The Word library (MIT licence, see `vendor/docx-LICENSE.txt`), hosted with the site so nothing loads from a third party |
 | `method.html` | Method note: every rule in words, with one headline traced from the IDSR row to the sentence |
-| `GovernorBrief-Offer-2026-27.pdf` | Two-page marketing offer sheet. Source is `tests/offer/offer.html`; rebuild with `python3 tests/make-offer.py` when the briefing count, price or roles change |
+| `GovernorBrief-Offer-2026-27.pdf` | Two-page marketing offer sheet. Source is `tests/offer/offer.html`; rebuild with `python3 tests/make-offer.py` when the briefing count, price or wording change |
 | `sample-briefing-one-page.pdf`, `sample-briefing-full.pdf` | Sample briefings for the invented example school. Rebuild with `node tests/make-sample.cjs` after any change to the briefing |
 | `_headers` | Security headers for Netlify, including the content security policy |
 | `_redirects` | Forwards the old `govcopilot.netlify.app` address to `governorbrief.co.uk`, and returns "not found" for the tests folder, this README and the `.claude` and `.agents` folders |
@@ -103,7 +103,8 @@ Sign-ups from `/subscribe` are only collected; nothing is sent automatically. Th
 2. **Never put the list in To or Cc.** Send each briefing with mail merge (one email per person) from the enquiry mailbox, so no subscriber sees another's address. Do not rely on typing addresses into Bcc by hand.
 3. **Every email carries the same footer:** who it is from (GovernorBrief, enquiry@governorbrief.co.uk), why they are receiving it, and "To stop these emails, reply with STOP".
 4. **Stopping.** When someone asks to stop, remove them from the list the same day. Within one month, delete their address from the list, the mailbox and the Netlify form store. Keep a dated note that the request was handled, without the address.
-5. **Scope.** Subscribers agreed to briefing emails only. Do not use the list to promote the workshop or anything else.
+5. **Scope.** Subscribers agreed to briefing emails only. Email someone about workshops only if their submission shows `workshop-info: Yes` (the optional tick on `/subscribe` and `/idsr-signup`). Do not use either list for anything else.
+6. **Where people came from.** Each form has a hidden `source` field. It is filled only when the link carried a label, for example `/contact?type=workshop&from=offer-pdf`. Add `from=` with a short lower-case label to links you share (emails, social posts, the QR code) and count the labels in Netlify Forms each month.
 
 ## Hosting notes
 
@@ -116,7 +117,7 @@ Sign-ups from `/subscribe` are only collected; nothing is sent automatically. Th
 2. Open the Netlify deploy preview for the pull request and check the home page, `/idsr` (load the example school) and `/briefs/`.
 3. Send one test enquiry from `/contact` on the preview. Check that it appears under Forms in Netlify and that the notification email reaches the enquiry mailbox. Check the Spam list if it does not.
 4. In Netlify, Forms must show form detection as enabled and an email notification set for all three forms: `enquiry`, `briefing-updates` and `idsr-signup`.
-5. Delete test enquiries from Netlify afterwards. Real enquiries that do not lead to a workshop are deleted within 12 months (see the privacy notice); Netlify does not do this automatically.
+5. Delete test enquiries from Netlify afterwards. Real enquiries that do not lead to a workshop are deleted at the first quarterly review after 12 months (see the privacy notice); Netlify does not do this automatically.
 6. Merge, then check the live site.
 
 ## Data housekeeping (manual)
