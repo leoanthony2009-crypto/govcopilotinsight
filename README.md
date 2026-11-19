@@ -27,6 +27,7 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `sample.js` | The example school. **Every school figure in it is invented.** National comparison figures are published statistics |
 | `vendor/docx-9.5.1.iife.js` | The Word library (MIT licence, see `vendor/docx-LICENSE.txt`), hosted with the site so nothing loads from a third party |
 | `method.html` | Method note: every rule in words, with one headline traced from the IDSR row to the sentence |
+| `GovernorBrief-Offer-2026-27.pdf` | Two-page marketing offer sheet. Source is `tests/offer/offer.html`; rebuild with `python3 tests/make-offer.py` when the briefing count, price or roles change |
 | `sample-briefing-one-page.pdf`, `sample-briefing-full.pdf` | Sample briefings for the invented example school. Rebuild with `node tests/make-sample.cjs` after any change to the briefing |
 | `_headers` | Security headers for Netlify, including the content security policy |
 | `_redirects` | Forwards the old `govcopilot.netlify.app` address to `governorbrief.co.uk`, and returns "not found" for the tests folder, this README and the `.claude` and `.agents` folders |
