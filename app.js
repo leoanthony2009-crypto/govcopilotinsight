@@ -141,7 +141,7 @@ function showCoverage(an){ const c=an.coverage; const el=$('coverage'); el.textC
   add('Missing for this phase: ',`${c.missing.length?c.missing.join(', '):'none'}. `);
   add('Check manually: ',c.verify.length?`${c.verify.length} item${c.verify.length>1?'s':''} (listed in Appendix B of Version B).`:'nothing flagged.'); }
 
-const PLACEHOLDER='Tick the box and upload an IDSR, or load the example school to see the three outputs.';
+const PLACEHOLDER='Tick the box and choose an IDSR file, or load the example school to see the three outputs.';
 /* A failed or refused file never leaves an earlier school's briefing on screen. */
 function clearDoc(msg){ MODEL=null; AN=null; EDITED=false; const w=$('docwrap'); w.textContent=''; w.style.height=''; const ph=document.createElement('div'); ph.className='placeholder'; ph.id='placeholder'; ph.textContent=msg||PLACEHOLDER; w.appendChild(ph);
   $('toOpts').hidden=true; $('coverage').textContent=''; $('fitcheck').textContent=''; $('printHint').textContent=''; showFound(null); document.title='GovernorBrief'; }
@@ -182,7 +182,7 @@ $('btnReset').addEventListener('click',()=>{ if(MODEL) guardEdits(()=>render());
 let rzTimer=null; addEventListener('resize',()=>{ clearTimeout(rzTimer); rzTimer=setTimeout(()=>{ if(MODEL&&!EDITED&&VIEW==='A') render(); else { if(MODEL) fitCheck(); fitScale(); } },200); });
 addEventListener('beforeprint',()=>{ if(MODEL&&!EDITED&&VIEW==='A'&&window.innerWidth>=960) render(); });
 let fitTimer=null;
-$('btnEdit').addEventListener('click',()=>{ const d=$('doc'); if(!d) return; const on=d.contentEditable!=='true'; d.contentEditable=on?'true':'false'; $('btnEdit').classList.toggle('on',on); $('btnEdit').textContent=on?'Done editing':'Edit text';
+$('btnEdit').addEventListener('click',()=>{ const d=$('doc'); if(!d) return; const on=d.contentEditable!=='true'; d.setAttribute('spellcheck','false'); d.setAttribute('translate','no'); d.contentEditable=on?'true':'false'; $('btnEdit').classList.toggle('on',on); $('btnEdit').textContent=on?'Done editing':'Edit text';
   if(on){ d.focus(); setStatus('Editing on screen. Your edits are kept for Print / save as PDF only: the Word file is built from the IDSR data and will not include them.','warn'); if(!d.dataset.editBound){ d.dataset.editBound='1'; d.addEventListener('input',()=>{ EDITED=true; clearTimeout(fitTimer); fitTimer=setTimeout(()=>{ fitCheck(); fitScale(); },400); }); } } });
 $('btnCopy').addEventListener('click',async()=>{ const d=$('doc'); if(!d) return; try{ await navigator.clipboard.writeText(d.innerText); setStatus('Briefing copied as plain text.','ok'); }catch(e){ const r=document.createRange(); r.selectNodeContents(d); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); setStatus('Text selected: press Ctrl+C / ⌘C to copy.','ok'); } });
 const EMBEDDED=window.self!==window.top;

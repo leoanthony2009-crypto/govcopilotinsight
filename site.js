@@ -48,6 +48,8 @@
   // which then saves a marker in this browser so the tool does not ask again. The marker holds only the date and is never sent anywhere.
   var KEY='gb-idsr-signup', PENDING='gb-idsr-pending';
   var su=document.getElementById('idsr-signup');
+  // The note for the next page is cleared on every page except the one it is meant for, so a form that failed to send cannot unlock the tool later.
+  if(!document.getElementById('idsrDone')){ try{ sessionStorage.removeItem(PENDING); }catch(e){} }
   if(su) wire(su,[['name','Enter your name'],['email','Enter your professional email address'],['organisation','Enter the name of your school or trust'],['role','Choose your role'],['authorised','Tick the box to confirm you are authorised to handle your school\'s IDSR']],'Sign up and open the tool',function(){ try{ sessionStorage.setItem(PENDING,'1'); }catch(e){} });
   var done=document.getElementById('idsrDone');
   if(done){ var signed=false;

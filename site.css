@@ -115,6 +115,7 @@ p{margin:0 0 14px}
 .brief ol.qs li{counter-increment:q;position:relative;padding:14px 16px 14px 60px;background:var(--soft);border-radius:10px;font-weight:700;font-size:19px}
 .brief ol.qs li::before{content:counter(q);position:absolute;left:14px;top:12px;width:32px;height:32px;border-radius:50%;background:var(--midnight);color:#fff;font-family:var(--head);text-align:center;line-height:32px}
 .brief .check{background:var(--midnight);color:#fff;border-radius:10px;padding:20px 22px;border-left:6px solid var(--brass)}
+@media screen and (prefers-color-scheme: dark){.brief .check{background:#0A1C24}.brief ol.qs li::before{background:#8FD6D1;color:#0C212B}}
 .brief .check h2{color:#fff;border-top:0;padding:0;margin:0 0 8px}.brief .check p{margin:0}
 .brief .tagline{font-family:var(--head);font-weight:500;font-size:19px;color:var(--link);margin:-8px 0 18px}
 .brief .check .four{margin-top:10px;font-size:19px;line-height:1.7}
@@ -137,7 +138,7 @@ form.enq{display:grid;gap:18px;max-width:40em}
 .enq label.check input[aria-invalid="true"]{outline:3px solid #B3261E;outline-offset:3px}
 .enq [aria-invalid="true"]{border-color:#B3261E;border-width:3px}
 .enq .err{color:#B3261E;font-weight:700;font-size:16px;margin:6px 0 0}
-@media (prefers-color-scheme: dark){.enq .err{color:#FFB4A9}.enq [aria-invalid="true"]{border-color:#FFB4A9}}
+@media (prefers-color-scheme: dark){.enq .err{color:#FFB4A9}.enq [aria-invalid="true"]{border-color:#FFB4A9}.enq label.check input[aria-invalid="true"]{outline-color:#FFB4A9}}
 .errsum{border:3px solid #B3261E;border-radius:10px;padding:16px 20px;max-width:40em;margin:0 0 20px}
 .errsum h2{font-size:21px;margin:0 0 8px}.errsum ul{margin:0;padding-left:1.2em}
 
