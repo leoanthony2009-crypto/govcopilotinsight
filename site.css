@@ -31,14 +31,14 @@ p{margin:0 0 14px}
 /* header */
 .topbar{background:#102D3B;border-bottom:3px solid #C4AE7A}
 .tb-in{max-width:1240px;margin:0 auto;display:flex;align-items:center;flex-wrap:wrap;gap:0 20px;padding:4px max(16px,env(safe-area-inset-right,0px)) 4px max(16px,env(safe-area-inset-left,0px))}
-.tb-logo{display:block;flex:none;margin-left:-3px;padding:12px 0}.tb-logo img{display:block;width:322px;height:56px}
+.tb-logo{display:block;flex:none;margin-left:-3px;padding:12px 0}.tb-logo img{display:block;width:308px;height:56px}
 .tb-nav{display:flex;flex-wrap:wrap;gap:0 2px;margin-left:auto}
 .tb-nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;font-weight:700;font-size:17px;color:#fff;text-decoration:none}
 .tb-nav a:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
 .tb-nav a[aria-current="page"]{box-shadow:inset 0 -3px 0 #C4AE7A}
 .nav-x{white-space:pre}
 @media screen and (max-width:900px){.tb-nav{margin-left:-10px;width:100%}.tb-nav a{padding:0 10px}}
-@media screen and (max-width:560px){.tb-logo{padding:8px 0 2px;margin-left:-2px}.tb-logo img{width:253px;height:44px}.tb-nav a{padding:0 8px;font-size:16px;white-space:nowrap}.nav-x{display:none}}
+@media screen and (max-width:560px){.tb-logo{padding:8px 0 2px;margin-left:-2px}.tb-logo img{width:242px;height:44px}.tb-nav a{padding:0 8px;font-size:16px;white-space:nowrap}.nav-x{display:none}}
 
 /* buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:11px 22px;border:2px solid var(--control);border-radius:8px;font:700 17px/1.2 var(--font);text-decoration:none;text-align:center;color:var(--fg);background:transparent;cursor:pointer}
@@ -160,8 +160,8 @@ form.enq{display:grid;gap:18px;max-width:40em}
 .sitefoot .wrap{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.85fr) minmax(0,.85fr) minmax(0,1.3fr);gap:28px 32px;align-items:start}
 @media screen and (max-width:900px){.sitefoot .wrap{grid-template-columns:1fr 1fr}.sitefoot .f-brand{grid-column:1/-1}}
 @media screen and (max-width:520px){.sitefoot .wrap{grid-template-columns:1fr}}
-.sitefoot img{display:block;width:322px;height:56px;margin:0 0 16px -3px}
-@media screen and (max-width:400px){.sitefoot img{width:253px;height:44px;margin-left:-2px}}
+.sitefoot img{display:block;width:308px;height:56px;margin:0 0 16px -3px}
+@media screen and (max-width:560px){.sitefoot img{width:242px;height:44px;margin-left:-2px}}
 .sitefoot p{margin:0 0 10px;max-width:46em;line-height:1.55}
 .sitefoot .indep{font-size:16px;color:#D5DDE0;max-width:26em}
 .sitefoot h2{font-family:"Plus Jakarta Sans",Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#C4AE7A;margin:6px 0 10px;padding:0;border:0}
