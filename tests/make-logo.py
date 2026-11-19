@@ -46,12 +46,13 @@ def favicon_symbol(ring, b):
 def symbol(p, ring, b=None):
     """The G ring (open at the upper right, short crossbar) and the B inside it."""
     b = b or ring
-    R = 36
+    R = p.get("R", 36)
+    by = p.get("bar_y", 50)
     sx = 50 + R * math.cos(math.radians(p["theta"]))
     sy = 50 - R * math.sin(math.radians(p["theta"]))
     mid = (p["top"] + p["bot"]) / 2
     st = f'fill="none" stroke-width="{p["sw"]}" stroke-linecap="round" stroke-linejoin="round"'
-    g = f'<path d="M{sx:.2f},{sy:.2f} A{R},{R} 0 1 0 {50 + R},50 L{p["bar_to"]},50" stroke="{ring}" {st}/>'
+    g = f'<path d="M{sx:.2f},{sy:.2f} A{R},{R} 0 1 0 {50 + R},50 L{50 + R},{by} L{p["bar_to"]},{by}" stroke="{ring}" {st}/>'
     bb = (f'<path d="M{p["stem"]},{p["top"]} V{p["bot"]} M{p["stem"]},{p["top"]} H{p["hx"]} '
           f'a{p["r"]},{p["r"]} 0 0 1 0,{2 * p["r"]} H{p["stem"]} M{p["hx"]},{mid} H{p["hx2"]} '
           f'a{p["r"]},{p["r"]} 0 0 1 0,{2 * p["r"]} H{p["stem"]}" stroke="{b}" {st}/>')
@@ -126,29 +127,43 @@ def svg(w, h, body, label, bg=None):
             f'height="{h:.0f}" viewBox="0 0 {w:.0f} {h:.0f}"><title>{label}</title>{r}{body}</svg>\n')
 
 
+# The symbol in a lockup has a lighter, 6-unit line. Its measurements are chosen so that at 44 px high
+# (half size) the ring, the stem and the bars of the B and the rule all fall on whole pixels.
+LOCK = dict(STANDARD, sw=6, R=37, stem=39, top=29, bot=73, hx=47.5, hx2=49, bar_y=51)
+RULE_X, NAME_X = 105, 128       # the divider rule, and where the name starts
+STRAP_CAPS = "FROM INFORMATION TO ASSURANCE"
+
+
+def fitted(text, weight, size, left, width, baseline):
+    """A run of text letter-spaced so that its ink is exactly `width` wide, starting at `left`."""
+    _, _, lo0, hi0 = run(text, weight, size, 0, baseline, 0.0)
+    _, _, lo1, hi1 = run(text, weight, size, 0, baseline, 0.1)
+    t = (width - (hi0 - lo0)) / (((hi1 - lo1) - (hi0 - lo0)) / 0.1)
+    _, _, lo, _ = run(text, weight, size, 0, baseline, t)
+    d, _, _, _ = run(text, weight, size, left - lo, baseline, t)
+    return d
+
+
 def lockup(kind, ink, b=None, bg=None, pad=PAD, mono=False):
-    """kind: 'primary' (symbol + name), 'full' (with strapline), 'wordmark' (name only)."""
+    """kind: 'primary' (symbol, rule, name), 'full' (with strapline), 'wordmark' (name only)."""
     parts, x = [], 0.0
     if b is None:
         b = ink if mono else (BRASS if ink == WHITE else TEAL)
     if kind != "wordmark":
-        parts.append(f'<g transform="translate(-10 -10)">{symbol(STANDARD, ink, b)}</g>')
-        x = H + GAP
+        parts.append(f'<g transform="translate(-10 -10)">{symbol(LOCK, ink, b)}</g>')
+        parts.append(f'<path d="M{RULE_X},4 V76" stroke="{b}" stroke-width="2" fill="none"/>')
+        x = NAME_X
     if kind == "full":
-        size = 56
-        base = 2 + face(500).cap * size / 1000          # cap top sits just inside the ring's top
+        size = 50
+        base = 8 + face(500).cap * size / 1000
         d, lo, hi = wordmark(size, 0, base)
-        shift = x - lo
-        d, lo, hi = wordmark(size, shift, base)
-        # strapline: scaled so it is exactly as wide as the name, baseline on the ring's bottom
-        _, _, slo, shi = run(STRAP, 500, 100, 0, 0, 0.004)
-        ssize = 100 * (hi - lo) / (shi - slo)
-        sd, _, slo, shi = run(STRAP, 500, ssize, 0, H - 1, 0.004)
-        sd, _, _, _ = run(STRAP, 500, ssize, lo - slo, H - 1, 0.004)
-        parts.append(f'<path d="{d}{sd}" fill="{ink}"/>')
+        d, lo, hi = wordmark(size, x - lo, base)
+        # strapline: small capitals, letter-spaced to the width of the name
+        sd = fitted(STRAP_CAPS, 500, 12.5, lo + 1, hi - lo - 2, 72)
+        parts.append(f'<path d="{d}" fill="{ink}"/><path d="{sd}" fill="{ink}" fill-opacity=".86"/>')
         height = H
     else:
-        size = 58
+        size = 52 if kind == "primary" else 58
         base = H / 2 + face(500).cap * size / 2000      # name centred on the symbol
         d, lo, hi = wordmark(size, 0, base)
         d, lo, hi = wordmark(size, x - lo, base)
@@ -161,7 +176,7 @@ def lockup(kind, ink, b=None, bg=None, pad=PAD, mono=False):
     w, h = hi + 2 * pad, height + 2 * pad
     if kind != "wordmark" and not bg:
         # Width is a whole multiple of 22 against a height of 88, so the logo scales to whole
-        # pixels (253 x 44, 207 x 36, 322 x 56). At 44 px high the symbol's lines are exactly 4 px.
+        # pixels (253 x 44, 322 x 56). At 44 px high the symbol's lines are exactly 3 px.
         w = math.ceil(w / 22) * 22
     label = NAME + (". " + STRAP if kind == "full" else "")
     return svg(w, h, f'<g transform="translate({pad} {pad})">{"".join(parts)}</g>', label, bg)
