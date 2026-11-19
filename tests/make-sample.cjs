@@ -4,7 +4,7 @@ const { chromium } = require('playwright'); const path = require('path'); const 
 const ROOT = path.join(__dirname, '..'), PORT = 8795, URL = `http://127.0.0.1:${PORT}/`;
 (async () => {
   const srv = spawn(process.execPath, [path.join(__dirname, 'serve.cjs'), ROOT, String(PORT)], { stdio: 'ignore' }); await new Promise(r => setTimeout(r, 700));
-  const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1440, height: 1000 } }); await p.goto(URL); await p.waitForTimeout(600);
+  const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1440, height: 1000 } }); await p.goto(URL + 'idsr'); await p.waitForTimeout(600);
   await p.pdf({ path: path.join(ROOT, 'sample-briefing-one-page.pdf'), preferCSSPageSize: true, printBackground: true });
   await p.click('#tabB'); await p.waitForTimeout(400);
   await p.pdf({ path: path.join(ROOT, 'sample-briefing-full.pdf'), preferCSSPageSize: true, printBackground: true });
