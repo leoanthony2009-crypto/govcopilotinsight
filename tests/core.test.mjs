@@ -224,3 +224,20 @@ test('special schools are labelled as not yet supported and get no overall pictu
   assert.ok(T.validateModel(m).warn.some(w => /Special schools are not yet supported/.test(w)));
   assert.equal(T.analyse(m).overall, '');
 });
+
+test('the sample PDFs were rebuilt after the last change to the briefing', async () => {
+  const { createHash } = await import('node:crypto'); const h = createHash('sha256');
+  for (const f of ['core.js', 'sample.js', 'idsr.html']) h.update(fs.readFileSync(path.join(root, f)));
+  assert.equal(fs.readFileSync(path.join(root, 'sample-briefing.sha256'), 'utf8').trim(), h.digest('hex'), 'run: node tests/make-sample.cjs');
+});
+test('similar-schools comparisons are quoted as published and only when the IDSR has them', () => {
+  T.setSuppress(true); let m = fresh(); let an = T.analyse(m); assert.equal(an.hasSim, false); assert.doesNotMatch(T.renderB(m, an, true), /Similar schools \(as published\)/);
+  m = fresh(); const r = m.annex['All pupils']['Reading expected standard'].find(x => x.year === '2026'); r.sim = '71%'; r.simBand = { text: 'Above (non-sig)' };
+  m = T.normaliseModel(m); an = T.analyse(m); const html = T.renderB(m, an, true);
+  assert.equal(an.hasSim, true); assert.match(html, /Similar schools \(as published\)/); assert.match(html, /71% · Above \(non-sig\)/);
+  assert.doesNotMatch(T.renderA(m, an, true), /Similar schools/);
+});
+test('data rows have real row headers; group rows do not', () => {
+  T.setSuppress(true); const m = fresh(); const an = T.analyse(m); const html = T.renderA(m, an, true) + T.renderB(m, an, true);
+  assert.ok((html.match(/<th scope="row" class="rh"/g) || []).length > 40); assert.doesNotMatch(html, /<tr><td(>| style=)/);   // evidence-trail rows start with a reference-number cell and are left as they are assert.match(html, /<tr class="grp"><td colspan/);
+});
