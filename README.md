@@ -7,7 +7,7 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 ## How it works
 
 - **Rule-based. No AI.** Fixed rules read the IDSR tables; the same file always gives the same briefing.
-- **No upload.** The IDSR file is read in the browser and never sent anywhere. The site has no storage and no analytics. The only things the site ever sends are the workshop enquiry form on `/contact` and the briefing sign-up form on `/subscribe` (an email address), which both go to Netlify Forms.
+- **No upload.** The IDSR file is read in the browser and never sent anywhere. The site has no analytics and stores nothing except one sign-up marker in the visitor's own browser. The only things the site ever sends are the workshop enquiry form on `/contact`, the briefing sign-up form on `/subscribe` (an email address) and the tool sign-up form on `/idsr-signup`, which all go to Netlify Forms.
 - **Traceable.** Every headline points to its IDSR row in the evidence trail, and a data-coverage appendix lists what was read, what was missing and what to check by hand.
 - **Fails loudly.** If the expected tables or columns are not found, no briefing is produced. An IDSR released after the last checked release loads with a warning.
 
@@ -114,6 +114,6 @@ Sign-ups from `/subscribe` are only collected; nothing is sent automatically. Th
 1. Run `node --test tests/core.test.mjs` and `node tests/browser.cjs`. Both must pass.
 2. Open the Netlify deploy preview for the pull request and check the home page, `/idsr` (load the example school) and `/briefs/`.
 3. Send one test enquiry from `/contact` on the preview. Check that it appears under Forms in Netlify and that the notification email reaches the enquiry mailbox. Check the Spam list if it does not.
-4. In Netlify, Forms must show form detection as enabled and an email notification set for both forms, `enquiry` and `briefing-updates`.
+4. In Netlify, Forms must show form detection as enabled and an email notification set for all three forms: `enquiry`, `briefing-updates` and `idsr-signup`.
 5. Delete test enquiries from Netlify afterwards. Real enquiries that do not lead to a workshop are deleted within 12 months (see the privacy notice); Netlify does not do this automatically.
 6. Merge, then check the live site.
