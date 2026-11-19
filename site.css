@@ -132,6 +132,9 @@ form.enq{display:grid;gap:18px;max-width:40em}
 .enq .hint{display:block;font-weight:400;color:var(--muted);font-size:16px}
 .enq input,.enq select,.enq textarea{width:100%;font:inherit;color:var(--fg);background:var(--panel);border:2px solid var(--control);border-radius:8px;padding:11px 12px;min-height:48px}
 .enq textarea{min-height:120px;resize:vertical}
+.enq label.check{display:flex;gap:12px;align-items:flex-start;font-weight:400;margin:0}
+.enq label.check input{width:28px;height:28px;min-height:0;flex:none;margin:1px 0 0;padding:0;accent-color:var(--teal)}
+.enq label.check input[aria-invalid="true"]{outline:3px solid #B3261E;outline-offset:3px}
 .enq [aria-invalid="true"]{border-color:#B3261E;border-width:3px}
 .enq .err{color:#B3261E;font-weight:700;font-size:16px;margin:6px 0 0}
 @media (prefers-color-scheme: dark){.enq .err{color:#FFB4A9}.enq [aria-invalid="true"]{border-color:#FFB4A9}}
