@@ -122,7 +122,7 @@ function fitCheck(){ const el=$('fitcheck'); const d=$('doc'); if(!d){ el.textCo
   el.textContent='';
   const b=document.createElement('b'); b.textContent='Print check: '; el.appendChild(b);
   if(VIEW==='A'){ const over=docFits()-A_LIMIT; el.appendChild(document.createTextNode(over<=0?'Version A fits one side of A4 landscape.':`Version A is about ${Math.ceil(over*25.4/96)} mm too tall for one page. Print Version B instead${EDITED?', or shorten your edits':''}.`)); if(over>0) el.classList.add('warn'); else el.classList.remove('warn'); }
-  else { el.classList.remove('warn'); const pages=d.querySelectorAll('.page').length; el.appendChild(document.createTextNode(`Version B prints on A4 portrait, one section per page (${pages} sections, plus continuation pages for the evidence trail). Nothing is cut or shrunk; long sections continue onto the next page.`)); } }
+  else { el.classList.remove('warn'); const pages=d.querySelectorAll('.page').length; el.appendChild(document.createTextNode(`Version B prints on A4 portrait with page numbers. Sections follow on from one another and Appendix A starts a new page. Nothing is cut or shrunk.`)); } }
 
 function render(){ if(!MODEL) return;
   SUPPRESS=$('optSuppress').checked;            // one switch, read once: screen, print and Word all use this analysis
@@ -131,11 +131,13 @@ function render(){ if(!MODEL) return;
   else { html=renderB(MODEL,AN,SUPPRESS); $('docwrap').innerHTML=html; }
   wrapTables(); $('toOpts').hidden=false; EDITED=false; fitCheck(); fitScale(); if(fitRO){ fitRO.disconnect(); const d=$('doc'); if(d) fitRO.observe(d); }
   $('btnEdit').classList.remove('on'); $('btnEdit').textContent='Edit text';
-  $('printHint').textContent=VIEW==='A'?'Version A prints on one side of A4 landscape. Switch to Version B for the full five-section briefing (recommended for emailing).':'Version B prints on A4 portrait, one section per page. Switch to Version A for the one-page summary.';
+  $('printHint').textContent=VIEW==='A'?'Version A prints on one side of A4 landscape. Switch to Version B for the full five-section briefing (recommended for emailing).':'Version B prints on A4 portrait with page numbers. Switch to Version A for the one-page summary.';
   document.title=`${MODEL.school.name} – IDSR Governor Briefing`; setPageSize(); }
 function wrapTables(){ document.querySelectorAll('#doc table').forEach(t=>{ if(t.parentElement.classList.contains('tscroll')) return; const w=document.createElement('div'); w.className='tscroll'; w.tabIndex=0; w.setAttribute('role','region'); const cap=t.querySelector('caption'); w.setAttribute('aria-label',(cap?cap.textContent.trim():'Table')+' (scrolls sideways on small screens)'); t.parentNode.insertBefore(w,t); w.appendChild(t); }); }
 function showDocOnMobile(){ if(window.innerWidth<=960){ const d=$('doc'); if(d) d.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}); } }
-function setPageSize(){ let st=$('pagesize'); if(!st){ st=document.createElement('style'); st.id='pagesize'; document.head.appendChild(st); } st.textContent=VIEW==='A'?'@page{size:A4 landscape;margin:10mm 11mm}':'@page{size:A4 portrait;margin:13mm 14mm 16mm}'; }
+function setPageSize(){ let st=$('pagesize'); if(!st){ st=document.createElement('style'); st.id='pagesize'; document.head.appendChild(st); } const nm=(MODEL?String(MODEL.school.name||''):'').replace(/[\\"\n\r\f]/g,' ').slice(0,90), mb='font:8.6pt Arial,"Liberation Sans",Helvetica,sans-serif;color:#555';
+  // Version B: the school name and a page number are printed in the page margins (browsers that cannot do this simply leave them out).
+  st.textContent=VIEW==='A'?'@page{size:A4 landscape;margin:10mm 11mm}':`@page{size:A4 portrait;margin:15mm 14mm 16mm;@top-left{content:"${nm} · IDSR Governor Briefing";${mb}}@top-right{content:"Confidential · governing board papers";${mb}}@bottom-left{content:"GovernorBrief · governorbrief.co.uk";${mb}}@bottom-right{content:"Page " counter(page) " of " counter(pages);${mb}}}@page:first{@top-left{content:none}@top-right{content:none}}`; }
 function showCoverage(an){ const c=an.coverage; const el=$('coverage'); el.textContent='';
   const add=(label,text)=>{ const b=document.createElement('b'); b.textContent=label; el.appendChild(b); el.appendChild(document.createTextNode(text)); };
   add('Extracted: ',`${c.found.length} achievement measure${c.found.length===1?'':'s'}; attendance ${c.behaviour.filter(x=>x[1]).length}/${c.behaviour.length}. `);
