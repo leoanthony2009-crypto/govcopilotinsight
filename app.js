@@ -122,7 +122,7 @@ function fitCheck(){ const el=$('fitcheck'); const d=$('doc'); if(!d){ el.textCo
   el.textContent='';
   const b=document.createElement('b'); b.textContent='Print check: '; el.appendChild(b);
   if(VIEW==='A'){ const over=docFits()-A_LIMIT; el.appendChild(document.createTextNode(over<=0?'Version A fits one side of A4 landscape.':`Version A is about ${Math.ceil(over*25.4/96)} mm too tall for one page. Print Version B instead${EDITED?', or shorten your edits':''}.`)); if(over>0) el.classList.add('warn'); else el.classList.remove('warn'); }
-  else { el.classList.remove('warn'); const pages=d.querySelectorAll('.page').length; el.appendChild(document.createTextNode(`Version B prints on A4 portrait with page numbers. Sections follow on from one another and Appendix A starts a new page. Nothing is cut or shrunk.`)); } }
+  else { el.classList.remove('warn'); const pages=d.querySelectorAll('.page').length; el.appendChild(document.createTextNode(`Version B prints on A4 portrait with page numbers. Sections follow on from one another. Nothing is cut or shrunk.`)); } }
 
 function render(){ if(!MODEL) return;
   SUPPRESS=$('optSuppress').checked;            // one switch, read once: screen, print and Word all use this analysis
