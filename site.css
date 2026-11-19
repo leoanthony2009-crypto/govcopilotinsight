@@ -194,3 +194,17 @@ form.enq{display:grid;gap:18px;max-width:40em}
   .brief .check{background:#fff;color:#000;border:1pt solid #000}.brief .tagline,.brief .source{color:#000}.brief .check h2{color:#000}
   a{color:#000;text-decoration:none}
 }
+
+/* Terms page: sections that open and close */
+.acc{border-top:1px solid #d5dbd8}
+.acc:last-of-type{border-bottom:1px solid #d5dbd8;margin-bottom:28px}
+.acc>summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 4px;min-height:44px}
+.acc>summary::-webkit-details-marker{display:none}
+.acc>summary h2{margin:0;padding:0;border:0;font-size:20px;line-height:1.3}
+.acc>summary::after{content:"+";flex:none;font:700 24px/1 Inter,Arial,sans-serif;color:#1b6368;width:24px;text-align:center}
+.acc[open]>summary::after{content:"\2212"}
+.acc>summary:hover h2{text-decoration:underline}
+.acc>summary:focus-visible{outline:3px solid #c4ae7a;outline-offset:2px}
+.acc[open]{padding-bottom:10px}
+.acc-tools{margin:18px 0 0}
+@media print{.acc>summary::after,.acc-tools{display:none}}

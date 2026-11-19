@@ -14,6 +14,16 @@
   }); }
   var pr=document.getElementById('printBrief'); if(pr) pr.addEventListener('click',function(){ window.print(); });
 
+  // Terms page: a button that opens or closes every section, and every section opens for printing.
+  var acc=document.querySelectorAll('details.acc'), tools=document.getElementById('accTools'), all=document.getElementById('accAll');
+  if(acc.length&&tools&&all){ tools.hidden=false;
+    var setAll=function(o){ for(var i=0;i<acc.length;i++) acc[i].open=o; all.textContent=o?'Close all sections':'Open all sections'; all.setAttribute('aria-expanded',o?'true':'false'); };
+    all.addEventListener('click',function(){ setAll(all.getAttribute('aria-expanded')!=='true'); });
+    window.addEventListener('beforeprint',function(){ setAll(true); });
+    // A link to a part of the page that sits inside a closed section opens that section.
+    if(location.hash){ try{ var tg=document.querySelector(location.hash), d=tg&&tg.closest('details.acc'); if(d) d.open=true; }catch(e){} }
+  }
+
   // Forms: checks the answers in the browser, then lets the form go to the site's host (Netlify Forms).
   // Without JavaScript the forms still work; the browser's own required-field checks apply instead.
   var wire=function(f,fields,label,onSend){
