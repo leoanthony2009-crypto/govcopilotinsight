@@ -154,7 +154,12 @@ function load(model,label,opts){ opts=opts||{}; let v;
     if(v.warn.length) setStatus(`${base} Check before use: ${v.warn.join(' ')}`,'warn'); else setStatus(base,opts.quiet?'quiet':'ok'); }
   catch(e){ console.error(e); clearDoc('No briefing was produced for this file. See the message above.'); setStatus(`We read the file but could not build a briefing from it, so nothing has been produced. Ofsted may have changed the IDSR layout. Please keep the file${reportTo()}.`,'err'); } }
 const MAX_FILE=15*1048576;
-function handleFile(file){ if(!file) return; if(!$('attest').checked){ $('file').value=''; needAttest(); return; }
+// Sign-up step. People sign up once, on a separate page, before using their own file. That page leaves a marker in this browser;
+// this page only checks that it is there, and sends nothing. If the browser blocks storage, the tool stays open rather than locking people out.
+const signedUp=()=>{ try{ return !!localStorage.getItem('gb-idsr-signup'); }catch(e){ return true; } };
+function showGate(){ const g=!signedUp(); $('gate').hidden=!g; $('chooser').hidden=g; const s=$('skipChoose'); s.setAttribute('href',g?'#gate':'#drop'); s.textContent=g?'Skip to signing up':'Skip to choosing your file'; }
+showGate(); window.addEventListener('pageshow',showGate); window.addEventListener('storage',showGate);
+function handleFile(file){ if(!file) return; if(!signedUp()){ $('file').value=''; showGate(); $('btnSignup').focus(); return; } if(!$('attest').checked){ $('file').value=''; needAttest(); return; }
   if(file.size>MAX_FILE){ setStatus(`That file is ${(file.size/1048576).toFixed(1)} MB, which is larger than an IDSR page should be (limit ${MAX_FILE/1048576} MB). Save the IDSR as "Webpage, HTML only" and try again.`,'err'); return; }
   setStatus('Reading '+file.name+'…'); const fr=new FileReader();
   fr.onload=()=>{ let model; try{ model=parseIDSR(fr.result); }catch(e){ clearDoc(); setStatus(e.message,'err'); return; } load(model,'Loaded'); };

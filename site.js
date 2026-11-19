@@ -1,4 +1,4 @@
-// Small helpers for the pages around the IDSR tool. This script sends nothing itself; the enquiry and sign-up forms are ordinary HTML forms.
+// Small helpers for the pages around the IDSR tool. This script sends nothing itself; the enquiry form and the two sign-up forms are ordinary HTML forms.
 (function(){
   'use strict';
   var y=document.querySelectorAll('[data-year]'); for(var i=0;i<y.length;i++) y[i].textContent=String(new Date().getFullYear());
@@ -16,17 +16,17 @@
 
   // Forms: checks the answers in the browser, then lets the form go to the site's host (Netlify Forms).
   // Without JavaScript the forms still work; the browser's own required-field checks apply instead.
-  var wire=function(f,fields,label){
+  var wire=function(f,fields,label,onSend){
     f.setAttribute('novalidate','');
     var sum=document.getElementById('errsum');
     f.addEventListener('submit',function(e){
       var bad=[];
-      fields.forEach(function(d){ var el=document.getElementById('f-'+d[0]), er=document.getElementById('e-'+d[0]), v=el.value.trim(), msg='';
+      fields.forEach(function(d){ var el=document.getElementById('f-'+d[0]), er=document.getElementById('e-'+d[0]), v=el.type==='checkbox'?(el.checked?'yes':''):el.value.trim(), msg='';
         if(!v) msg=d[1]; else if(d[0]==='email'&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) msg='Enter an email address in the correct format, with an @ sign and a full stop';
         if(msg){ el.setAttribute('aria-invalid','true'); el.setAttribute('aria-describedby','e-'+d[0]); er.textContent='Error: '+msg; er.hidden=false; bad.push([d[0],msg]); }
         else { el.removeAttribute('aria-invalid'); el.removeAttribute('aria-describedby'); er.hidden=true; er.textContent=''; } });
       if(bad.length){ e.preventDefault(); if(document.title.indexOf('Error: ')!==0) document.title='Error: '+document.title; var ul=sum.querySelector('ul'); ul.textContent=''; bad.forEach(function(b){ var li=document.createElement('li'), a=document.createElement('a'); a.href='#f-'+b[0]; a.textContent=b[1]; li.appendChild(a); ul.appendChild(li); }); sum.hidden=false; sum.focus(); return; }
-      sum.hidden=true; var btn=f.querySelector('button[type="submit"]'); btn.disabled=true; btn.textContent='Sending…';
+      sum.hidden=true; if(onSend) onSend(); var btn=f.querySelector('button[type="submit"]'); btn.disabled=true; btn.textContent='Sending…';
       // The form now submits normally. The "submitted" page appears only if the host accepts it.
     });
     window.addEventListener('pageshow',function(){ var btn=f.querySelector('button[type="submit"]'); btn.disabled=false; btn.textContent=label; });
@@ -43,4 +43,16 @@
   // Sign-up for new briefings by email.
   var sub=document.getElementById('subscribe');
   if(sub) wire(sub,[['email','Enter your email address']],'Sign up');
+
+  // Sign-up to use the IDSR tool. The form is an ordinary HTML form. When it is sent, a note is left for the next page,
+  // which then saves a marker in this browser so the tool does not ask again. The marker holds only the date and is never sent anywhere.
+  var KEY='gb-idsr-signup', PENDING='gb-idsr-pending';
+  var su=document.getElementById('idsr-signup');
+  if(su) wire(su,[['name','Enter your name'],['email','Enter your professional email address'],['organisation','Enter the name of your school or trust'],['role','Choose your role'],['authorised','Tick the box to confirm you are authorised to handle your school\'s IDSR']],'Sign up and open the tool',function(){ try{ sessionStorage.setItem(PENDING,'1'); }catch(e){} });
+  var done=document.getElementById('idsrDone');
+  if(done){ var signed=false;
+    try{ if(sessionStorage.getItem(PENDING)){ localStorage.setItem(KEY,new Date().toISOString().slice(0,10)); sessionStorage.removeItem(PENDING); } signed=!!localStorage.getItem(KEY); }
+    catch(e){ signed=true; } // storage is blocked in this browser: the tool stays open rather than locking people out
+    if(!signed){ done.hidden=true; document.getElementById('idsrNotYet').hidden=false; }
+  }
 })();
