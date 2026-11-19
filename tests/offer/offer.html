@@ -1,0 +1,129 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>GovernorBrief: offer for governing boards 2026-27</title>
+<style>
+@font-face{font-family:"Plus Jakarta Sans";font-weight:500;src:url(../../fonts/plus-jakarta-sans-500.woff2) format("woff2")}
+@font-face{font-family:"Plus Jakarta Sans";font-weight:700;src:url(../../fonts/plus-jakarta-sans-700.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-weight:400;src:url(../../fonts/inter-400.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-weight:700;src:url(../../fonts/inter-700.woff2) format("woff2")}
+@page{size:A4;margin:0}
+*{box-sizing:border-box}html,body{margin:0}
+body{font:400 10.4pt/1.45 Inter,Arial,sans-serif;color:#102d3b;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+h1,h2,h3{font-family:"Plus Jakarta Sans",Arial,sans-serif;font-weight:700;margin:0;letter-spacing:-.015em}
+p{margin:0}
+.page{width:210mm;height:297mm;display:flex;flex-direction:column;overflow:hidden;page-break-after:always}
+.pad{padding:0 16mm}
+.hero{background:#102d3b;color:#fff;padding:10mm 16mm 9mm;border-bottom:1.2mm solid #c4ae7a}
+.hero img{height:13mm;display:block;margin-left:-1mm}
+.eyebrow{font-weight:700;color:#c4ae7a;font-size:9.6pt;margin-top:7mm}
+.hero h1{font-size:27pt;line-height:1.08;margin-top:2.5mm;max-width:170mm}
+.hero .lead{font-size:11.6pt;line-height:1.4;margin-top:3.5mm;max-width:165mm}
+h2{font-size:15.5pt;margin:6.5mm 0 4mm}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm}
+.card{border:.35mm solid #d5dbd8;border-top:1.2mm solid #247e84;border-radius:2.5mm;padding:4mm 4.5mm 4mm;display:flex;flex-direction:column;gap:1.9mm;background:#fff}
+.tag{font-weight:700;font-size:8.2pt;letter-spacing:.09em;color:#1b6368}
+.card h3{font-size:12.4pt;line-height:1.2}
+.card p{font-size:9.1pt;line-height:1.4}
+.price{margin-top:auto;background:#e3efef;border-radius:1.6mm;padding:2.2mm 3mm;font-weight:700;font-size:10pt}
+.url{font-weight:700;color:#1b6368;font-size:9.4pt}
+.tint{background:#f4f5f2;margin-top:6.5mm;padding:6mm 16mm 6.5mm}
+.tint h2{margin:0 0 1.5mm;font-size:15pt}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:5mm;margin-top:4mm;counter-reset:s}
+.steps div{border-top:1mm solid #247e84;padding-top:2mm;font-size:9pt;line-height:1.4;counter-increment:s}
+.steps b{display:block;font-family:"Plus Jakarta Sans",Arial,sans-serif;font-size:11.5pt;margin-bottom:.6mm}
+.steps b::before{content:counter(s) ". "}
+.why{display:grid;grid-template-columns:repeat(3,1fr);gap:6mm;margin-top:6mm}
+.why div{font-size:9.1pt;line-height:1.4}.why b{display:block;font-family:"Plus Jakarta Sans",Arial,sans-serif;font-size:11.2pt;margin-bottom:1mm}
+.foot{margin-top:auto;padding:3mm 16mm 5mm;font-size:7.6pt;color:#4a5d66;display:flex;justify-content:space-between;gap:8mm;border-top:.3mm solid #d5dbd8}
+.top2{background:#102d3b;color:#fff;padding:7mm 16mm 6mm;border-bottom:1.2mm solid #c4ae7a}
+.top2 .eyebrow{margin-top:0}.top2 h1{font-size:22pt;margin-top:1mm}.top2 p{font-size:10.4pt;line-height:1.4;margin-top:2mm;max-width:172mm}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:9mm;margin-top:5mm}
+.two h2{font-size:12pt;margin:0 0 2mm}
+ul.t{list-style:none;margin:0;padding:0;display:grid;gap:1.2mm}
+ul.t li{position:relative;padding-left:6.5mm;font-size:9pt;line-height:1.35}
+ul.t li::before{content:"✓";position:absolute;left:0;top:.4mm;width:4.6mm;height:4.6mm;border-radius:50%;background:#247e84;color:#fff;font-weight:700;font-size:8pt;line-height:4.6mm;text-align:center}
+dl{margin:0;display:grid;grid-template-columns:23mm 1fr;gap:1mm 3mm;font-size:9pt;line-height:1.35}dt{font-weight:700}dd{margin:0}
+.pricebox{margin-top:5mm;background:#e3efef;border-left:1.6mm solid #247e84;border-radius:2mm;padding:3.6mm 6mm;display:grid;grid-template-columns:auto 1fr;gap:8mm;align-items:center}
+.pricebox .big{font-family:"Plus Jakarta Sans",Arial,sans-serif;font-weight:700;font-size:23pt;line-height:1}.pricebox .big span{display:block;font-size:10pt;font-weight:700;margin-top:1.5mm;letter-spacing:0}
+.pricebox p{font-size:9pt;line-height:1.38}.pricebox p+p{margin-top:1.2mm}
+.who{margin-top:5mm;display:grid;grid-template-columns:1fr 1fr;gap:9mm;font-size:8.7pt;line-height:1.36}
+.who h2{font-size:12pt;margin:0 0 1.6mm}
+.who ul{margin:1mm 0 0;padding-left:4.2mm}.who li{margin-bottom:.3mm}
+.cta{margin-top:5mm;background:#102d3b;color:#fff;border-radius:3mm;padding:4mm 6mm;display:grid;grid-template-columns:1fr auto;gap:8mm;align-items:center}
+.cta h2{font-size:15pt;margin:0 0 1.5mm;color:#fff}.cta p{font-size:9.8pt;line-height:1.4}.cta b{color:#c4ae7a}
+.cta img{width:22mm;height:22mm;border-radius:1.5mm;display:block}
+.cta small{display:block;text-align:center;font-size:7.4pt;margin-top:1mm;color:#fff}
+</style></head><body>
+
+<section class="page">
+  <div class="hero">
+    <img src="../../logo-lockup-white.svg" alt="GovernorBrief. From Information to Assurance.">
+    <p class="eyebrow">For governing boards and academy trusts · 2026–27</p>
+    <h1>Better evidence. Better questions. Stronger schools.</h1>
+    <p class="lead">Independent support for school governors and trustees in England: a free tool, free briefings and one practical workshop for the whole board.</p>
+  </div>
+  <div class="pad">
+    <h2>Three ways to use GovernorBrief</h2>
+    <div class="cards">
+      <div class="card"><p class="tag">PREPARE</p><h3>IDSR Briefing Tool</h3><p>Turns your school's Ofsted IDSR into a one-page briefing, a full briefing with questions for governors, and an editable Word copy.</p><p>No AI. The file is read on your own device and is never sent to us.</p><p class="price">Free pilot</p><p class="url">governorbrief.co.uk/idsr</p></div>
+      <div class="card"><p class="tag">READ</p><h3>3 Minutes Before the Meeting</h3><p>Short briefings for your next meeting: one issue, three questions, one thing to follow up.</p><p>Four so far: assurance, AI safety, keeping good staff, and SEND and inclusion.</p><p class="price">Free</p><p class="url">governorbrief.co.uk/briefs</p></div>
+      <div class="card"><p class="tag">DEVELOP</p><h3>Asking Better Questions</h3><p>A 90-minute face-to-face workshop for the whole board. Governors practise reading evidence, asking constructive questions and agreeing follow-up.</p><p class="price">£295 per board · pilot price</p><p class="url">governorbrief.co.uk/workshop</p></div>
+    </div>
+  </div>
+  <div class="tint">
+    <h2>One approach behind all three</h2>
+    <p>The GovernorBrief Evidence-to-Impact Framework: four steps a board can use in any meeting.</p>
+    <div class="steps">
+      <div><b>Evidence</b>Understand what the performance evidence shows, and what it does not.</div>
+      <div><b>Questions</b>Turn the evidence into a small number of purposeful questions.</div>
+      <div><b>Assurance</b>Agree what would give the board confidence, and who will follow up.</div>
+      <div><b>Impact</b>Come back to it: what has changed, and how do we know?</div>
+    </div>
+  </div>
+  <div class="pad">
+    <div class="why">
+      <div><b>Built for volunteers</b>Plain English, three minutes to read, and ready to use at the meeting you already have.</div>
+      <div><b>Your data stays with you</b>The tool never receives your school's IDSR, and the workshop uses fictional scenarios.</div>
+      <div><b>Independent</b>Not affiliated with or endorsed by Ofsted or the Department for Education.</div>
+    </div>
+  </div>
+  <div class="foot"><span>GovernorBrief · governorbrief.co.uk · enquiry@governorbrief.co.uk</span><span>Page 1 of 2</span></div>
+</section>
+
+<section class="page">
+  <div class="top2">
+    <p class="eyebrow">THE WORKSHOP</p>
+    <h1>Asking Better Questions</h1>
+    <p>Does your board receive reports but sometimes struggle to know what to ask, what evidence to expect or what should happen next? This 90-minute session gives the whole board practice.</p>
+  </div>
+  <div class="pad">
+    <div class="two">
+      <div><h2>Your board will practise how to</h2>
+        <ul class="t"><li>Distinguish information from evidence-based assurance.</li><li>Identify gaps or uncertainties in leadership reports.</li><li>Ask constructive questions that respect operational boundaries.</li><li>Connect meeting discussions to actions and follow-up.</li><li>Apply these skills to safeguarding, pupil outcomes and inclusion.</li></ul></div>
+      <div><h2>What is included</h2>
+        <ul class="t"><li>Short pre-session discussion.</li><li>Facilitated 90-minute workshop.</li><li>Better Questions Checklist.</li><li>Board Assurance Action Template.</li><li>Brief follow-up summary.</li></ul></div>
+    </div>
+    <div class="two">
+      <div><h2>Practical details</h2>
+        <dl><dt>Format</dt><dd>Face-to-face twilight session at your school or an agreed venue.</dd><dt>Where</dt><dd>Birmingham and the West Midlands; elsewhere by arrangement.</dd><dt>Who</dt><dd>Governors and trustees, ideally 6–20, with the chair and the clerk where possible.</dd><dt>Data</dt><dd>None needed. Scenarios are fictional or anonymised.</dd></dl></div>
+      <div><h2>How booking works</h2>
+        <dl><dt>1. Enquiry</dt><dd>You send a short enquiry.</dd><dt>2. Discussion</dt><dd>We discuss suitability and dates.</dd><dt>3. Proposal</dt><dd>We set out the scope and fee in writing.</dd><dt>4. Confirm</dt><dd>Nothing is arranged until you confirm.</dd></dl></div>
+    </div>
+    <div class="pricebox">
+      <div class="big">£295<span>per board · pilot price</span></div>
+      <div><p><b>Three pilot boards wanted.</b> The pilot price is offered in return for short written feedback after the session and, only if you agree, permission to quote it.</p><p>Any travel cost is stated in the written proposal. Nothing is booked, and no fee is due, until a written proposal has been agreed.</p></div>
+    </div>
+    <div class="who">
+      <div><h2>Who is behind GovernorBrief</h2>
+        <p>GovernorBrief is run by Wendell Gopaul, a serving primary headteacher in Birmingham.</p>
+        <ul><li>Headteacher and designated safeguarding lead since 2016.</li><li>Ofsted inspector, 2014 to 2017.</li><li>Catholic school inspector since 2022.</li><li>Vice-chair of a multi-academy trust board, 2016 to 2018.</li></ul></div>
+      <div><h2>Independence</h2>
+        <p>These are past and current roles. GovernorBrief is not endorsed by, and does not speak for, Ofsted, the Catholic Schools Inspectorate, any diocese or trust, or his school or employer.</p>
+        <p style="margin-top:1.6mm">It is run in a personal capacity. Paid work is not offered to his own school or to schools he inspects, and is confirmed only when any permissions that apply are in place.</p></div>
+    </div>
+    <div class="cta">
+      <div><h2>Ask about a pilot workshop</h2><p>Email <b>enquiry@governorbrief.co.uk</b> or use the form at <b>governorbrief.co.uk/contact</b>. Tell us which kind of board you are and roughly when would suit.</p></div>
+      <div><img src="qr.svg" alt="QR code for the enquiry form"><small>Scan to enquire</small></div>
+    </div>
+  </div>
+  <div class="foot"><span>GovernorBrief is an independent resource and is not affiliated with or endorsed by Ofsted or the Department for Education. The workshop is not an accredited course.</span><span>Page 2 of 2</span></div>
+</section>
+</body></html>
