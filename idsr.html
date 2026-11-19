@@ -4,7 +4,7 @@
 /* App chrome: control rail + document stage. Documents use a fixed paper palette (navy / teal / amber / grey) that prints the same in both themes. */
 :root{
   --bg:#F4F5F2; --panel:#ffffff; --fg:#102D3B; --muted:#4A5D66; --line:#D5DBD8;
-  --accent:#1B6368; --accent-ink:#ffffff; --accent-soft:#E3EFEF; --accent-hover:#144E52; --err:#9c2b00; --warn:#7a4a00;
+  --accent:#1B6368; --btn:#247E84; --accent-ink:#ffffff; --accent-soft:#E3EFEF; --accent-hover:#144E52; --err:#9c2b00; --warn:#7a4a00;
   --control:#5F7078;
   --teal:#247E84; --navy:#102D3B; --soft:#E3EFEF; --brass:#C4AE7A;
   --font:Arial,"Liberation Sans",Helvetica,sans-serif;
@@ -17,10 +17,10 @@
 @font-face{font-family:"Plus Jakarta Sans";font-weight:500;font-style:normal;font-display:swap;src:url(/fonts/plus-jakarta-sans-500.woff2) format("woff2")}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#0C212B; --panel:#12303E; --fg:#EEF1EE; --muted:#A9B8BD; --line:#2B4653;
-  --accent:#8FD6D1; --accent-ink:#0C212B; --accent-soft:#17404A; --err:#ffb4a1; --warn:#f2c46b; --control:#8a93a5; --accent-hover:#a5e3de; color-scheme:dark } }
+  --accent:#8FD6D1; --accent-ink:#0C212B; --accent-soft:#17404A; --err:#ffb4a1; --warn:#f2c46b; --control:#8FA3AA; --btn:#8FD6D1; --accent-hover:#a5e3de; color-scheme:dark } }
 :root[data-theme="dark"]{
   --bg:#0C212B; --panel:#12303E; --fg:#EEF1EE; --muted:#A9B8BD; --line:#2B4653;
-  --accent:#8FD6D1; --accent-ink:#0C212B; --accent-soft:#17404A; --err:#ffb4a1; --warn:#f2c46b; --control:#8a93a5; --accent-hover:#a5e3de; color-scheme:dark }
+  --accent:#8FD6D1; --accent-ink:#0C212B; --accent-soft:#17404A; --err:#ffb4a1; --warn:#f2c46b; --control:#8FA3AA; --btn:#8FD6D1; --accent-hover:#a5e3de; color-scheme:dark }
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:17px;line-height:1.5;margin:0}
@@ -37,8 +37,9 @@ body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:17px;l
 .tb-nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;font-weight:700;font-size:17px;color:#fff;text-decoration:none}
 .tb-nav a:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
 .tb-nav a[aria-current="page"]{box-shadow:inset 0 -3px 0 #C4AE7A}
+.nav-x{white-space:pre}
 @media screen and (max-width:900px){.tb-nav{margin-left:-10px;width:100%}.tb-nav a{padding:0 10px}}
-@media screen and (max-width:560px){.tb-logo{padding:10px 0;margin-left:-2px}.tb-logo img{width:253px;height:44px}.tb-nav a{padding:0 8px;font-size:16px;white-space:nowrap}}
+@media screen and (max-width:560px){.tb-logo{padding:8px 0 2px;margin-left:-2px}.tb-logo img{width:253px;height:44px}.tb-nav a{padding:0 8px;font-size:16px;white-space:nowrap}.nav-x{display:none}}
 @media print{.topbar,.skip{display:none!important}}
 .sample-shot{display:block;margin:12px 0 0}.sample-shot img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px;box-shadow:0 4px 14px rgba(15,31,46,.12);background:#fff}
 .logo-d{display:none!important}
@@ -56,13 +57,13 @@ h2.step::before{content:counter(step);flex:none;display:inline-flex;align-items:
 .drop strong{display:block;font-family:var(--head);font-size:19px;color:var(--accent)}.drop span{display:block;font-size:15px;color:var(--muted);margin-top:4px}
 .drop input{display:none}
 .row{display:flex;gap:8px;flex-wrap:wrap}
-button{font:inherit;font-family:var(--ui);font-weight:700;padding:10px 16px;min-height:44px;border-radius:6px;border:1px solid var(--control);background:var(--panel);color:var(--fg);cursor:pointer}
+button{font:inherit;font-family:var(--ui);font-weight:700;padding:10px 16px;min-height:48px;border-radius:8px;border:2px solid var(--control);background:var(--panel);color:var(--fg);cursor:pointer}
 button:hover{border-color:var(--accent)}
-button:focus-visible,.drop:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:focus-visible,.drop:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #C4AE7A;outline-offset:2px;box-shadow:0 0 0 5px #102D3B}
 .topbar a:focus-visible{outline:3px solid #C4AE7A;outline-offset:2px}
-button.primary,a.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.primary,a.btn.primary{background:var(--btn);color:var(--accent-ink);border-color:var(--btn)}
 button.primary:hover:not([disabled]),a.btn.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
-a.btn{display:flex;align-items:center;justify-content:center;flex:1 1 100%;min-height:44px;padding:10px 16px;border:1px solid var(--control);border-radius:6px;font-weight:700;text-decoration:none;text-align:center}
+a.btn{display:flex;align-items:center;justify-content:center;flex:1 1 100%;min-height:48px;padding:10px 16px;border:2px solid var(--control);border-radius:8px;font-weight:700;text-decoration:none;text-align:center}
 a.btn:hover{text-decoration:underline}
 button.on{background:var(--accent-soft);border-color:var(--accent)}
 button[disabled]{opacity:.45;cursor:not-allowed}
@@ -258,7 +259,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 <a class="skip" href="#docwrap">Skip to main content</a>
 <header class="topbar"><div class="tb-in">
   <a class="tb-logo" href="/"><img src="/logo-lockup-white.svg" alt="GovernorBrief home" width="506" height="88"></a>
-  <nav class="tb-nav" aria-label="Main"><a href="/">Home</a><a href="/services">Services</a><a href="/briefs/">3-Minute Briefs</a><a href="/idsr" aria-current="page">IDSR Tool</a><a href="/contact">Contact</a></nav>
+  <nav class="tb-nav" aria-label="Main"><a href="/">Home</a><a href="/services">Services</a><a href="/briefs/"><span class="nav-x">3-Minute </span>Briefs</a><a href="/idsr" aria-current="page">IDSR<span class="nav-x"> Tool</span></a><a href="/contact">Contact</a></nav>
 </div></header>
 <div class="app">
   <aside class="panel" id="controls">
@@ -334,7 +335,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
     <hr>
     <h2 class="sect">More from GovernorBrief</h2>
     <p class="note"><a href="/briefs/">3 Minutes Before the Meeting</a>: short briefings with three questions for your next meeting. <a href="/subscribe">Get new ones by email</a>.</p>
-    <p class="note"><b>Want your board to practise using a briefing like this?</b> From Information to Assurance is a practical 90-minute face-to-face workshop for governors and trustees. <a href="/workshop">About the workshop</a>.</p>
+    <p class="note"><b>Want your board to practise using a briefing like this?</b> Asking Better Questions is a practical 90-minute face-to-face workshop for governors and trustees. <a href="/workshop">About the workshop</a>.</p>
     <p class="note">GovernorBrief also offers governance and school improvement support. <a href="/services">See our services</a>.</p>
     <div class="row"><a class="btn primary" id="btnBook" href="/contact">Make an enquiry</a></div>
     <p class="note">Any other question: <a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a>. Please never email an IDSR to us.</p>
@@ -342,7 +343,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
     <hr>
     <details class="help about-box"><summary>How it's checked</summary>
     <p class="note"><b>Checked against the IDSR.</b> <span id="checkedLine"></span> If your IDSR is newer than that, the briefing still loads but carries a warning.</p>
-    <p class="note"><b>Tested before each release.</b> At this version, 31 rule tests and 125 browser tests pass. They cover the number reader, banding and significance rules, small-number hiding, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs.</p>
+    <p class="note"><b>Tested before each release.</b> At this version, 31 rule tests and 126 browser tests pass. They cover the number reader, banding and significance rules, small-number hiding, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs.</p>
     <p class="note"><b>For data protection officers.</b> The page is static. The IDSR is opened by the browser on the user's own device and is never transmitted: the site's security policy stops this page sending data to any server in the background, the code contains nothing that sends it, and there are no cookies, analytics scripts or accounts. The supplier therefore never receives the school's data. Before first use, users sign up on a separate page with their name, school, role and email; this page then reads one marker in the browser's local storage, holding only the date of sign-up, so that it does not ask again. The marker is never sent anywhere. The site is hosted on Netlify, which, like any web host, keeps ordinary visit logs (such as the IP address and time of each visit).</p>
     <p class="note"><b>How the headlines are made.</b> Every rule is written out in the <a href="/method">method note</a>, with one headline traced from the IDSR row to the sentence.</p>
     <p class="note"><b>Who built it.</b> Built by a serving headteacher, so that governors can use the IDSR without reading all of it.</p>

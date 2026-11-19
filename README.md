@@ -117,3 +117,12 @@ Sign-ups from `/subscribe` are only collected; nothing is sent automatically. Th
 4. In Netlify, Forms must show form detection as enabled and an email notification set for all three forms: `enquiry`, `briefing-updates` and `idsr-signup`.
 5. Delete test enquiries from Netlify afterwards. Real enquiries that do not lead to a workshop are deleted within 12 months (see the privacy notice); Netlify does not do this automatically.
 6. Merge, then check the live site.
+
+## Data housekeeping (manual)
+
+The privacy notice makes retention promises that nothing enforces automatically. Netlify Forms and the mailbox keep submissions until they are deleted by hand.
+
+- **Monthly:** in Netlify, Forms, `briefing-updates`: delete sign-ups older than one month that never confirmed by reply.
+- **Quarterly:** delete `idsr-signup` submissions older than 12 months and `enquiry` submissions older than 12 months that did not lead to work. Delete the matching notification emails from the mailbox, including Deleted Items.
+- **On request:** remove a person's details from Netlify and the mailbox within one month, and reply to confirm.
+- The old `workshop-enquiry` form is no longer on the site: delete it and its submissions in Netlify.
