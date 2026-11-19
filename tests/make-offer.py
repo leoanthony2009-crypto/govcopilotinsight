@@ -19,6 +19,6 @@ with sync_playwright() as p:
     over = pg.evaluate("[...document.querySelectorAll('.page')].filter(s=>s.scrollHeight>s.clientHeight).length")
     if over:
         sys.exit('A page overflows A4: shorten the copy in tests/offer/offer.html')
-    pg.pdf(path=OUT, prefer_css_page_size=True, print_background=True)
+    pg.pdf(path=OUT, prefer_css_page_size=True, print_background=True, tagged=True, outline=True)
     b.close()
 print('wrote', OUT)
