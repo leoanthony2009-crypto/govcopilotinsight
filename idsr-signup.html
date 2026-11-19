@@ -23,7 +23,7 @@
     <p>This takes about a minute. There is no password and no account to manage.</p>
     <div class="errsum" id="errsum" role="alert" tabindex="-1" hidden><h2>There is a problem</h2><ul></ul></div>
     <form class="enq" id="idsr-signup" name="idsr-signup" method="POST" action="/idsr-signed-up" data-netlify="true" netlify-honeypot="company-website">
-    <input type="hidden" name="form-name" value="idsr-signup">
+    <input type="hidden" name="form-name" value="idsr-signup"><input type="hidden" name="source" id="f-source" value="">
     <p class="hp" aria-hidden="true"><label>Leave this field empty <input name="company-website" tabindex="-1" autocomplete="off"></label></p>
     <div><label for="f-name">Name</label><input id="f-name" name="name" type="text" required maxlength="200" autocomplete="name"><p class="err" id="e-name" hidden></p></div>
     <div><label for="f-email">Professional email<span class="hint">Your school, trust or work address.</span></label><input id="f-email" name="email" type="email" required maxlength="200" autocomplete="email"><p class="err" id="e-email" hidden></p></div>
@@ -31,7 +31,8 @@
     <div><label for="f-role">Your role</label><select id="f-role" name="role" required><option value="">Choose one</option><option>Governor or trustee</option><option>Chair or vice-chair</option><option>Headteacher or senior leader</option><option>Governance professional or clerk</option><option>Trust, diocese or local authority officer</option><option>Other</option></select><p class="err" id="e-role" hidden></p></div>
     <div><label class="check" for="f-authorised"><input id="f-authorised" name="authorised" type="checkbox" value="Yes" required><span>I confirm that I am a nominated DfE Sign-in user for my school, or that the school or trust has authorised me to handle its IDSR, and that I will follow Ofsted's IDSR conditions of use.</span></label><p class="err" id="e-authorised" hidden></p></div>
     <div><label class="check" for="f-pilot-contact"><input id="f-pilot-contact" name="pilot-contact" type="checkbox" value="Yes"><span>You may email me about the pilot, for example to ask for feedback on the tool. <span class="hint" style="display:inline">Optional.</span></span></label></div>
-    <p style="margin:0">Your answers are sent to GovernorBrief through our website host, Netlify. We use them to know which schools and roles are using the pilot tool and to keep a record of your confirmation. We email you about the pilot only if you tick the box above, and signing up does not add you to any mailing list. Your school's IDSR is never sent to us. See the <a href="/privacy#tool-signup">privacy notice</a> and the <a href="/terms">terms of use</a>.</p>
+    <div><label class="check" for="f-workshop-info"><input id="f-workshop-info" name="workshop-info" type="checkbox" value="Yes"><span>You may also email me about GovernorBrief workshops for governing boards. <span class="hint" style="display:inline">Optional.</span></span></label></div>
+    <p style="margin:0">Your answers are sent to GovernorBrief through our website host, Netlify. We use them to know which schools and roles are using the pilot tool and to keep a record of your confirmation. We email you about the pilot, or about workshops, only if you tick the box for each above. Otherwise signing up does not add you to any mailing list. Your school's IDSR is never sent to us. See the <a href="/privacy#tool-signup">privacy notice</a> and the <a href="/terms">terms of use</a>.</p>
     <div><button class="btn primary" type="submit">Sign up and open the tool</button></div>
     </form>
   </div>

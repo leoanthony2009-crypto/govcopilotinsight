@@ -32,6 +32,10 @@
     window.addEventListener('pageshow',function(){ var btn=f.querySelector('button[type="submit"]'); btn.disabled=false; btn.textContent=label; });
   };
 
+  // A link such as /contact?from=offer-pdf carries a short label. It is copied into a hidden field so the owner can see which pages lead to enquiries and sign-ups.
+  var src=document.getElementById('f-source'), from=(/[?&]from=([a-z0-9-]{1,40})(?:&|$)/.exec(window.location.search)||[])[1];
+  if(src&&from) src.value=from;
+
   // Workshop enquiry. A link such as /contact?type=workshop chooses the enquiry type in advance.
   var f=document.getElementById('enquiry');
   if(f){

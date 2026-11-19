@@ -27,6 +27,8 @@ body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:17px;l
 @media screen and (max-width:960px){body{font-size:16px}}
 .app{display:grid;grid-template-columns:400px minmax(0,1fr);min-height:100vh}
 @media screen and (max-width:960px){.app{grid-template-columns:1fr}}
+.only-narrow{display:none}
+@media screen and (max-width:960px){.only-narrow{display:block}}
 .panel{background:var(--panel);border-right:1px solid var(--line);padding-block:20px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px;display:flex;flex-direction:column;gap:16px;position:sticky;top:0;height:100vh;overflow-y:auto}
 @media screen and (max-width:960px){.panel{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding-right:max(16px,env(safe-area-inset-right,0px))}}
 .skip{position:absolute;left:-9999px}.skip:focus{left:8px;top:8px;z-index:10;background:var(--panel);padding:10px 14px;border-radius:6px}
@@ -271,6 +273,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
       <span class="eyebrow">Independent tool · not an Ofsted or DfE service · pilot</span>
       <p class="lede"><b>Your school's IDSR, ready for the governors' meeting.</b></p>
       <p class="note"><a id="skipChoose" href="#drop">Skip to choosing your file</a></p>
+      <p class="note only-narrow"><a id="seeExample" href="#stage">See the example briefing first</a></p>
       <p>Choose your school's IDSR (Inspection Data Summary Report) file and get a one-page briefing, a full briefing with questions for governors, and an editable Word copy. Built and checked mainly on primary school IDSRs. Secondary IDSRs load but have had little testing, so check those briefings with extra care. Special schools are not yet supported.</p>
       <ul class="about">
         <li><b>No AI.</b> Fixed rules read the tables; the same file always gives the same briefing.</li>
@@ -339,7 +342,6 @@ details.help ol{margin:6px 0 0;padding-left:18px}
     <h2 class="sect">More from GovernorBrief</h2>
     <p class="note"><a href="/briefs/">3 Minutes Before the Meeting</a>: short briefings with three questions for your next meeting. <a href="/subscribe">Get new ones by email</a>.</p>
     <p class="note"><b>Want your board to practise using a briefing like this?</b> Asking Better Questions is a practical 90-minute face-to-face workshop for governors and trustees. <a href="/workshop">About the workshop</a>.</p>
-    <p class="note">GovernorBrief also offers governance and school improvement support. <a href="/services">See our services</a>.</p>
     <div class="row"><a class="btn primary" id="btnBook" href="/contact">Make an enquiry</a></div>
     <p class="note">Any other question: <a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a>. Please never email an IDSR to us.</p>
 
@@ -347,19 +349,19 @@ details.help ol{margin:6px 0 0;padding-left:18px}
     <details class="help about-box"><summary>How it's checked</summary>
     <p class="note"><b>Checked against the IDSR.</b> <span id="checkedLine"></span> If your IDSR is newer than that, the briefing still loads but carries a warning.</p>
     <p class="note"><b>Tested before each release.</b> At this version, 34 rule tests and 130 browser tests pass. They cover the number reader, banding and significance rules, small-number hiding, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs.</p>
-    <p class="note"><b>For data protection officers.</b> The page is static. The IDSR is opened by the browser on the user's own device and is never transmitted: the site's security policy stops this page sending data to any server in the background, the code contains nothing that sends it, and there are no cookies, analytics scripts or accounts. The supplier therefore never receives the school's data. Before first use, users sign up on a separate page with their name, school, role and email; this page then reads one marker in the browser's local storage, holding only the date of sign-up, so that it does not ask again. The marker is never sent anywhere. The site is hosted on Netlify, which, like any web host, keeps ordinary visit logs (such as the IP address and time of each visit).</p>
+    <p class="note"><b>For data protection officers.</b> The page is static. The IDSR is opened by the browser on the user's own device and is never transmitted: the site's security policy stops this page sending data to any other site in the background, the code contains nothing that sends it to ours, and there are no cookies, analytics scripts or accounts. The supplier therefore never receives the school's data. Before first use, users sign up on a separate page with their name, school, role and email; this page then reads one marker in the browser's local storage, holding only the date of sign-up, so that it does not ask again. The marker is never sent anywhere. The site is hosted on Netlify, which, like any web host, keeps ordinary visit logs (such as the IP address and time of each visit).</p>
     <p class="note"><b>How the headlines are made.</b> Every rule is written out in the <a href="/method">method note</a>, with one headline traced from the IDSR row to the sentence.</p>
     <p class="note"><b>Who built it.</b> Built by a serving headteacher, so that governors can use the IDSR without reading all of it.</p>
     </details>
     <details class="help about-box"><summary>About, privacy and limits</summary>
-    <p class="note"><strong>Your data stays on this device.</strong> The IDSR is read in your browser only; nothing is sent to us or stored, and the site's security policy stops this page sending data to any server in the background. No AI is used. The school or trust remains responsible for the IDSR and everything made from it, and Ofsted's IDSR conditions of use apply to anything you print or share.</p>
+    <p class="note"><strong>Your data stays on this device.</strong> The IDSR is read in your browser only; nothing is sent to us or stored, and the site's security policy stops this page sending data to any other site in the background. No AI is used. The school or trust remains responsible for the IDSR and everything made from it, and Ofsted's IDSR conditions of use apply to anything you print or share.</p>
     <p class="note">This briefing supports governor scrutiny. It does not replace the original IDSR or professional judgement, and it is not an Ofsted judgement, grade or prediction. Bandings and significance are reproduced from the IDSR; every headline carries a reference to its source row in the evidence trail. Small cohorts move percentages a lot: check the pupil numbers (n) before drawing conclusions.</p>
     <p class="note">Not affiliated with or endorsed by Ofsted or the Department for Education. Source data: Ofsted IDSR, © Crown copyright, provided to the school under Ofsted's IDSR conditions of use; not for publication. <span id="ver"></span></p>
     </details>
     <p class="note" style="border-top:1px solid var(--line);padding-top:10px"><strong>GovernorBrief · Pilot version.</strong> An independent tool, not affiliated with or endorsed by Ofsted or the Department for Education. Contact: <a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a>. © GovernorBrief 2026. All rights reserved.</p>
   </aside>
 
-  <main class="stage"><a class="toopts" id="toOpts" href="#controls" hidden>↑ Options &amp; downloads</a><div class="notice" id="notice" role="status" aria-live="polite" hidden></div><div class="docwrap" id="docwrap" role="tabpanel" aria-label="Briefing"><div class="placeholder" id="placeholder">Tick the box and choose an IDSR file, or load the example school to see the three outputs.</div></div></main>
+  <main class="stage" id="stage" tabindex="-1"><a class="toopts" id="toOpts" href="#controls" hidden>↑ Options &amp; downloads</a><div class="notice" id="notice" role="status" aria-live="polite" hidden></div><div class="docwrap" id="docwrap" role="tabpanel" aria-label="Briefing"><div class="placeholder" id="placeholder">Tick the box and choose an IDSR file, or load the example school to see the three outputs.</div></div></main>
 </div>
 
 <footer class="sitefoot">
