@@ -118,13 +118,23 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 .toopts{display:none}
 @media screen and (max-width:960px){.stage{flex-direction:column;align-items:stretch;padding-bottom:84px}.toopts:not([hidden]){display:block;position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:5;padding:10px 14px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:16px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)}}
 .sitefoot{background:var(--navy);color:#fff;padding:44px 0 48px;border-top:4px solid var(--brass);font-size:18px}
-.sitefoot .wrap{max-width:1120px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px 48px;align-items:start}
-@media screen and (max-width:900px){.sitefoot .wrap{grid-template-columns:1fr}}
-.sitefoot img{display:block;width:322px;height:56px;margin:0 0 0 -3px}
+.sitefoot .wrap{max-width:1120px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.85fr) minmax(0,.85fr) minmax(0,1.3fr);gap:28px 32px;align-items:start}
+@media screen and (max-width:900px){.sitefoot .wrap{grid-template-columns:1fr 1fr}.sitefoot .f-brand{grid-column:1/-1}}
+@media screen and (max-width:520px){.sitefoot .wrap{grid-template-columns:1fr}}
+.sitefoot img{display:block;width:322px;height:56px;margin:0 0 16px -3px}
 @media screen and (max-width:400px){.sitefoot img{width:253px;height:44px;margin-left:-2px}}
 .sitefoot p{margin:0 0 10px;max-width:46em;line-height:1.55}
+.sitefoot .indep{font-size:16px;color:#D5DDE0;max-width:26em}
+.sitefoot h2{font-family:"Plus Jakarta Sans",Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#C4AE7A;margin:6px 0 10px;padding:0;border:0}
+.sitefoot ul{list-style:none;margin:0;padding:0}
+.sitefoot li{margin:0}
+.sitefoot li a,.sitefoot .f-col p a{display:inline-block;padding:7px 0;text-decoration:none}
+.sitefoot li a:hover,.sitefoot .f-col p a:hover{text-decoration:underline}
+.sitefoot .f-col p{margin:0}
+.sitefoot .f-col p.small{margin-top:8px}
+.sitefoot .f-col a[href^="mailto"]{overflow-wrap:anywhere}
+.sitefoot .f-base{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.22);padding-top:18px;margin:6px 0 0;max-width:none}
 .sitefoot a{color:#fff}.sitefoot a:focus-visible{outline-color:#fff}
-.sitefoot .footnav a{display:inline-block;padding:8px 0;margin-right:18px}
 .sitefoot .small{font-size:16px;color:#D5DDE0}
 @media print{.sitefoot{display:none!important}}
 @media print{.toopts{display:none!important}}
@@ -366,14 +376,35 @@ details.help ol{margin:6px 0 0;padding-left:18px}
 
 <footer class="sitefoot">
   <div class="wrap">
-    <img src="/logo-lockup-white.svg" alt="GovernorBrief. From Information to Assurance." width="506" height="88">
-    <div>
+    <div class="f-brand">
+      <img src="/logo-lockup-white.svg" alt="GovernorBrief. From Information to Assurance." width="506" height="88">
       <p class="indep">GovernorBrief is an independent resource and is not affiliated with or endorsed by Ofsted or the Department for Education.</p>
-      <p>Contact: <a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a></p>
-      <p class="footnav"><a href="/privacy">Privacy</a><a href="/accessibility">Accessibility</a><a href="/terms">Terms</a><a href="/method">IDSR method note</a></p>
-      <p class="small">Please never email an IDSR, or information about individual pupils or staff, to us.</p>
-      <p class="small">© <span data-year>2026</span> GovernorBrief. All rights reserved.</p>
     </div>
+    <nav class="f-col" aria-label="Footer: explore">
+      <h2>Explore</h2>
+      <ul>
+        <li><a href="/idsr">IDSR tool</a></li>
+        <li><a href="/briefs/">3-minute briefings</a></li>
+        <li><a href="/workshop">Board workshop</a></li>
+        <li><a href="/subscribe">Briefings by email</a></li>
+      </ul>
+    </nav>
+    <nav class="f-col footnav" aria-label="Footer: policies">
+      <h2>Policies</h2>
+      <ul>
+        <li><a href="/privacy">Privacy</a></li>
+        <li><a href="/accessibility">Accessibility</a></li>
+        <li><a href="/terms">Terms</a></li>
+        <li><a href="/method">IDSR method note</a></li>
+      </ul>
+    </nav>
+    <div class="f-col">
+      <h2>Contact</h2>
+      <p><a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a></p>
+      <p><a href="/contact">Make an enquiry</a></p>
+      <p class="small">Please never email an IDSR, or information about individual pupils or staff, to us.</p>
+    </div>
+    <p class="f-base small">© <span data-year>2026</span> GovernorBrief. All rights reserved. GovernorBrief is the trading name of Wendell Gopaul.</p>
   </div>
 </footer>
 <script src="/vendor/docx-9.5.1.iife.js"></script>
