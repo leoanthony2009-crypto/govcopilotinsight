@@ -157,13 +157,23 @@ form.enq{display:grid;gap:18px;max-width:40em}
 
 /* footer */
 .sitefoot{background:var(--midnight);color:#fff;padding:44px 0 48px;border-top:4px solid var(--brass)}
-.sitefoot .wrap{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px 48px;align-items:start}
-@media screen and (max-width:900px){.sitefoot .wrap{grid-template-columns:1fr}}
-.sitefoot img{display:block;width:322px;height:56px;margin:0 0 0 -3px}
+.sitefoot .wrap{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.85fr) minmax(0,.85fr) minmax(0,1.3fr);gap:28px 32px;align-items:start}
+@media screen and (max-width:900px){.sitefoot .wrap{grid-template-columns:1fr 1fr}.sitefoot .f-brand{grid-column:1/-1}}
+@media screen and (max-width:520px){.sitefoot .wrap{grid-template-columns:1fr}}
+.sitefoot img{display:block;width:322px;height:56px;margin:0 0 16px -3px}
 @media screen and (max-width:400px){.sitefoot img{width:253px;height:44px;margin-left:-2px}}
 .sitefoot p{margin:0 0 10px;max-width:46em;line-height:1.55}
+.sitefoot .indep{font-size:16px;color:#D5DDE0;max-width:26em}
+.sitefoot h2{font-family:"Plus Jakarta Sans",Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#C4AE7A;margin:6px 0 10px;padding:0;border:0}
+.sitefoot ul{list-style:none;margin:0;padding:0}
+.sitefoot li{margin:0}
+.sitefoot li a,.sitefoot .f-col p a{display:inline-block;padding:7px 0;text-decoration:none}
+.sitefoot li a:hover,.sitefoot .f-col p a:hover{text-decoration:underline}
+.sitefoot .f-col p{margin:0}
+.sitefoot .f-col p.small{margin-top:8px}
+.sitefoot .f-col a[href^="mailto"]{overflow-wrap:anywhere}
+.sitefoot .f-base{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.22);padding-top:18px;margin:6px 0 0;max-width:none}
 .sitefoot a{color:#fff}.sitefoot a:focus-visible{box-shadow:0 0 0 5px #fff}
-.sitefoot .footnav a{display:inline-block;padding:8px 0;margin-right:18px}
 .sitefoot .small{font-size:16px;color:#D5DDE0}
 
 /* dark mode: white on teal is too faint for text, so filled controls turn light with dark text. Kept after the base rules so it wins. */
