@@ -2,7 +2,7 @@
 
 Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page governor briefing, a full briefing with an evidence trail, and an editable Word document.
 
-**Status:** pilot, version 3.5. Checked against the IDSR release of 25 September 2026, mainly on primary-school data. Secondary handling has had little testing; special schools are not yet supported.
+**Status:** pilot, version 4.0. Checked against the IDSR release of 25 September 2026, mainly on primary-school data. Secondary handling has had little testing; special schools are not yet supported.
 
 ## How it works
 
@@ -22,7 +22,8 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `contact.html`, `enquiry-sent.html` | Workshop enquiry at `/contact`, using Netlify Forms (form name `enquiry`, with a hidden spam-trap field; `/contact?type=workshop` chooses the enquiry type in advance). After a submission Netlify shows `/enquiry-sent`; that page can also be opened directly, so it says "submitted", not "received". The local test server cannot imitate Netlify's spam filter or notifications |
 | `subscribe.html`, `subscribed.html` | Sign-up for new briefings by email at `/subscribe`, using Netlify Forms (form name `briefing-updates`, one email field and the same hidden spam-trap field). After a submission Netlify shows `/subscribed`. Sign-ups are only collected: nothing is emailed automatically, so each new briefing has to be sent to the list by hand, and anyone who asks to stop has to be removed by hand. Check that Netlify's form notification covers this form as well as `enquiry` |
 | `google25717b871bec80ca.html` | Proves ownership of the site to Google Search Console. Do not delete it |
-| `core.js` | Parser, analysis rules and the two on-screen briefings |
+| `questions.js` | The question bank: the wording of every governor question, its one-page short form and its "evidence to expect" line. Edit wording here, not in `core.js`; the header of the file explains `{name}` and `[[optional clause]]` |
+| `core.js` | Parser, analysis rules (including when each question fires) and the two on-screen briefings |
 | `app.js` | Word export and page behaviour |
 | `sample.js` | The example school. **Every school figure in it is invented.** National comparison figures are published statistics |
 | `vendor/docx-9.5.1.iife.js` | The Word library (MIT licence, see `vendor/docx-LICENSE.txt`), hosted with the site so nothing loads from a third party |
@@ -45,7 +46,7 @@ Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page go
 | `sample-briefing-preview.png` | Picture of the sample one-page briefing (invented school), made from the sample PDF |
 | `fonts/` | Plus Jakarta Sans (headlines) and Inter (body text), hosted on the site itself so nothing loads from outside. SIL Open Font Licence, see the `OFL-*.txt` files. The briefings themselves stay in Arial so the one-page version still fits A4 |
 | `tests/browser.cjs`, `tests/serve.cjs`, `tests/make-sample.cjs`, `tests/fixtures/` | Browser checks, the local test server, the sample-PDF builder and invented test files |
-| `tests/core.test.mjs` | Rule tests |
+| `tests/core.test.mjs`, `tests/questions.test.mjs` | Rule tests: the reader and headlines; the question bank, merging, compound rules and a 600-combination audit of every sentence |
 
 There is no build step. Deploy by publishing the folder as a static site.
 
@@ -71,17 +72,19 @@ The line follows the IDSR, which suppresses cohorts of 5 or fewer. Attainment pe
 
 Each question is produced by a fixed rule and linked to a theme in Ofsted's State-funded school inspection toolkit (v2.0, June 2026, for use from 7 September 2026). Version B and the Word file show, for each area, a short paraphrase of what the toolkit's expected standard looks for. The paraphrases live in `TOOLKIT` in `core.js`. They are not Ofsted's wording, and they must be re-read against the toolkit whenever Ofsted updates it. Leadership and governance is cited by area only. Safeguarding and personal development and wellbeing are not evidenced by IDSR data, so no questions are generated for them.
 
+From version 4.0 the wording lives in `questions.js` (`QUESTION_BANK`) and the rules that fire each entry live in the `QUESTIONS` block of `analyse()` in `core.js`. Findings are merged by subject and by measure. Four compound rules (I3, I10, L2, L6) absorb the stand-alone questions they are built from. A `{name}` with no value drops its `[[optional clause]]`, or the whole question if it is required, so a suppressed figure can never print as blank or "undefined". After editing any wording run the rule tests: the audit test rebuilds 600 varied schools and fails on any malformed sentence.
+
 ## Tests
 
 ```
-node --test tests/core.test.mjs     # rule tests: Node 20 or later, no packages
+node --test tests/*.test.mjs        # rule tests: Node 20 or later, no packages
 node tests/browser.cjs              # browser tests: needs Playwright
 node tests/make-sample.cjs          # rebuild the two sample PDFs
 ```
 
 The browser tests serve the site under its real security headers and use it as a person would: both briefings, the small-numbers switch, edits, Word export, uploads that should work and uploads that should be refused, hostile files, phone and narrow layouts. Fixtures are in `tests/fixtures/` and use invented figures only.
 
-Vendored library check: `vendor/docx-9.5.1.iife.js` is the unmodified npm `docx@9.5.1` build, sha256 `bb2908d72ffd8a3d896b455563733d3a2e708e1384a5140e05b3c6dd0b2f676d` (the rule tests assert this). The rule tests fail if the sample PDFs were not rebuilt after the last change to `core.js`, `sample.js` or `idsr.html` (they compare `sample-briefing.sha256`); run `node tests/make-sample.cjs`. When the test counts change, update the figures in the "How it's checked" panel in `idsr.html`.
+Vendored library check: `vendor/docx-9.5.1.iife.js` is the unmodified npm `docx@9.5.1` build, sha256 `bb2908d72ffd8a3d896b455563733d3a2e708e1384a5140e05b3c6dd0b2f676d` (the rule tests assert this). The rule tests fail if the sample PDFs were not rebuilt after the last change to `questions.js`, `core.js`, `sample.js` or `idsr.html` (they compare `sample-briefing.sha256`); run `node tests/make-sample.cjs`. When the test counts change, update the figures in the "How it's checked" panel in `idsr.html`.
 
 The tests cover the number reader, the banding and significance rules, year ordering, small-number handling, escaping of uploaded text and the template check. Run them before every deploy, and add a case whenever Ofsted changes the IDSR.
 
