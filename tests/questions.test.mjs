@@ -11,7 +11,7 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = f => fs.readFileSync(path.join(root, f), 'utf8');
 const ctx = vm.createContext({ console });
 vm.runInContext(src('questions.js') + '\n' + src('core.js') + '\n' + src('sample.js') +
-  '\n;globalThis.T={joinList,sortFigures,fillTemplate,pickOnePage,QUESTION_BANK,TOOLKIT,AREAS,num,bandInfo,analyse,normaliseModel,renderA,renderB,SAMPLE_MODEL,VERSION,setSuppress:v=>{SUPPRESS=v;}};', ctx);
+  '\n;globalThis.T={QUESTION_TOKENS,joinList,sortFigures,fillTemplate,pickOnePage,QUESTION_BANK,TOOLKIT,AREAS,num,bandInfo,analyse,normaliseModel,renderA,renderB,SAMPLE_MODEL,VERSION,setSuppress:v=>{SUPPRESS=v;}};', ctx);
 const T = ctx.T;
 const fresh = () => T.normaliseModel(JSON.parse(JSON.stringify(T.SAMPLE_MODEL)));
 const row = (m, g, k, year) => m.annex[g][k].find(r => r.year === year);
@@ -71,7 +71,7 @@ test('every bank entry has an area, a toolkit theme, a priority, a question and 
 });
 test('compound rules outrank the stand-alone rules they absorb', () => {
   const B = T.QUESTION_BANK;
-  for (const id of ['I3', 'I10', 'L2', 'L6']) { assert.equal(B[id].compound, true); assert.ok(B[id].pri <= 1, `${id} priority`); }
+  for (const id of ['I3', 'I10', 'L2', 'L6']) { assert.equal(B[id].compound, true); assert.ok((B[id].priSig ?? B[id].pri) <= 1, `${id} priority when significant`); }
   assert.ok(B.I3.pri < B.I1.pri && B.I10.pri <= B.B1.pri && B.L2.pri < B.L1T.pri && B.L6.pri < B.I8.pri);
 });
 
@@ -106,7 +106,7 @@ test('A2: significantly below in the latest year only asks "one cohort or a patt
 test('A3: one question per subject, with the gap in pupils, hidden when small numbers are hidden', () => {
   const m = fresh(); setBand(row(m, 'All pupils', 'Reading expected standard', '2026'), '65%', 'Below (non-sig)'); setBand(row(m, 'All pupils', 'Reading higher standard', '2026'), '20%', 'Below (non-sig)');
   T.setSuppress(true); let q = byId(run(m), 'A3').filter(x => /^Reading/.test(x.q)); assert.equal(q.length, 1);
-  assert.match(q[0].q, /Reading expected 65% vs 75% and Reading higher 20% vs 31%/); assert.match(q[0].q, /not statistically significant/); assert.match(q[0].q, /a difference of 5 or fewer pupils/);
+  assert.match(q[0].q, /Reading expected 65% vs 75% and Reading higher 20% vs 31%/); assert.match(q[0].q, /not statistically significant/); assert.doesNotMatch(q[0].q, /difference of|or fewer/, 'a masked count is left out');
   T.setSuppress(false); q = byId(run(m), 'A3').filter(x => /^Reading/.test(x.q)); assert.match(q[0].q, /a difference of about 3 pupils/); T.setSuppress(true);
 });
 test('A3: the pupils clause disappears cleanly when the cohort is not published', () => {
@@ -163,7 +163,7 @@ test('L2: a staffing flag plus a significant weakness is one question; without t
   let m = fresh(); m.staffing[4] = 'Staff turnover is in the highest 20% of schools.';
   let an = run(m); assert.match(one(an, 'L2').q, /Staff turnover is in the highest 20% of schools/); assert.match(one(an, 'L2').q, /Results in writing are significantly below national/); assert.equal(byId(an, 'L1T').length, 0);
   m = fresh(); m.staffing[4] = 'Staff turnover is in the highest 20% of schools.'; noWriting(m);
-  an = run(m); assert.equal(byId(an, 'L2').length, 0); assert.match(one(an, 'L1T').q, /Why are staff leaving/);
+  an = run(m); assert.equal(byId(an, 'L2').length, 0); assert.match(one(an, 'L1T').q, /why staff have left/);
   m = fresh(); m.staffing[1] = 'Teacher sickness absence is in the highest 20% of schools.'; noWriting(m); assert.match(one(run(m), 'L1S').q, /How is teaching covered/);
 });
 test('L6: low stability plus a below-national subject is one question; the plain stability question is absorbed', () => {
@@ -184,7 +184,7 @@ test('context and trend rules: I5, I11, B5, B7 and L5 fire on their own patterns
 });
 test('B1 merges every group above national into one question and says when absence is rising', () => {
   const m = fresh(); const r = row(m, 'All pupils', 'Persistent absence', '2025/26 (1 term)'); setBand(r, '20.0%', 'Above (sig+)'); r.trend = 'Sig increase';
-  const q = one(run(m), 'B1'); assert.match(q.q, /all pupils \(20\.0% vs 14\.4%\) and pupils with SEN \(29\.7% vs 22\.9%\)/); assert.match(q.q, /rising significantly/); assert.equal(q.pri, 1);
+  const q = one(run(m), 'B1'); assert.match(q.q, /all pupils \(20\.0% vs 14\.4%, rising significantly\) and pupils with SEN/); assert.equal(q.pri, 1);
 });
 
 // ---- caps
@@ -201,7 +201,8 @@ test('the full briefing leads with at most 10 questions; the rest are further pr
 test('the one-page briefing takes questions in priority order but no more than two from one area', () => {
   const qs = ['ach', 'ach', 'ach', 'att', 'inc'].map((area, i) => ({ id: 'X' + i, area, pri: i }));
   assert.deepEqual(T.pickOnePage(qs, 4).map(q => q.id), ['X0', 'X1', 'X3', 'X4']);
-  assert.deepEqual(T.pickOnePage(qs, 2).map(q => q.id), ['X0', 'X1']);
+  assert.deepEqual(T.pickOnePage(qs, 2).map(q => q.id), ['X0', 'X3'], 'with three or fewer shown, one per area');
+  assert.deepEqual(T.pickOnePage(qs, 3).map(q => q.id), ['X0', 'X3', 'X4']);
   assert.deepEqual(T.pickOnePage(qs.slice(0, 3), 3).map(q => q.id), ['X0', 'X1', 'X2'], 'the cap gives way when nothing else is left');
 });
 test('the one-page briefing uses the short form of a long question; the full briefing keeps the full form', () => {
@@ -256,7 +257,8 @@ test('audit: across hundreds of data combinations no question or evidence line i
     for (const q of an.questions) { fired.add(q.id); checked++;
       assert.doesNotMatch(q.q, UNCLEAN, `combination ${i}, ${q.id}: ${q.q}`); assert.match(q.q, /\?$/, `combination ${i}, ${q.id}: ${q.q}`); assert.match(q.q, /^[A-Z0-9"]/, `${q.id}: ${q.q}`);
       assert.ok(q.ev && !UNCLEAN.test(q.ev), `${q.id} evidence`); assert.ok(q.brief && !UNCLEAN.test(q.brief) && /\?$/.test(q.brief), `combination ${i}, ${q.id} short form: ${q.brief}`); assert.ok(T.TOOLKIT.refs[q.ref]); }
-    const seen = ids(an).filter(x => !/^(L1|A3)/.test(x));   // L1 is asked per workforce flag, A3 per subject assert.equal(new Set(seen).size, seen.length, `combination ${i}: a rule fired twice: ${seen.join(',')}`);
+    const seen = ids(an).filter(x => !/^(L1|A3)/.test(x));   // L1 is asked per workforce flag, A3 per subject
+    assert.equal(new Set(seen).size, seen.length, `combination ${i}: a rule fired twice: ${seen.join(',')}`);
     if (seen.includes('I3')) assert.ok(!seen.includes('I1'), 'I3 must absorb I1');
     if (seen.includes('L2')) assert.ok(!ids(an).some(x => /^L1/.test(x)), 'L2 must absorb L1');
     if (seen.includes('L6')) assert.ok(!seen.includes('I8'), 'L6 must absorb I8');
@@ -264,9 +266,87 @@ test('audit: across hundreds of data combinations no question or evidence line i
   }
   T.setSuppress(true);
   assert.ok(checked > 3000, 'too few questions checked: ' + checked);
-  const never = Object.keys(T.QUESTION_BANK).filter(id => !T.QUESTION_BANK[id].addOn && !fired.has(id) && !['A9', 'A3G', 'C1'].includes(id));
+  const never = Object.keys(T.QUESTION_BANK).filter(id => !T.QUESTION_BANK[id].addOn && !fired.has(id) && !['A9', 'A3G'].includes(id));
   assert.deepEqual(never, [], 'bank entries the audit never exercised');
 });
-test('version is 4.0 and the question bank is its own file', () => {
-  assert.match(T.VERSION, /^4\.0 /); assert.match(src('idsr.html'), /<script src="\/questions\.js"><\/script>\s*<script src="\/core\.js"><\/script>/);
+// ---- council review, November 2026: each test below reproduces a reported fault
+test('council: a compound question keeps the caveats of its parts and only outranks them when a part is significant', () => {
+  let m = fresh(); let r = row(m, 'FSM6', 'Persistent absence', '2025/26 (1 term)'); setBand(r, '31.0%', 'Above (non-sig)'); r.trend = 'Sig increase';
+  let q = one(run(m), 'I3'); assert.match(q.q, /31\.0% vs 25\.3% nationally, autumn term only, not statistically significant, rising significantly\)/); assert.equal(q.pri, 2);
+  m = fresh(); setBand(row(m, 'FSM6', 'Persistent absence', '2025/26 (1 term)'), '40.0%', 'Above (sig+)'); assert.equal(one(run(m), 'I3').pri, 1);
+  m = fresh(); const y = m.charYears[m.charYears.length - 1]; m.characteristics['School % stability'][y].band = 'Below average'; noWriting(m); setBand(row(m, 'All pupils', 'Reading expected standard', '2026'), '65%', 'Below (non-sig)');
+  q = one(run(m), 'L6'); assert.match(q.q, /results in reading are below national \(not statistically significant\)/); assert.equal(q.pri, 2);
+});
+test('council: I3 absorbs the FSM6 part of the absence question only; FSM6 suspensions are still asked about', () => {
+  const m = fresh(); T.setSuppress(false); setBand(row(m, 'FSM6', 'Persistent absence', '2025/26 (1 term)'), '31.0%', 'Above (non-sig)'); setBand(row(m, 'FSM6', '1 or more suspensions', '2024/25 (3 term)'), '9.00%', 'Above (sig+)');
+  const an = run(m); T.setSuppress(true); one(an, 'I3'); assert.match(one(an, 'B4').q, /disadvantaged \(FSM6\) pupils \(9\.00% vs 2\.50%\)/);
+});
+test('council: the strength question never pushes out a question of priority 0 to 2', () => {
+  const m = fresh(); const y = m.charYears[m.charYears.length - 1];
+  setBand(row(m, 'All pupils', 'Reading expected standard', '2026'), '60%', 'Below (sig-)'); setBand(row(m, 'All pupils', 'Persistent absence', '2025/26 (1 term)'), '20.0%', 'Above (sig+)');
+  setBand(row(m, 'FSM6', 'Persistent absence', '2025/26 (1 term)'), '40.0%', 'Above (sig+)'); setBand(row(m, 'All pupils', '1 or more suspensions', '2024/25 (3 term)'), '9.00%', 'Above (sig+)');
+  m.staffing[4] = 'Staff turnover is in the highest 20% of schools.'; m.characteristics['School % stability'][y].band = 'Below average';
+  m.exclusions.rows['Total number of permanent exclusions']['2024/25 (3 term)'] = 7; m.ap = ['2 pupils were placed in alternative provision.'];
+  for (const g of ['Low prior attainers', 'Middle prior attainers', 'High prior attainers']) { const r = row(m, g, 'Writing progress', '2023'); r.year = '2026'; r.cohort = 20; setBand(r, null, 'Below (sig-)'); }
+  setBand(row(m, 'All pupils', 'Maths expected standard', '2026'), '60%', 'Below (non-sig)'); setBand(row(m, 'All pupils', 'EGPS expected standard', '2026'), '60%', 'Below (non-sig)');
+  const an = run(m); assert.ok(an.questions.length > 10, String(an.questions.length));
+  const urgent = an.questions.filter(q => q.pri <= 2); assert.ok(urgent.length <= 10 ? urgent.every(q => an.questionsTop.includes(q)) : an.questionsTop.every(q => q.pri <= 2), 'top: ' + an.questionsTop.map(q => q.id + ':' + q.pri) + ' / more: ' + an.questionsMore.map(q => q.id + ':' + q.pri));
+});
+test('council: a workforce sentence that reports no data is not a flag, and L2 does not imply staffing caused the results', () => {
+  let m = fresh(); m.staffing[1] = 'Data on teacher sickness absence is not available for this school.'; let an = run(m);
+  assert.equal(byId(an, 'L2').length + ids(an).filter(i => /^L1/.test(i)).length, 0); assert.ok(!an.concerns.some(c => /not available/.test(c.text)));
+  m = fresh(); m.staffing[0] = 'The proportion of education support staff relative to teaching staff is in the lowest 20% of schools.';
+  const q = one(run(m), 'L2'); assert.doesNotMatch(q.q + q.brief, /staffing change|affected by|hit hardest/);
+});
+test('council: a masked pupil count is left out, because the percentage and cohort would give it away', () => {
+  T.setSuppress(true); const an = run(fresh()); const i1 = one(an, 'I1'); assert.doesNotMatch(i1.q, /or fewer pupils|cohort of/); assert.match(i1.q, /widest in Writing \(−24 pp\)/);
+  for (const q of an.questions) assert.doesNotMatch(q.q + q.brief, /5 or fewer pupils (in|out|for)|difference of 5 or fewer/, q.id);
+  T.setSuppress(false); assert.match(one(run(fresh()), 'I1').q, /a difference of about 3 pupils out of 11/); T.setSuppress(true);
+});
+test('council: no absence or suspension question about a group of 10 or fewer while small numbers are hidden', () => {
+  const m = fresh(); T.setSuppress(true);
+  for (const k of ['Persistent absence', '1 or more suspensions']) { const r = m.annex.SEN[k].find(x => /^\d{4}/.test(x.year) && !/half terms/.test(x.year)); r.cohort = 8; setBand(r, '75.0%', 'Above (non-sig)'); }
+  const an = run(m); assert.equal(byId(an, 'I10').length + byId(an, 'I12').length, 0); assert.ok(!an.questions.some(q => /75\.0%/.test(q.q)), an.questions.map(q => q.q).filter(q => /75/.test(q)).join(' | '));
+});
+test('council: I12 needs a gap of at least one pupil and does not claim a significance test that was not published', () => {
+  let m = fresh(); let r = row(m, 'SEN', 'Persistent absence', '2025/26 (1 term)'); r.school = '23.0%'; r.schoolN = 23; r.band = { text: 'Not available' };
+  assert.equal(byId(run(m), 'I12').length, 0, 'a 0.1 point difference is less than one pupil');
+  m = fresh(); r = row(m, 'SEN', 'Persistent absence', '2025/26 (1 term)'); r.school = '35.0%'; r.schoolN = 35; r.band = { text: 'Not available' };
+  const q = one(run(m), 'I12'); assert.doesNotMatch(q.q, /does not treat this as statistically significant|With \d+ pupils/); assert.match(q.q, /the IDSR gives no significance test/);
+});
+test('council: the most common need is not named when 5 or fewer pupils have it and small numbers are hidden', () => {
+  const m = fresh(); m.sen.needs = [{ need: 'Hearing impairment', n: 1, type: 'SEN support' }]; T.setSuppress(true); assert.equal(byId(run(m), 'I6').length, 0);
+  m.sen.needs = [{ need: 'Hearing impairment', n: 0, type: 'SEN support' }]; T.setSuppress(false); assert.equal(byId(run(m), 'I6').length, 0); T.setSuppress(true);
+  const m2 = fresh(); m2.sen.needs = [{ need: 'Autism', n: 8, type: 'SEN support' }, { need: 'Autism', n: null, type: 'EHCP' }]; assert.doesNotMatch(one(run(m2), 'I6').q, /8 pupils/);
+});
+test('council: the similar-schools sentence is left out when the latest result is not below national', () => {
+  const m = fresh(); const w = row(m, 'All pupils', 'Writing expected standard', '2026'); setBand(w, '80%', 'Above (non-sig)'); w.sim = '70%'; w.simBand = { text: 'Above (non-sig)' };
+  assert.doesNotMatch(one(run(m), 'A1').q, /similar-schools|remaining gap/);
+});
+test('council: phonics and the multiplication check state their year, are skipped when stale, and are not repeated in A1', () => {
+  let m = fresh(); m.annex['All pupils']['Phonics expected standard'].forEach(r => { if (r.year === '2025') setBand(r, '71%', 'Below (non-sig)'); if (r.year === '3-year') setBand(r, '70%', 'Below (sig-)'); });
+  let an = run(m); assert.match(one(an, 'A7').q, /^Year 1 phonics was 71% against 80% nationally in 2025\./); assert.equal((one(an, 'A1').q.match(/phonics/g) || []).length, 1, one(an, 'A1').q);
+  m = fresh(); m.annex['All pupils']['Phonics expected standard'] = m.annex['All pupils']['Phonics expected standard'].filter(r => r.year === '2023' ); m.annex['All pupils']['Phonics expected standard'][0].band = { text: 'Close to average (non-sig)' };
+  assert.equal(byId(run(m), 'A7').length, 0, 'phonics from 2023 against 2026 results is stale');
+});
+test('council: a rising or declining trend is attached to the group it belongs to', () => {
+  const m = fresh(); const r = row(m, 'All pupils', 'Persistent absence', '2025/26 (1 term)'); setBand(r, '20.0%', 'Above (sig+)'); r.trend = 'Sig increase';
+  const q = one(run(m), 'B1'); assert.match(q.q, /all pupils \(20\.0% vs 14\.4%, rising significantly\) and pupils with SEN \(29\.7% vs 22\.9%, not statistically significant\)/);
+});
+test('council: every {name} in the bank is one the engine supplies for that entry', () => {
+  const names = s => [...String(s || '').matchAll(/\{(\w+)\}/g)].map(x => x[1]);
+  for (const [id, e] of Object.entries(T.QUESTION_BANK)) { const allowed = T.QUESTION_TOKENS[id]; assert.ok(allowed, id + ': no token list in core.js');
+    for (const n of [...names(e.q), ...names(e.brief)]) assert.ok(allowed.includes(n), `${id}: {${n}} is not supplied; allowed: ${allowed.join(', ') || 'none'}`);
+    assert.deepEqual(names(e.ev), [], id + ': evidence lines are fixed text'); assert.doesNotMatch(e.q + (e.brief || ''), /\[\[[^\]]*\[\[/, id + ': [[ ]] cannot be nested');
+    for (const k of Object.keys(e)) assert.ok(['area', 'pri', 'priSig', 'ref', 'q', 'brief', 'ev', 'strength', 'compound', 'addOn'].includes(k), `${id}: unknown field "${k}"`); }
+});
+test('council: evidence lines do not ask a board for pupil-level or staff-identifiable records', () => {
+  for (const [id, e] of Object.entries(T.QUESTION_BANK)) assert.doesNotMatch(e.ev || '', /member of staff|pupil-level|panel minutes|Case reviews for|plans for the pupils|list by/i, id);
+});
+test('council: I2 reads correctly when several measures are within one pupil', () => {
+  assert.match(T.QUESTION_BANK.I2.q, /\{within\}: each within one pupil of the national figure/);
+});
+
+test('version is 4.x and the question bank is its own file', () => {
+  assert.match(T.VERSION, /^4\.\d /); assert.match(src('idsr.html'), /<script src="\/questions\.js"><\/script>\s*<script src="\/core\.js"><\/script>/);
 });

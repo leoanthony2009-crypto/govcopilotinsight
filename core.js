@@ -1,4 +1,4 @@
-const VERSION='4.0 (November 2026)';
+const VERSION='4.1 (November 2026)';
 /* IDSR releases this version has been checked against. An IDSR released after the last one still loads, with a warning. */
 const TESTED_RELEASES=['25 September 2026'];
 /* Ofsted suppresses cohorts of 5 or fewer in the IDSR; this tool uses the same line for small counts. */
@@ -237,9 +237,9 @@ const REF_RULES=[
 const refFor=(area,q)=>{ const r=REF_RULES.find(([a,re])=>a===area&&re.test(q)); return r?r[2]:null; };
 const refLabel=k=>{ const r=TOOLKIT.refs[k]; return r?(r.theme?`${r.area}: ${r.theme}`:r.area):''; };
 /* ---- v4 question helpers ----
-   joinList: a list as natural English ("a", "a and b", "a, b, and c"); semicolons when an item already holds a comma. */
+   joinList: a list as natural English ("a", "a and b", "a, b, and c"); semicolons in a list of three or more when an item already holds a comma. */
 const joinList=items=>{ const a=(items||[]).filter(x=>x!=null&&String(x).trim()!=='').map(x=>String(x).trim()); if(a.length<2) return a[0]||'';
-  const comma=a.some(x=>x.includes(',')); if(a.length===2&&!comma) return a[0]+' and '+a[1]; const sep=comma?'; ':', '; return a.slice(0,-1).join(sep)+sep+'and '+a[a.length-1]; };
+  const comma=a.some(x=>x.includes(',')); if(a.length===2) return a[0]+' and '+a[1]; const sep=comma?'; ':', '; return a.slice(0,-1).join(sep)+sep+'and '+a[a.length-1]; };
 /* sortFigures: statistically significant before not significant, latest year before multi-year average, then the usual measure order. */
 const sortFigures=items=>(items||[]).map((x,i)=>({x,i})).sort((p,q)=>((p.x.sig?0:1)-(q.x.sig?0:1))||((p.x.avg?1:0)-(q.x.avg?1:0))||((p.x.order||0)-(q.x.order||0))||(p.i-q.i)).map(o=>o.x);
 /* fillTemplate: {name} is replaced by data.name. [[ ... ]] is an optional clause, dropped whole when any {name} inside it has no
@@ -251,10 +251,18 @@ function fillTemplate(tpl,data){ data=data||{}; const has=k=>{ const v=data[k]; 
   out=out.replace(/\{(\w+)\}/g,(_,k)=>{ if(!has(k)){ miss=true; return ''; } return String(data[k]).trim(); });
   if(miss) return null;
   return out.replace(/\s+/g,' ').replace(/\s+([,.;:?!)])/g,'$1').replace(/\(\s+/g,'(').replace(/\(\)/g,'').replace(/[,;:](?=[.?;])/g,'').replace(/\s+([,.;:?!)])/g,'$1').trim(); }
-/* The one-page briefing: questions in priority order, at most two from one area unless nothing else is left. */
-function pickOnePage(qs,n){ const out=[],held=[],count={}; for(const q of qs||[]){ if(out.length>=n) break; if((count[q.area]||0)<2){ out.push(q); count[q.area]=(count[q.area]||0)+1; } else held.push(q); }
+/* The one-page briefing: questions in priority order; one from each area when three or fewer are shown, otherwise at most two,
+   unless too few areas have a question. */
+function pickOnePage(qs,n){ const out=[],held=[],count={},cap=n<=3?1:2; for(const q of qs||[]){ if(out.length>=n) break; if((count[q.area]||0)<cap){ out.push(q); count[q.area]=(count[q.area]||0)+1; } else held.push(q); }
   for(const q of held){ if(out.length>=n) break; out.push(q); } return n>0?(qs||[]).filter(q=>out.includes(q)).slice(0,n):[]; }
 const TOP_QUESTIONS=10;
+/* The {names} the engine supplies for each bank entry. A test checks every template in questions.js against this list,
+   so a misspelt {name} is caught before it can silently remove a clause or a whole question. */
+const QUESTION_TOKENS={A1:['avgLabel','these','figures','latest'],A2:['theseWere','year','avgLabel','figures'],A3:['subject','year','figures','sigNote','kPupils'],A3G:['subject','year','figures','sigNote','kPupils'],A3P:['subject','year','figures','sigNote'],
+  A4:['figures'],A5:['avgLabel','these','figures'],A6:['theseGroups','figures'],A7:['school','nat','year'],A8:['school','nat','year'],A9:['school','band'],A10:['figures'],SIMB:['year','measure','school','sim'],SIMA:['year','measure','school','sim'],SP1:[],
+  I1:['subject','subjectLc','gap','kPupils','n'],I2:['within'],I3:['pa','paNat','paNote','gaps'],I4:['value','la'],I5:['figures'],I6:['need','n'],I7:['value','band'],I8:['value'],I9:[],I10:['pa','paNat','paNote','susp','suspNat','suspNote'],I11:['figures'],I12:['pa','paNat','sigNote'],
+  B1:['groups','term'],B2:['groups','term'],B2D:['groups','term'],B3:['hot'],B4:['groups','repeat'],B5:['counts'],B6:['lead'],B7:['school','nat'],
+  L1T:['statement'],L1S:['statement'],L1O:['statement'],L2:['statement','subjects'],L3:[],L4:['n','achLabel','pp'],L5:[],L6:['value','subjects','sigNote'],C1:['band','value','range'],E1:['gld','lit','math']};
 const latest=rows=>(rows||[]).filter(r=>isYear(r.year)&&r.schoolN!=null).sort((a,b)=>yearKey(b.year)-yearKey(a.year))[0];
 /* "2025/26 (1 term)" is a part-year figure: say so wherever it is quoted. "(3 term)" is a full year. */
 const termNote=y=>{ const m=(y||'').match(/\((\d)\s*term/i); return !m||m[1]==='3'?'':m[1]==='1'?', autumn term only':', autumn and spring terms only'; };
@@ -353,14 +361,15 @@ function analyse(m){
   // ---- Context / inclusion
   const ch=m.characteristics, y=m.charYears[m.charYears.length-1]; const val=n=>{ const o=ch[n]; return o&&o[y]?o[y]:null; };
   const ctx={nor:val('School number on roll'),fsm:val('School % FSM6'),senS:val('School % SEN support'),ehcp:val('School % EHC plan'),eal:val('School % EAL'),stab:val('School % stability'),cin:val('School % CIN'),dep:val('School location deprivation'),laSen:val('Local area % SEN support'),year:y};
-  if(m.sen.needs.length){ const byNeed=Object.create(null); m.sen.needs.forEach(n=>byNeed[n.need]=(byNeed[n.need]||0)+(n.n||0)); const top=Object.entries(byNeed).sort((a,b)=>b[1]-a[1])[0]; const partHidden=top&&SUPPRESS&&m.sen.needs.some(n=>n.need===top[0]&&n.n>0&&n.n<=SMALL); if(top) F.need={name:top[0].toLowerCase(),n:partHidden?null:cnt(top[1])}; }
+  if(m.sen.needs.length){ const byNeed=Object.create(null); m.sen.needs.forEach(n=>byNeed[n.need]=(byNeed[n.need]||0)+(n.n||0)); const top=Object.entries(byNeed).sort((a,b)=>b[1]-a[1])[0]; const partHidden=top&&SUPPRESS&&m.sen.needs.some(n=>n.need===top[0]&&n.n>0&&n.n<=SMALL); if(top) F.need={name:top[0].toLowerCase(),total:top[1],n:partHidden||m.sen.needs.some(n=>n.need===top[0]&&n.n==null)?null:cnt(top[1])}; }
 
   // ---- Leadership / staffing
-  const staffHigh=m.staffing.filter(s=>!/nothing to highlight|no full-time vacant|there were no/i.test(s));
+  const staffHigh=m.staffing.filter(s=>!/nothing to highlight|no full-time vacant|there were no|not available|no data|not published/i.test(s));
   staffHigh.forEach(s=>{ Cn(s.replace(/\.$/,'')+'.',4,{section:'Context of the school',group:'Staffing',measure:'School workforce census statement',year:'',cohort:null,school:'–',nat:'–',band:'Ofsted highlight',trend:s}); });
   if(!staffHigh.length&&m.staffing.length) S('Workforce census: nothing flagged for the support-staff ratio, teacher sickness absence, vacancies or turnover.',6,m.staffing.map(st=>({section:'Context of the school',group:'Staffing',measure:'School workforce census statement',year:'',cohort:null,school:'–',nat:'–',band:'"nothing to highlight"',trend:st})));
   // ---- QUESTIONS (v4). The wording is in questions.js (QUESTION_BANK); the rules here decide which entries fire.
   //      One finding, one question: figures are merged by subject and by measure, and a compound rule absorbs its parts.
+  //      A question never drops a caveat its figures carry: part-year, not statistically significant, no test published.
   const ask=(id,data,o)=>{ const e=QUESTION_BANK[id]; if(!e) return null; let q=fillTemplate(e.q,data||{}); if(!q) return null; const brief=(e.brief&&fillTemplate(e.brief,data||{}))||q; if(o&&o.add) q+=' '+o.add;
     const item={id,area:e.area,q,brief,ev:e.ev,pri:o&&o.sig&&e.priSig!=null?e.priSig:e.pri,ref:e.ref}; questions.push(item); return item; };
   const fig=(x,r)=>`${x.short} ${r.school} vs ${r.nat}`;
@@ -369,30 +378,34 @@ function analyse(m){
   const OWN_RE=/^(Phonics expected standard|Year 4 MTC score)$|progress 8/i;   // measures with a question of their own (A7, A8, A9): kept out of the merged lists so a figure is not repeated
   const lc=s=>/^(English|EBacc|Progress 8|Attainment 8|Year )/.test(s)?s:s.replace(/^[A-Z](?=[a-z])/,c=>c.toLowerCase());
   const latestYear=Math.max(-1,...latestAtt.map(x=>yearKey(x.row.year)));
-  const fresh=r=>latestYear<0||!isYear(r.year)||yearKey(r.year)>=latestYear-1;       // no question on data more than a year older than the latest results
-  const pupilsWord=(gap,cohort)=>{ if(gap==null||!cohort) return null; const k=Math.round(Math.abs(gap)/(100/cohort)); if(!(k>=1)) return null; return SUPPRESS&&k<=SMALL?`${SMALL} or fewer pupils`:`about ${k} pupil${k===1?'':'s'}`; };
+  const fresh=r=>latestYear<0||!isYear(r.year)||yearKey(r.year)>=latestYear-1;       // no achievement question on data more than a year older than the latest results
+  /* A gap as a number of pupils. When small numbers are hidden and the answer is 5 or fewer it is left out altogether:
+     printing "5 or fewer" beside a percentage and a cohort size would let the reader work the number out. */
+  const pupilsWord=(gap,cohort)=>{ if(gap==null||!cohort) return null; const k=Math.round(Math.abs(gap)/(100/cohort)); if(!(k>=1)||(SUPPRESS&&k<=SMALL)) return null; return `about ${k} pupil${k===1?'':'s'}`; };
   const sigNoteOf=rows=>{ const s=rows.filter(r=>r.band&&r.band.sig).length; if(s===rows.length) return 'statistically significant'; if(s) return null; const n=[...new Set(rows.map(r=>nsg(r.band)))]; return n.length===1?n[0]:'not statistically significant, or not tested'; };
   const simNum=r=>r&&r.sim!=null?num(unmark(String(r.sim))):null;
-  const simAdd=keys=>{ for(const k of keys){ if(PROG_RE.test(k)) continue; const r=latest(all[k]), s=simNum(r); if(r&&s!=null&&r.schoolN!=null) return fillTemplate(QUESTION_BANK[r.schoolN<s?'SIMB':'SIMA'].q,{year:yearLabel(r.year),measure:shortOf(k),school:r.school,sim:unmark(String(r.sim))}); } return null; };
+  /* Similar-schools sentence: only for a latest result that is itself below national, so "also below" and "remaining gap" are true. */
+  const simAdd=keys=>{ for(const k of keys){ if(PROG_RE.test(k)) continue; const r=latest(all[k]), s=simNum(r); if(usable(r)&&s!=null&&r.schoolN<r.natN&&fresh(r)) return fillTemplate(QUESTION_BANK[r.schoolN<s?'SIMB':'SIMA'].q,{year:yearLabel(r.year),measure:shortOf(k),school:r.school,sim:unmark(String(r.sim))}); } return null; };
   const texts=items=>joinList(sortFigures(items).map(i=>i.text));
   const pct=v=>v==null?'':` (${v}%)`;
+  const plural=(n,one,many)=>n===1?one:many;
 
   // Achievement
   const sigSubjects=new Set(), belowSubjects=new Set();
   const down=fDown.filter(({a})=>usable(a));
   if(down.length){ down.forEach(({x})=>sigSubjects.add(subjOf(x.key)));
     const items=sortFigures(down.map(({x,a})=>({text:fig(x,a),sig:true,avg:true,order:orderOf(x.key),key:x.key})));
-    const lat=[...latestAtt,...latestProg].filter(x=>sigSubjects.has(subjOf(x.key))&&usable(x.row)&&x.row.band&&x.row.band.dir<0&&fresh(x.row));
+    const lat=[...latestAtt,...latestProg].filter(x=>!OWN_RE.test(x.key)&&sigSubjects.has(subjOf(x.key))&&usable(x.row)&&x.row.band&&x.row.band.dir<0&&fresh(x.row));
     let latestTxt=null; if(lat.length){ const yrs=[...new Set(lat.map(x=>yearLabel(x.row.year)))], note=sigNoteOf(lat.map(x=>x.row));
       const li=lat.map(x=>({text:fig(x,x.row)+(yrs.length>1?` in ${yearLabel(x.row.year)}`:'')+(!note&&x.row.band.sig?' (significant)':''),sig:!!x.row.band.sig,avg:false,order:orderOf(x.key)}));
-      latestTxt=`${texts(li)} (${[yrs.length===1?yrs[0]:null,note||'the others not statistically significant'].filter(Boolean).join('; ')})`; }
-    ask('A1',{avgLabel,figures:joinList(items.map(i=>i.text)),latest:latestTxt},{add:simAdd(items.map(i=>i.key))}); }
+      latestTxt=`${texts(li)} (${[yrs.length===1?yrs[0]:null,note||'the others not significant or not tested'].filter(Boolean).join('; ')})`; }
+    ask('A1',{avgLabel,these:plural(items.length,'this result is','these results are'),figures:joinList(items.map(i=>i.text)),latest:latestTxt},{add:simAdd(items.map(i=>i.key))}); }
   const a1Subjects=new Set(sigSubjects);
   [...latestAtt,...latestProg].forEach(x=>{ if(OWN_RE.test(x.key)&&usable(x.row)&&x.row.band&&x.row.band.dir<0&&fresh(x.row)){ belowSubjects.add(subjOf(x.key)); if(x.row.band.sig) sigSubjects.add(subjOf(x.key)); } });
   const dip=[...latestAtt,...latestProg].filter(x=>!OWN_RE.test(x.key)&&usable(x.row)&&x.row.band&&x.row.band.sig&&x.row.band.dir<0&&fresh(x.row)&&!a1Subjects.has(subjOf(x.key)));
-  if(dip.length){ const dy=[...new Set(dip.map(x=>yearLabel(x.row.year)))], one=dy.length===1; const tag=x=>{ const p=[one?null:yearLabel(x.row.year),x.row.cohort!=null?`n = ${cnt(x.row.cohort)}`:null].filter(Boolean).join(', '); return p?` (${p})`:''; };
+  if(dip.length){ const dy=[...new Set(dip.map(x=>yearLabel(x.row.year)))], oneYear=dy.length===1; const tag=x=>{ const p=[oneYear?null:yearLabel(x.row.year),x.row.cohort!=null?`n = ${cnt(x.row.cohort)}`:null].filter(Boolean).join(', '); return p?` (${p})`:''; };
     const items=sortFigures(dip.map(x=>({text:fig(x,x.row)+tag(x),sig:true,avg:false,order:orderOf(x.key),key:x.key})));
-    if(ask('A2',{year:one?dy[0]:null,avgLabel:dip.every(x=>x.avg)?avgLabel:null,figures:joinList(items.map(i=>i.text))},{add:simAdd(items.map(i=>i.key))})) dip.forEach(x=>sigSubjects.add(subjOf(x.key))); }
+    if(ask('A2',{theseWere:plural(items.length,'This result was','These results were'),year:oneYear?dy[0]:null,avgLabel:dip.every(x=>x.avg)?avgLabel:null,figures:joinList(items.map(i=>i.text))},{add:simAdd(items.map(i=>i.key))})) dip.forEach(x=>sigSubjects.add(subjOf(x.key))); }
   sigSubjects.forEach(s=>belowSubjects.add(s));
   const weak=[...latestAtt,...latestProg].filter(x=>!OWN_RE.test(x.key)&&usable(x.row)&&x.row.band&&!x.row.band.sig&&x.row.band.dir<0&&fresh(x.row)&&!sigSubjects.has(subjOf(x.key)));
   [...new Set(weak.map(x=>subjOf(x.key)))].forEach(subject=>{ const rows=weak.filter(x=>subjOf(x.key)===subject), yrs=[...new Set(rows.map(x=>yearLabel(x.row.year)))].sort();
@@ -402,48 +415,56 @@ function analyse(m){
     const onlyProgress=rows.every(x=>PROG_RE.test(x.key)), standards=rows.every(x=>PROG_RE.test(x.key)||/standard|greater depth/i.test(x.key));
     if(ask(onlyProgress?'A3P':standards?'A3':'A3G',{subject,year:joinList(yrs),figures:joinList(items.map(i=>i.text)),sigNote:sigNoteOf(rows.map(x=>x.row)),kPupils:kWord?kWord+(rows.length>1?` for ${firstPct.short}`:''):null},{add:simAdd(items.map(i=>i.key))})) belowSubjects.add(subject); });
   if(F.hs) ask('A4',{figures:joinList(F.hs)});
-  const up=fUp.filter(({a})=>usable(a)); if(up.length) ask('A5',{avgLabel,figures:texts(up.map(({x,a})=>({text:fig(x,a),sig:true,avg:true,order:orderOf(x.key)})))});
+  const up=fUp.filter(({a})=>usable(a)); if(up.length) ask('A5',{avgLabel,these:plural(up.length,'this result is','these results are'),figures:texts(up.map(({x,a})=>({text:fig(x,a),sig:true,avg:true,order:orderOf(x.key)})))});
   { const g6=[]; groupProg.forEach(o=>o.cells.forEach((r,i)=>{ if(r&&r.schoolN!=null&&r.band&&r.band.dir<0&&fresh(r)&&(r.band.sig||(r.cohort!=null&&r.cohort>=11))) g6.push({text:`${o.g} in ${lc(subjOf(progKeys[i]))} (${r.school} in ${yearLabel(r.year)}${r.cohort!=null?`, n = ${cnt(r.cohort)}`:''}; ${r.band.sig?'statistically significant':'not statistically significant'})`,sig:!!r.band.sig,avg:false,order:i}); }));
-    if(g6.length) ask('A6',{figures:texts(g6)},{sig:g6.some(i=>i.sig)}); }
-  { const ph=latest(all['Phonics expected standard']); if(usable(ph)&&ph.band&&ph.band.dir<=0) ask('A7',{school:ph.school,nat:ph.nat});
-    const mtc=latest(all['Year 4 MTC score']); if(usable(mtc)&&mtc.band&&mtc.band.dir<=0) ask('A8',{school:mtc.school,nat:mtc.nat}); }
+    if(g6.length) ask('A6',{theseGroups:plural(g6.length,'This group','These groups'),figures:texts(g6)},{sig:g6.some(i=>i.sig)}); }
+  { const ph=latest(all['Phonics expected standard']); if(usable(ph)&&ph.band&&ph.band.dir<=0&&fresh(ph)) ask('A7',{school:ph.school,nat:ph.nat,year:yearLabel(ph.year)});
+    const mtc=latest(all['Year 4 MTC score']); if(usable(mtc)&&mtc.band&&mtc.band.dir<=0&&fresh(mtc)) ask('A8',{school:mtc.school,nat:mtc.nat,year:yearLabel(mtc.year)}); }
   if(F.p8&&F.p8.schoolN!=null&&!down.some(({x})=>/progress 8/i.test(x.key))) ask('A9',{school:F.p8.school,band:bandWords(F.p8.band)});
-  { const sims=latestAtt.filter(x=>{ const r=x.row, s=simNum(r); if(PROG_RE.test(x.key)||!usable(r)||s==null||!r.band||r.band.dir<0||s<=r.schoolN||!/%/.test(String(r.school))) return false; return r.simBand?r.simBand.dir<0:!!(r.cohort&&s-r.schoolN>100/r.cohort); });
+  { const sims=latestAtt.filter(x=>{ const r=x.row, s=simNum(r); if(PROG_RE.test(x.key)||!usable(r)||!fresh(r)||s==null||!r.band||r.band.dir<0||s<=r.schoolN||!/%/.test(String(r.school))) return false; return r.simBand?r.simBand.dir<0:!!(r.cohort&&s-r.schoolN>100/r.cohort); });
     if(sims.length) ask('A10',{figures:joinList(sims.map(x=>`${x.short} ${x.row.school} (national ${x.row.nat}, similar schools ${unmark(String(x.row.sim))})`))}); }
   if(m.phase.isSpecial) ask('SP1');
 
-  // Inclusion (compound rules first: each absorbs the stand-alone questions it is built from)
+  // Attendance and behaviour rows. While small numbers are hidden, no question is asked about a group of 10 or fewer:
+  // a rate for so few pupils can show what happened to nearly all of them.
   const gFSM=attLines.find(x=>x.g==='FSM6'), gSEN=attLines.find(x=>x.g==='SEN'), gAll=attLines.find(x=>x.g==='All pupils');
-  const isAbove=r=>!!(r&&r.schoolN!=null&&r.natN!=null&&r.band&&r.band.dir>0);
+  const tooFew=r=>!!(SUPPRESS&&r&&r.cohort!=null&&r.cohort<=10);
+  const isAbove=r=>!!(usable(r)&&r.band&&r.band.dir>0&&!tooFew(r));
+  const qLabel=x=>x.g==='FSM6'?'disadvantaged (FSM6) pupils':x.label;
+  const term=r=>termNote(r.year).replace(/^,\s*/,'');
+  const rising=r=>/Sig increase/i.test(r.trend||'');
+  const rateNote=(r,withYear)=>[withYear?yearLabel(r.year):null,term(r)||null,r.band&&r.band.sig?null:nsg(r.band),rising(r)?'rising significantly':null].filter(Boolean).join(', ');
+
+  // Inclusion (compound rules first: each absorbs the stand-alone question it is built from, and keeps that question's caveats)
   const gapName=x=>x.short.replace(/ expected$/,'');
-  const i3=!!(F.dis&&gFSM&&isAbove(gFSM.pa)&&ask('I3',{pa:gFSM.pa.school,paNat:gFSM.pa.nat,gaps:joinList(F.dis.behind.map(x=>`${gapName(x)} (${fmtGap(x.r.gapN,x.k)})`))}));
-  const i10=!!(gSEN&&isAbove(gSEN.pa)&&isAbove(gSEN.s1)&&ask('I10',{pa:gSEN.pa.school,paNat:gSEN.pa.nat,susp:gSEN.s1.school,suspNat:gSEN.s1.nat}));
-  if(F.dis&&!i3){ const w=F.dis.w, isPct=/%/.test(String(w.r.school)), k=isPct?pupilsWord(w.r.gapN,w.r.cohort):null; ask('I1',{subject:gapName(w),subjectLc:lc(gapName(w)),gap:fmtGap(w.r.gapN,w.k),kPupils:k,n:k&&w.r.cohort!=null?cnt(w.r.cohort):null}); }
+  const disF=F.dis&&fresh(F.dis.w.r)?F.dis:null;
+  const i3=!!(disF&&gFSM&&isAbove(gFSM.pa)&&ask('I3',{pa:gFSM.pa.school,paNat:gFSM.pa.nat,paNote:rateNote(gFSM.pa),gaps:joinList(disF.behind.map(x=>`${gapName(x)} (${fmtGap(x.r.gapN,x.k)})`))},{sig:!!gFSM.pa.band.sig}));
+  const i10=!!(gSEN&&isAbove(gSEN.pa)&&isAbove(gSEN.s1)&&ask('I10',{pa:gSEN.pa.school,paNat:gSEN.pa.nat,paNote:rateNote(gSEN.pa,true),susp:gSEN.s1.school,suspNat:gSEN.s1.nat,suspNote:rateNote(gSEN.s1,true)},{sig:!!(gSEN.pa.band.sig||gSEN.s1.band.sig)}));
+  if(disF&&!i3){ const w=disF.w, isPct=/%/.test(String(w.r.school)), k=isPct?pupilsWord(w.r.gapN,w.r.cohort):null; ask('I1',{subject:gapName(w),subjectLc:lc(gapName(w)),gap:fmtGap(w.r.gapN,w.k),kPupils:k,n:k&&w.r.cohort!=null?cnt(w.r.cohort):null}); }
   if(F.disOk) ask('I2',{within:joinList(F.disOk.within.map(x=>`${gapName(x)} ${fmtGap(x.r.gapN,x.k)}`))});
   if(ctx.senS&&ctx.senS.dir<0) ask('I4',{value:ctx.senS.value,la:ctx.laSen?ctx.laSen.value:null});
   { const hi=[]; if(ctx.senS&&ctx.senS.dir>0) hi.push('SEN support'+pct(ctx.senS.value)); if(ctx.ehcp&&ctx.ehcp.dir>0) hi.push('an EHC plan'+pct(ctx.ehcp.value)); if(hi.length) ask('I5',{figures:joinList(hi)}); }
-  if(F.need) ask('I6',{need:F.need.name,n:F.need.n});
+  if(F.need&&F.need.total>0&&!(SUPPRESS&&F.need.total<=SMALL)) ask('I6',{need:F.need.name,n:F.need.n});
   if(ctx.cin&&ctx.cin.dir>0&&ctx.cin.band) ask('I7',{value:ctx.cin.value,band:ctx.cin.band.toLowerCase()});
   if(F.ap) ask('I9');
   { const hi=[]; if(ctx.fsm&&ctx.fsm.dir>=2) hi.push('FSM6 eligibility well above average'+pct(ctx.fsm.value)); if(ctx.dep&&ctx.dep.dir>=2) hi.push('location deprivation well above average'); if(hi.length) ask('I11',{figures:joinList(hi)}); }
-  if(!i10&&gSEN&&gSEN.pa&&gSEN.pa.schoolN!=null&&gSEN.pa.natN!=null&&gSEN.pa.schoolN>gSEN.pa.natN&&!(gSEN.pa.band&&gSEN.pa.band.dir>0)) ask('I12',{pa:gSEN.pa.school,paNat:gSEN.pa.nat,n:gSEN.pa.cohort!=null?cnt(gSEN.pa.cohort):null});
+  { const p=gSEN&&gSEN.pa; if(!i10&&usable(p)&&!tooFew(p)&&!(p.band&&p.band.dir>0)&&p.schoolN-p.natN>=(p.cohort?100/p.cohort:1)) ask('I12',{pa:p.school,paNat:p.nat,sigNote:nsg(p.band)}); }
 
-  // Attendance and behaviour (one question per measure, covering every group that fires)
-  const absorbed=g=>(g==='FSM6'&&i3)||(g==='SEN'&&i10);
-  const sameTerm=rows=>{ const t=[...new Set(rows.map(r=>termNote(r.year)))]; return t.length===1&&t[0]?t[0].replace(/^,\s*/,''):null; };
-  const grp=(x,r,i)=>({text:`${x.label} (${r.school} vs ${r.nat})`,sig:!!(r.band&&r.band.sig),avg:false,order:i});
-  { const g=attLines.map((x,i)=>({x,i})).filter(o=>isAbove(o.x.pa)&&!absorbed(o.x.g));
-    if(g.length) ask('B1',{groups:texts(g.map(o=>grp(o.x,o.x.pa,o.i))),term:sameTerm(g.map(o=>o.x.pa)),rising:g.some(o=>/Sig increase/i.test(o.x.pa.trend||''))?'rising significantly':null},{sig:g.some(o=>o.x.pa.band.sig)}); }
-  { const lowA=r=>!!(r&&r.schoolN!=null&&r.natN!=null&&r.band&&r.band.dir<0); const g=attLines.map((x,i)=>({x,i})).filter(o=>lowA(o.x.att));
-    if(g.length) ask('B2',{groups:texts(g.map(o=>grp(o.x,o.x.att,o.i))),term:sameTerm(g.map(o=>o.x.att)),declining:g.some(o=>/decline/i.test(o.x.att.trend||''))?'declining against the national trend':null});
-    const d=attLines.map((x,i)=>({x,i})).filter(o=>o.x.att&&o.x.att.schoolN!=null&&!lowA(o.x.att)&&/Relative decline/i.test(o.x.att.trend||''));
-    if(d.length) ask('B2D',{groups:joinList(d.map(o=>`${o.x.label} (${o.x.att.school})`)),term:sameTerm(d.map(o=>o.x.att))}); }
+  // Attendance and behaviour (one question per measure, covering every group that fires; each group carries its own caveats)
+  const withNotes=(x,r,i,notes)=>({text:`${qLabel(x)} (${r.school} vs ${r.nat}${notes.filter(Boolean).map(n=>', '+n).join('')})`,sig:!!(r.band&&r.band.sig),avg:false,order:i});
+  const sameTerm=rows=>{ const t=[...new Set(rows.map(term))]; return t.length===1&&t[0]?t[0]:null; };
+  { const g=attLines.map((x,i)=>({x,i})).filter(o=>isAbove(o.x.pa)&&!(o.x.g==='FSM6'&&i3)&&!(o.x.g==='SEN'&&i10));
+    if(g.length) ask('B1',{groups:texts(g.map(o=>withNotes(o.x,o.x.pa,o.i,[o.x.pa.band.sig?null:nsg(o.x.pa.band),rising(o.x.pa)?'rising significantly':null]))),term:sameTerm(g.map(o=>o.x.pa))},{sig:g.some(o=>o.x.pa.band.sig)}); }
+  { const lowA=r=>!!(usable(r)&&r.band&&r.band.dir<0&&r.schoolN<r.natN&&!tooFew(r)); const g=attLines.map((x,i)=>({x,i})).filter(o=>lowA(o.x.att));
+    if(g.length) ask('B2',{groups:texts(g.map(o=>withNotes(o.x,o.x.att,o.i,[/decline/i.test(o.x.att.trend||'')?'declining against the national trend':null]))),term:sameTerm(g.map(o=>o.x.att))});
+    const d=attLines.map((x,i)=>({x,i})).filter(o=>o.x.att&&o.x.att.schoolN!=null&&!tooFew(o.x.att)&&!lowA(o.x.att)&&/Relative decline/i.test(o.x.att.trend||''));
+    if(d.length) ask('B2D',{groups:joinList(d.map(o=>`${qLabel(o.x)} (${o.x.att.school})`)),term:sameTerm(d.map(o=>o.x.att))}); }
   if(F.hot) ask('B3',{hot:joinList(F.hot)});
-  { const g=attLines.map((x,i)=>({x,i})).filter(o=>isAbove(o.x.s1)&&!absorbed(o.x.g));
-    if(g.length) ask('B4',{groups:texts(g.map(o=>grp(o.x,o.x.s1,o.i))),repeat:g.some(o=>isAbove(o.x.s2))?'including repeat suspensions':null},{sig:g.some(o=>o.x.s1.band.sig)}); }
+  { const g=attLines.map((x,i)=>({x,i})).filter(o=>isAbove(o.x.s1)&&!(o.x.g==='SEN'&&i10));
+    if(g.length) ask('B4',{groups:texts(g.map(o=>withNotes(o.x,o.x.s1,o.i,[o.x.s1.band.sig?null:nsg(o.x.s1.band)]))),repeat:g.some(o=>isAbove(o.x.s2))?'including repeat suspensions':null},{sig:g.some(o=>o.x.s1.band.sig)}); }
   if(F.suspRise) ask('B5',{counts:F.suspRise});
   if(F.excl) ask('B6',{lead:F.excl});
-  if(gAll&&gAll.pa&&gAll.pa.schoolN!=null&&gAll.pa.natN!=null&&gAll.pa.band&&gAll.pa.band.sig&&gAll.pa.band.dir<0) ask('B7',{school:gAll.pa.school,nat:gAll.pa.nat});
+  if(gAll&&usable(gAll.pa)&&gAll.pa.band&&gAll.pa.band.sig&&gAll.pa.band.dir<0) ask('B7',{school:gAll.pa.school,nat:gAll.pa.nat});
 
   // Leadership, curriculum and early years
   const flag=s=>s.replace(/\.$/,'').replace(/"/g,"'");
@@ -452,18 +473,18 @@ function analyse(m){
   ask('L3');
   if(mainRow&&mainRow.cohort&&mainRow.cohort<40&&/%/.test(String(mainRow.school))) ask('L4',{n:mainRow.cohort,achLabel,pp:Math.round(100/mainRow.cohort*10)/10});
   if(/academy|free school/i.test(m.school.type||'')) ask('L5');
-  const lowStab=ctx.stab&&ctx.stab.dir<0;
-  const l6=!!(lowStab&&belowSubjects.size&&ask('L6',{value:ctx.stab.value,subjects:joinList([...belowSubjects].map(lc))}));
+  const lowStab=ctx.stab&&ctx.stab.dir<0; const anySig=[...belowSubjects].some(s=>sigSubjects.has(s));
+  const l6=!!(lowStab&&belowSubjects.size&&ask('L6',{value:ctx.stab.value,subjects:joinList([...belowSubjects].map(lc)),sigNote:anySig?null:'not statistically significant'},{sig:anySig}));
   if(lowStab&&!l6) ask('I8',{value:ctx.stab.value});
   if(ctx.eal&&ctx.eal.dir>0&&ctx.eal.band&&m.yearGroups.length){ const r=m.yearGroups.map(g=>g.eal).filter(v=>v!=null); ask('C1',{band:ctx.eal.band.toLowerCase(),value:ctx.eal.value,range:r.length&&ctx.eal.value!=null?`${Math.round(Math.min(...r))}–${Math.round(Math.max(...r))}`:null}); }
   if(m.phase.hasKS2&&m.eyfs['Good level of development']!=null){ const lit=m.eyfs['Literacy'], math=m.eyfs['Mathematics']; ask('E1',{gld:m.eyfs['Good level of development'],lit:lit!=null&&math!=null?lit:null,math:lit!=null&&math!=null?math:null}); }
-
   strengths.sort((a,b)=>a.pri-b.pri); concerns.sort((a,b)=>a.pri-b.pri);
   /* Questions follow the priority of the headline they belong to; within one priority they rotate across areas. */
   const areaOrder=['ach','att','inc','lead','cur','ey']; const rr=[]; [...new Set(questions.map(q=>q.pri))].sort((a,b)=>a-b).forEach(pri=>{ const tier=questions.filter(q=>q.pri===pri); const byArea=areaOrder.map(a=>tier.filter(q=>q.area===a)); let added=0; for(let i=0;added<tier.length;i++) byArea.forEach(l=>{ if(l[i]){ rr.push(l[i]); added++; } }); });
   /* The full briefing leads with the first TOP_QUESTIONS; the rest are listed as further prompts. One strength question is always kept. */
   const qTop=rr.slice(0,TOP_QUESTIONS), qMore=rr.slice(TOP_QUESTIONS); const isStrength=q=>!!(QUESTION_BANK[q.id]&&QUESTION_BANK[q.id].strength);
-  if(qMore.some(isStrength)&&!qTop.some(isStrength)){ const i=qMore.findIndex(isStrength); const st=qMore.splice(i,1)[0]; qMore.unshift(qTop.pop()); qTop.push(st); }
+  if(qMore.some(isStrength)&&!qTop.some(isStrength)){ let j=-1; qTop.forEach((q,i)=>{ if(q.pri>=3) j=i; });   // the strength question may only replace the lowest question of priority 3 or below
+    if(j>=0){ const i=qMore.findIndex(isStrength); const st=qMore.splice(i,1)[0]; qMore.unshift(qTop.splice(j,1)[0]); qTop.push(st); } }
 
   // ---- Tables
   const attTable=latestAtt.map(x=>({name:x.name,short:x.short,school:x.row.school,nat:x.row.nat,n:x.row.cohort,j:judge(x.row.band),year:yearLabel(x.row.year),avg:x.avg?x.avg.school:'',avgJ:x.avg?judge(x.avg.band):null,avgLabel:x.avg?x.avg.year:'',sim:x.row.sim?unmark(x.row.sim):'',simText:x.row.simBand?x.row.simBand.text:''}));
@@ -541,7 +562,7 @@ function profileItems(m,on){ const out=[]; if(m.sen.needs.length){ const byNeed=
   return out; }
 function trendsHTML(an,short){ if(!an.trendGroups.length) return '<p class="note">Not enough years of data for trends.</p>'; return `<table class="tr" style="table-layout:fixed"><caption class="vh">Trends over time</caption>${an.trendGroups.map(g=>`<thead><tr><th style="width:30%" scope="col">${esc(g.title)}</th><th class="n" style="width:36%" scope="col">Oldest → latest</th><th style="width:18%" scope="col">Comparator</th><th scope="col">Latest vs national</th></tr></thead><tbody>${g.rows.map(r=>`<tr><td>${esc(r.label)}</td><td class="n s"><b>${r.values.map(v=>`<span>${esc(v)}</span>`).join(' → ')}</b></td><td>${esc(r.comp)}</td><td>${jHTML(r.j)}</td></tr>`).join('')}</tbody>`).join('')}</table>`; }
 /* The toolkit themes a set of questions relates to, each with its paraphrased expected standard, listed once. */
-const MORE_NOTE='These also fired from the data but rank below the questions above. They are listed without evidence lines.';
+const MORE_NOTE='The data also prompted these. They rank below the questions above and are listed without evidence lines.';
 function morePromptsHTML(an){ const l=an.questionsMore||[]; return l.length?`<div class="keep"><h3 style="margin:8pt 0 4pt">Further prompts</h3><p class="note" style="margin:0 0 4pt">${esc(MORE_NOTE)}</p><ul class="q">${l.map(q=>`<li><span class="tag">${esc(AREAS[q.area])}</span><span class="vh">: </span>${esc(q.q)}</li>`).join('')}</ul></div>`:''; }
 function toolkitThemes(qs){ return [...new Set(qs.map(q=>q.ref).filter(Boolean))].map(k=>TOOLKIT.refs[k]).filter(r=>r&&r.theme&&r.gist); }
 function qHTML(qs,grouped){ if(!qs.length) return '<p class="note">No questions generated.</p>'; if(grouped){ const areas=[...new Set(qs.map(q=>q.area))]; return areas.map(a=>{ const list=qs.filter(q=>q.area===a); const th=toolkitThemes(list); return `<div class="keep"><h3 style="margin:8pt 0 4pt">${esc(AREAS[a])}</h3>${th.length?`<p class="note" style="margin:0 0 4pt"><b>What the toolkit looks for (paraphrased):</b> ${th.map(r=>`<i>${esc(r.theme)}</i> – ${esc(r.gist)}`).join('; ')}.</p>`:''}<ul class="q">${list.map(q=>`<li>${esc(q.q)}${q.ref&&TOOLKIT.refs[q.ref].theme?` <span style="color:#555;font-size:88%">[Toolkit: ${esc(refLabel(q.ref))}]</span>`:''}${q.ev?`<span class="qev" style="display:block;margin-top:1.5pt;color:#333;font-size:92%"><b>Evidence to expect:</b> ${esc(q.ev)}</span>`:''}</li>`).join('')}</ul></div>`; }).join(''); } return `<ul class="q">${qs.map(q=>`<li><span class="tag">${esc(AREAS[q.area])}</span><span class="vh">: </span>${esc(q.q)}</li>`).join('')}</ul>`; }
@@ -577,7 +598,7 @@ function renderB0(m,an,on){ evidenceRows(an); const li=x=>`<li>${esc(x.text)} <s
     ${an.attendTable.length?`<div class="sec">${attendTableHTML(an,false)}<p class="note">${esc(attendNote(m,an))}</p></div>`:''}${prof.length?`<div class="sec"><h3>Pupil profile</h3><ul>${prof.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`:''}</div>`;
   const howTo=`<div class="sec"><h3>How to read this briefing</h3><p style="margin:0 0 6pt">${esc(KEY)}</p><p style="margin:0"><b>Acronyms.</b> ${esc(ACR)}</p></div>`;
   const p4=`<div class="page">${run}<div class="sec"><h2>5. Trends over time</h2>${trendsHTML(an,false)}<p class="note">${esc(suspensionReasonsNote(m))}* = part-year figure. 2022 outcomes may reflect pandemic disruption.</p></div></div>`;
-  const p5=`<div class="page">${run}<div class="sec"><h2>2. Key questions for governors <small>grouped by inspection toolkit evaluation area</small></h2><p class="note" style="margin:0 0 8pt">Questions are prompts for assurance, generated by fixed rules from the patterns in the data. They do not assert a cause; leaders' answers and the school's own evidence decide what the data means. Under each question, "Evidence to expect" suggests what the board could ask to see; it is a prompt, not a requirement. Each question is linked to a theme in the ${esc(TOOLKIT.title)}. The descriptions of what the toolkit looks for are short paraphrases of its expected standard, not Ofsted's wording: read the toolkit itself for the full text. The IDSR does not evidence every toolkit area: safeguarding and personal development and wellbeing are not covered by this data.</p>${qHTML(an.questionsTop||an.questions,true)}${morePromptsHTML(an)}</div></div>`;
+  const p5=`<div class="page">${run}<div class="sec"><h2>2. Key questions for governors <small>grouped by inspection toolkit evaluation area</small></h2><p class="note" style="margin:0 0 8pt">Questions are prompts for assurance, generated by fixed rules from the patterns in the data. They do not assert a cause; leaders' answers and the school's own evidence decide what the data means. Under each question, "Evidence to expect" suggests what the board could ask to see; it is a prompt written for this tool, not a requirement and not Ofsted's wording. Each question is linked to a theme in the ${esc(TOOLKIT.title)}. The descriptions of what the toolkit looks for are short paraphrases of its expected standard, not Ofsted's wording: read the toolkit itself for the full text. The IDSR does not evidence every toolkit area: safeguarding and personal development and wellbeing are not covered by this data.</p>${qHTML(an.questionsTop||an.questions,true)}${morePromptsHTML(an)}</div></div>`;
   const p6=`<div class="page appx">${run}<div class="sec"><h2>Appendix A. Evidence trail <small>every headline traced to its IDSR source row</small></h2>${evidenceHTML(an)}<p class="note">Bandings and trends are quoted exactly as the IDSR publishes them ("sig+" = statistically significantly above; "non-sig" = within the confidence interval). Multi-year averages are the IDSR's own.</p></div>
     <div class="sec"><h2>Appendix B. Data coverage <small>what was extracted, what was not, and what to check by hand</small></h2>${coverageHTML(an)}</div><div class="foot"><p>${esc(sourceText(m))}</p></div></div>`;
   return `<div class="doc vb" id="doc">${p1.replace(/<\/div>$/,howTo+'</div>')}${p5}${p2}${p3}${p4}${p6}</div>`; }
