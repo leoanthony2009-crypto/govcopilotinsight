@@ -10,7 +10,7 @@ import path from 'node:path';
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ctx = vm.createContext({ console });
 vm.runInContext(
-  fs.readFileSync(path.join(root, 'core.js'), 'utf8') + '\n' + fs.readFileSync(path.join(root, 'sample.js'), 'utf8') +
+  fs.readFileSync(path.join(root, 'questions.js'), 'utf8') + '\n' + fs.readFileSync(path.join(root, 'core.js'), 'utf8') + '\n' + fs.readFileSync(path.join(root, 'sample.js'), 'utf8') +
   '\n;globalThis.T={fewPupils,cnt,num,bandInfo,judge,analyse,normaliseModel,validateModel,latest,termNote,fmtGap,renderA,renderB,SAMPLE_MODEL,TESTED_RELEASES,setSuppress:v=>{SUPPRESS=v;}};', ctx);
 const T = ctx.T;
 const fresh = () => T.normaliseModel(JSON.parse(JSON.stringify(T.SAMPLE_MODEL)));
@@ -146,7 +146,7 @@ test('questions follow the priority of their headline', () => {
 
 test('every generated question is tied to a toolkit theme in the right area', () => {
   const ctx2 = vm.createContext({ console });
-  vm.runInContext(fs.readFileSync(path.join(root, 'core.js'), 'utf8') + '\n' + fs.readFileSync(path.join(root, 'sample.js'), 'utf8') + '\n;globalThis.X={TOOLKIT,AREAS,refFor,analyse,normaliseModel,renderB,SAMPLE_MODEL};', ctx2);
+  vm.runInContext(fs.readFileSync(path.join(root, 'questions.js'), 'utf8') + '\n' + fs.readFileSync(path.join(root, 'core.js'), 'utf8') + '\n' + fs.readFileSync(path.join(root, 'sample.js'), 'utf8') + '\n;globalThis.X={TOOLKIT,AREAS,refFor,analyse,normaliseModel,renderB,SAMPLE_MODEL};', ctx2);
   const X = ctx2.X; const m = X.normaliseModel(JSON.parse(JSON.stringify(X.SAMPLE_MODEL))); const an = X.analyse(m);
   for (const q of an.questions) { assert.ok(q.ref && X.TOOLKIT.refs[q.ref], 'no toolkit reference for: ' + q.q); }
   assert.equal(X.refFor('att', 'Suspension rates for all pupils are above national.'), 'att_beh');
@@ -227,7 +227,7 @@ test('special schools are labelled as not yet supported and get no overall pictu
 
 test('the sample PDFs were rebuilt after the last change to the briefing', async () => {
   const { createHash } = await import('node:crypto'); const h = createHash('sha256');
-  for (const f of ['core.js', 'sample.js', 'idsr.html']) h.update(fs.readFileSync(path.join(root, f)));
+  for (const f of ['questions.js', 'core.js', 'sample.js', 'idsr.html']) h.update(fs.readFileSync(path.join(root, f)));
   assert.equal(fs.readFileSync(path.join(root, 'sample-briefing.sha256'), 'utf8').trim(), h.digest('hex'), 'run: node tests/make-sample.cjs');
 });
 test('similar-schools comparisons are quoted as published and only when the IDSR has them', () => {
