@@ -2,7 +2,7 @@
 
 Turns a school's Ofsted Inspection Data Summary Report (IDSR) into a one-page governor briefing, a full briefing with an evidence trail, and an editable Word document.
 
-**Status:** pilot, version 4.0. Checked against the IDSR release of 25 September 2026, mainly on primary-school data. Secondary handling has had little testing; special schools are not yet supported.
+**Status:** pilot, version 4.1. Checked against the IDSR release of 25 September 2026, mainly on primary-school data. Secondary handling has had little testing; special schools are not yet supported.
 
 ## How it works
 
@@ -72,7 +72,7 @@ The line follows the IDSR, which suppresses cohorts of 5 or fewer. Attainment pe
 
 Each question is produced by a fixed rule and linked to a theme in Ofsted's State-funded school inspection toolkit (v2.0, June 2026, for use from 7 September 2026). Version B and the Word file show, for each area, a short paraphrase of what the toolkit's expected standard looks for. The paraphrases live in `TOOLKIT` in `core.js`. They are not Ofsted's wording, and they must be re-read against the toolkit whenever Ofsted updates it. Leadership and governance is cited by area only. Safeguarding and personal development and wellbeing are not evidenced by IDSR data, so no questions are generated for them.
 
-From version 4.0 the wording lives in `questions.js` (`QUESTION_BANK`) and the rules that fire each entry live in the `QUESTIONS` block of `analyse()` in `core.js`. Findings are merged by subject and by measure. Four compound rules (I3, I10, L2, L6) absorb the stand-alone questions they are built from. A `{name}` with no value drops its `[[optional clause]]`, or the whole question if it is required, so a suppressed figure can never print as blank or "undefined". After editing any wording run the rule tests: the audit test rebuilds 600 varied schools and fails on any malformed sentence.
+From version 4.0 the wording lives in `questions.js` (`QUESTION_BANK`) and the rules that fire each entry live in the `QUESTIONS` block of `analyse()` in `core.js`. Findings are merged by subject and by measure. Four compound rules (I3, I10, L2, L6) absorb the stand-alone question they are built from (I3: the gap question and the FSM6 part of the absence question; I10: the SEN part of the absence and suspension questions; L2 and L6: the workforce or stability question only) and keep its caveats. `QUESTION_TOKENS` in `core.js` lists the `{names}` each entry may use; a test checks every template against it. A `{name}` with no value drops its `[[optional clause]]`, or the whole question if it is required, so a suppressed figure can never print as blank or "undefined". After editing any wording run the rule tests: the audit test rebuilds 600 varied schools and fails on any malformed sentence.
 
 ## Tests
 
@@ -86,7 +86,7 @@ The browser tests serve the site under its real security headers and use it as a
 
 Vendored library check: `vendor/docx-9.5.1.iife.js` is the unmodified npm `docx@9.5.1` build, sha256 `bb2908d72ffd8a3d896b455563733d3a2e708e1384a5140e05b3c6dd0b2f676d` (the rule tests assert this). The rule tests fail if the sample PDFs were not rebuilt after the last change to `questions.js`, `core.js`, `sample.js` or `idsr.html` (they compare `sample-briefing.sha256`); run `node tests/make-sample.cjs`. When the test counts change, update the figures in the "How it's checked" panel in `idsr.html`.
 
-The tests cover the number reader, the banding and significance rules, year ordering, small-number handling, escaping of uploaded text and the template check. Run them before every deploy, and add a case whenever Ofsted changes the IDSR.
+The tests cover the number reader, the banding and significance rules, year ordering, small-number handling, escaping of uploaded text, the template check, and the governor questions (merging, compound rules, caveats, small-number limits and a 600-combination audit of every sentence). Run them before every deploy, and add a case whenever Ofsted changes the IDSR.
 
 When Ofsted publishes a new IDSR release: check a real file by hand against its briefing, then add the release date to `TESTED_RELEASES` in `core.js`.
 
@@ -116,7 +116,7 @@ Sign-ups from `/subscribe` are only collected; nothing is sent automatically. Th
 
 ## Release checklist
 
-1. Run `node --test tests/core.test.mjs` and `node tests/browser.cjs`. Both must pass.
+1. Run `node --test tests/*.test.mjs` and `node tests/browser.cjs`. Both must pass.
 2. Open the Netlify deploy preview for the pull request and check the home page, `/idsr` (load the example school) and `/briefs/`.
 3. Send one test enquiry from `/contact` on the preview. Check that it appears under Forms in Netlify and that the notification email reaches the enquiry mailbox. Check the Spam list if it does not.
 4. In Netlify, Forms must show form detection as enabled and an email notification set for all three forms: `enquiry`, `briefing-updates` and `idsr-signup`.

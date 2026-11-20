@@ -294,7 +294,7 @@ details.help ol{margin:6px 0 0;padding-left:18px}
       <p class="lede"><b>Your school's IDSR, ready for the governors' meeting.</b></p>
       <p class="note"><a id="skipChoose" href="#drop">Skip to choosing your file</a></p>
       <p class="note only-narrow"><a id="seeExample" href="#stage">See the example briefing first</a></p>
-      <p>Choose your school's IDSR (Inspection Data Summary Report) file and get a one-page briefing, a full briefing with questions for governors, and an editable Word copy. Built and checked mainly on primary school IDSRs. Secondary IDSRs load but have had little testing, so check those briefings with extra care. Special schools are not yet supported.</p>
+      <p>Choose your school's IDSR (Inspection Data Summary Report) file and get a one-page briefing, a full briefing with a short set of questions for governors, each with the evidence a board could ask to see, and an editable Word copy. Built and checked mainly on primary school IDSRs. Secondary IDSRs load but have had little testing, so check those briefings with extra care. Special schools are not yet supported.</p>
       <ul class="about">
         <li><b>No AI.</b> Fixed rules read the tables; the same file always gives the same briefing.</li>
         <li><b>No upload.</b> The file is read in this browser and is never sent anywhere.</li>
@@ -361,14 +361,14 @@ details.help ol{margin:6px 0 0;padding-left:18px}
     <hr>
     <h2 class="sect">More from GovernorBrief</h2>
     <p class="note"><a href="/briefs/">3 Minutes Before the Meeting</a>: short briefings with three questions for your next meeting. <a href="/subscribe">Get new ones by email</a>.</p>
-    <p class="note"><b>Want your board to practise using a briefing like this?</b> Asking Better Questions is a practical 90-minute face-to-face workshop for governors and trustees. <a href="/workshop">About the workshop</a>.</p>
+    <p class="note"><b>Want your board to practise using a briefing like this?</b> Each question in the full briefing comes with the evidence to expect. Asking Better Questions is a practical 90-minute face-to-face workshop where governors and trustees practise asking them. <a href="/workshop">About the workshop</a>.</p>
     <div class="row"><a class="btn primary" id="btnBook" href="/contact">Make an enquiry</a></div>
     <p class="note">Any other question: <a href="mailto:enquiry@governorbrief.co.uk">enquiry@governorbrief.co.uk</a>. Please never email an IDSR to us.</p>
 
     <hr>
     <details class="help about-box"><summary>How it's checked</summary>
     <p class="note"><b>Checked against the IDSR.</b> <span id="checkedLine"></span> If your IDSR is newer than that, the briefing still loads but carries a warning.</p>
-    <p class="note"><b>Tested before each release.</b> At this version, 67 rule tests and 135 browser tests pass. They cover the number reader, banding and significance rules, small-number hiding, the wording of every governor question across 600 varied sets of results, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs.</p>
+    <p class="note"><b>Tested before each release.</b> At this version, 81 rule tests and 135 browser tests pass. They cover the number reader, banding and significance rules, small-number hiding, the wording of every governor question across 600 varied sets of results, files that should be refused and files built to cause harm. It has not yet been validated against a large set of real IDSRs.</p>
     <p class="note"><b>For data protection officers.</b> The page is static. The IDSR is opened by the browser on the user's own device and is never transmitted: the site's security policy stops this page sending data to any other site in the background, the code contains nothing that sends it to ours, and there are no cookies, analytics scripts or accounts. The supplier therefore never receives the school's data. Before first use, users sign up on a separate page with their name, school, role and email; this page then reads one marker in the browser's local storage, holding only the date of sign-up, so that it does not ask again. The marker is never sent anywhere. The site is hosted on Netlify, which, like any web host, keeps ordinary visit logs (such as the IP address and time of each visit).</p>
     <p class="note"><b>How the headlines are made.</b> Every rule is written out in the <a href="/method">method note</a>, with one headline traced from the IDSR row to the sentence.</p>
     <p class="note"><b>Who built it.</b> Built by a serving headteacher, so that governors can use the IDSR without reading all of it.</p>
