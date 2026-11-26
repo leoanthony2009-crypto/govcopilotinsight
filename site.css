@@ -157,9 +157,9 @@ form.enq{display:grid;gap:18px;max-width:40em}
 
 /* footer */
 .sitefoot{background:var(--midnight);color:#fff;padding:44px 0 48px;border-top:4px solid var(--brass)}
-.sitefoot .wrap{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.85fr) minmax(0,.85fr) minmax(0,1.3fr);gap:28px 32px;align-items:start}
-@media screen and (max-width:900px){.sitefoot .wrap{grid-template-columns:1fr 1fr}.sitefoot .f-brand{grid-column:1/-1}}
-@media screen and (max-width:520px){.sitefoot .wrap{grid-template-columns:1fr}}
+.sitefoot .wrap{display:grid;grid-template-columns:minmax(360px,1.5fr) minmax(0,.8fr) minmax(0,.8fr) minmax(0,1.25fr);gap:28px 32px;align-items:start}
+@media screen and (max-width:1080px){.sitefoot .wrap{grid-template-columns:1fr 1fr}.sitefoot .f-brand{grid-column:1/-1}}
+@media screen and (max-width:600px){.sitefoot .wrap{grid-template-columns:1fr}}
 .sitefoot img{display:block;width:363px;height:66px;margin:0 0 16px -3px}
 @media screen and (max-width:560px){.sitefoot img{width:242px;height:44px;margin-left:-2px}}
 .sitefoot p{margin:0 0 10px;max-width:46em;line-height:1.55}
