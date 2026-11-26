@@ -131,6 +131,13 @@ def svg(w, h, body, label, bg=None):
 # (half size) the ring, the stem and the bars of the B and the rule all fall on whole pixels.
 LOCK = dict(STANDARD, sw=6, R=37, stem=39, top=29, bot=73, hx=47.5, hx2=49, bar_y=51)
 RULE_X, NAME_X = 105, 128       # the divider rule, and where the name starts
+# The lockup with the strapline is shown at 66 px high (three quarters size) on the website. Its
+# measurements are multiples of 4/3 so that at that size every straight edge falls on a whole pixel:
+# the ring and the B have a 4 px line, the rule is 2 px, and the lettering sits on whole-pixel baselines.
+U = 4 / 3
+LOCK_FULL = dict(STANDARD, sw=4 * U, R=36, stem=38, top=6 + 17 * U, bot=6 + 49 * U, r=8 * U,
+                 hx=6 + 30 * U, hx2=6 + 31 * U, bar_y=50, bar_to=6 + 50 * U)
+RULE_FULL = 104
 STRAP_CAPS = "FROM INFORMATION TO ASSURANCE"
 
 
@@ -150,17 +157,19 @@ def lockup(kind, ink, b=None, bg=None, pad=PAD, mono=False):
     if b is None:
         b = ink if mono else (BRASS if ink == WHITE else TEAL)
     if kind != "wordmark":
-        parts.append(f'<g transform="translate(-10 -10)">{symbol(LOCK, ink, b)}</g>')
-        parts.append(f'<path d="M{RULE_X},4 V76" stroke="{b}" stroke-width="2" fill="none"/>')
+        full = kind == "full"
+        parts.append(f'<g transform="translate(-10 -10)">{symbol(LOCK_FULL if full else LOCK, ink, b)}</g>')
+        parts.append(f'<path d="M{RULE_FULL if full else RULE_X},4 V76" stroke="{b}" stroke-width="{2 * U if full else 2:.4f}" fill="none"/>')
         x = NAME_X
     if kind == "full":
         size = 50
-        base = 8 + face(500).cap * size / 1000
+        base = 36 * U - PAD                             # baseline on a whole pixel at 66 px high
         d, lo, hi = wordmark(size, 0, base)
         d, lo, hi = wordmark(size, x - lo, base)
-        # strapline: small capitals, letter-spaced to the width of the name
-        sd = fitted(STRAP_CAPS, 500, 12.5, lo + 1, hi - lo - 2, 72)
-        parts.append(f'<path d="{d}" fill="{ink}"/><path d="{sd}" fill="{ink}" fill-opacity=".86"/>')
+        # strapline: capitals at full strength, letter-spaced to the width of the name; 16 units is
+        # 12 px at 66 px high (capitals about 8.5 px tall), the smallest size that stays crisp
+        sd = fitted(STRAP_CAPS, 500, 16, lo + 1, hi - lo - 2, 57 * U - PAD)
+        parts.append(f'<path d="{d}" fill="{ink}"/><path d="{sd}" fill="{ink}"/>')
         height = H
     else:
         size = 52 if kind == "primary" else 58
@@ -177,7 +186,7 @@ def lockup(kind, ink, b=None, bg=None, pad=PAD, mono=False):
     if kind != "wordmark" and not bg:
         # Width is a whole multiple of 22 against a height of 88, so the logo scales to whole
         # pixels (253 x 44, 322 x 56). At 44 px high the symbol's lines are exactly 3 px.
-        w = math.ceil(w / 22) * 22
+        w = math.ceil(w / 44) * 44 if kind == "full" else math.ceil(w / 22) * 22
     label = NAME + (". " + STRAP if kind == "full" else "")
     return svg(w, h, f'<g transform="translate({pad} {pad})">{"".join(parts)}</g>', label, bg)
 

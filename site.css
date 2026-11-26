@@ -31,7 +31,7 @@ p{margin:0 0 14px}
 /* header */
 .topbar{background:#102D3B;border-bottom:3px solid #C4AE7A}
 .tb-in{max-width:1240px;margin:0 auto;display:flex;align-items:center;flex-wrap:wrap;gap:0 20px;padding:4px max(16px,env(safe-area-inset-right,0px)) 4px max(16px,env(safe-area-inset-left,0px))}
-.tb-logo{display:block;flex:none;margin-left:-3px;padding:12px 0}.tb-logo img{display:block;width:308px;height:56px}
+.tb-logo{display:block;flex:none;margin-left:-3px;padding:7px 0}.tb-logo img{display:block;width:363px;height:66px}
 .tb-nav{display:flex;flex-wrap:wrap;gap:0 2px;margin-left:auto}
 .tb-nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;font-weight:700;font-size:17px;color:#fff;text-decoration:none}
 .tb-nav a:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
@@ -160,7 +160,7 @@ form.enq{display:grid;gap:18px;max-width:40em}
 .sitefoot .wrap{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.85fr) minmax(0,.85fr) minmax(0,1.3fr);gap:28px 32px;align-items:start}
 @media screen and (max-width:900px){.sitefoot .wrap{grid-template-columns:1fr 1fr}.sitefoot .f-brand{grid-column:1/-1}}
 @media screen and (max-width:520px){.sitefoot .wrap{grid-template-columns:1fr}}
-.sitefoot img{display:block;width:308px;height:56px;margin:0 0 16px -3px}
+.sitefoot img{display:block;width:363px;height:66px;margin:0 0 16px -3px}
 @media screen and (max-width:560px){.sitefoot img{width:242px;height:44px;margin-left:-2px}}
 .sitefoot p{margin:0 0 10px;max-width:46em;line-height:1.55}
 .sitefoot .indep{font-size:16px;color:#D5DDE0;max-width:26em}
